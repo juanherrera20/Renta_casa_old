@@ -1,6 +1,11 @@
 from django.contrib import admin
-from .models import p
+from .models import usuarios, superuser, arrendatario, propietario, propiedad, documentos
 
-admin.site.register(p)
+# Register the models.
 
-# Register your models here.
+admin.site.register(usuarios)
+admin.site.register(superuser)
+admin.site.register(arrendatario)
+admin.site.register(propietario)
+admin.site.register(propiedad)
+admin.site.register(documentos)

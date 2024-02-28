@@ -11,14 +11,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.CreateModel(
-            name='p',
-            fields=[
-                ('id', models.AutoField(primary_key=True, serialize=False)),
-                ('title', models.CharField(max_length=100)),
-                ('descrip', models.CharField(max_length=250)),
-                ('image', models.ImageField(upload_to='Imagenes/images')),
-                ('url', models.URLField(blank=True)),
-            ],
-        ),
     ]
