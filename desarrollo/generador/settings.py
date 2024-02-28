@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'generar',
+    'generar', #Se debe colocar el nombre del aplicativo para que se deba ejecutar OK
 ]
 
 MIDDLEWARE = [
@@ -74,9 +74,11 @@ WSGI_APPLICATION = 'casa.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+
+#Aquí se hace la configuación para conectar la base de datos.
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'renta',
         'USER' : 'root',
         'PASSWORD' : '',
