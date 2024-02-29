@@ -16,8 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from generar.views import hello
+#Se importan las vistas que se deseen ver en la página
+from generar.views import index
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('',hello),
+    path('admin/', admin.site.urls), 
+    path('',index), #Se indica que nombre a url se le agrega para la facilidad de rutas.
 ]
