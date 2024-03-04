@@ -7,16 +7,16 @@
 </head>
 <body>
     <h3>Registar a un administrador</h3>
-    <form action="login" method="get">
+    <form action="dash" method="get">
         {% csrf_token %}
         <label for="documento">Nombre</label>
-        <input type="text" name="documento" id="documento">
+        <input type="text" name="nombre" id="documento">
         <br>
         <label for="pass">Apellidos</label>
-        <input type="password" name="password" id="password">
+        <input type="password" name="apellidos" id="password">
         <br>
         <label for="documento">Telefono</label>
-        <input type="text" name="documento" id="documento">
+        <input type="text" name="telefono" id="documento">
         <br>
         <label for="documento">Documento</label>
         <input type="text" name="documento" id="documento">
@@ -24,11 +24,8 @@
         <label for="pass">Password</label>
         <input type="password" name="password" id="password">
         <br><br>
-        <input type="button" value="Registrar">
+        <button type="submit">Registrar</button>
 <br><br><br>
-
-
-
     </form>
 </body>
 </html>
