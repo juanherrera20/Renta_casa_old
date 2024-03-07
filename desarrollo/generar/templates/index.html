@@ -8,7 +8,7 @@
 <body>
     <h2>Inicio de sesión</h2>
 
-    <form action="{% url 'dash' %}" method="get">
+    <form action="{% url 'dash' %}" method="POST">
         {% csrf_token %} <!-- Token de seguridad obligatorio para formularios en Django -->
         <label for="documento">Documento</label>
         <input type="text" name="documento" id="documento">

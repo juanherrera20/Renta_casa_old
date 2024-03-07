@@ -7,24 +7,24 @@
 </head>
 <body>
     <h3>Registar a un administrador</h3>
-    <form action="{% url 'dash' %}" method="get">
+    <form action="{% url 'dash' %}" method="POST">
         {% csrf_token %}
-        <label for="documento">Nombre</label>
-        <input type="text" name="nombre" id="documento">
+        <label for="nombre">Nombre</label>
+        <input type="text" name="nombre" id="nombre">
         <br>
-        <label for="pass">Apellidos</label>
-        <input type="password" name="apellidos" id="password">
+        <label for="apellido">Apellidos</label>
+        <input type="text" name="apellido" id="apellido">
         <br>
-        <label for="documento">Telefono</label>
-        <input type="text" name="telefono" id="documento">
+        <label for="telefono">Telefono</label>
+        <input type="text" name="telefono" id="telefono">
         <br>
         <label for="documento">Documento</label>
         <input type="text" name="documento" id="documento">
         <br>
         <label for="pass">Password</label>
-        <input type="password" name="password" id="password">
+        <input type="password" name="pass" id="pass">
         <br><br>
-        <button type="submit">Registrar</button>
+        <button type="submit" name="registro" value="3">Registrar</button>
 <br><br><br>
     </form>
 </body>
