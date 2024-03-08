@@ -17,9 +17,22 @@ Including another URLconf
 
 from django.urls import path
 #Se importan las vistas que se deseen ver en la página
-from generar.views import index, register, dash
+from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
+from generar.views import  tarea, noti, inicio
+   
+
 urlpatterns = [
+
     path('',index, name="index"), #Se indica que nombre a url se le agrega para la facilidad de rutas.
-    path('register/', register, name="register"),
-    path('dash/', dash, name="dash"),
+    path('Register/', register, name="register"),
+    path('Inicio/', inicio, name="inicio"),
+    path('Dashboard/', dash, name="dash"),
+    path('Inmuebles/', inmu, name="inmu"),
+    path('Personas/Propietarios/', personas_propietarios, name="personas_propietarios"),
+    path('Personas/Inquilinos/', personas_inquilinos, name="personas_inquilinos"),
+    path('Analisis/Propietarios/', analisis_propietarios, name="analisis_propietarios"),
+    path('Analisis/Inquilinos/', analisis_inquilinos, name="analisis_inquilinos"),
+    path('CloseSession/', close, name="close_session"),
+    path('Tareas/', tarea, name="tareas"),
+    path('Notificaciones/', noti, name="noti"),
 ]

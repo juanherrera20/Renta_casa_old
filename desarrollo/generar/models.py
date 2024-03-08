@@ -23,7 +23,7 @@ class usuarios(models.Model): #Tabla usuarios
     documento = models.CharField(max_length = 50)
     email = models.EmailField(max_length = 100)
     telefono = models.CharField(max_length = 50)
-    propie_client = models.IntegerField() #Saber si es propietario o cliente
+    propie_client = models.IntegerField() 
     
     class Meta:
         db_table = 'usuarios' 

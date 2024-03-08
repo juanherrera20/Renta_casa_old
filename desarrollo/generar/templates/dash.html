@@ -7,18 +7,37 @@
     <title>Bienbenido</title>
 </head>
 <body>
-    <!-- Bootstrap5 -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-          <h2 class="navbar-brand">Bienvenido ... (nombre)</h2>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <form action="{% url 'index' %}" class="d-flex justify-content-start">
-            {% csrf_token %}    
-            <button class="btn btn-outline-success" type="submit">Cerrar Sesión</button>
-            </form>
-          </div>
-        </div>
-      </nav>
-    <!-- Bootstrap5 --> 
+  <h2>Dashboard</h2>
+  <div class="containerr">
+    <nav>
+      <ul style="list-style: none;"> <!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
+      <br>
+        <li><p>Logo</p></li>
+        <li><a href="#">Inicio</a></li>
+        <li><a href="{% url 'inmu' %}">Inmuebles</a></li>
+        <li>
+          <select name="personas" id="personas" onchange="location.href=this.value;">
+            <option value="1">Personas</option>
+            <option value="{% url 'personas_propietarios' %}">Propietarios</option>
+            <option value="{% url 'personas_inquilinos' %}">Inquilinos</option>>
+          </select>
+        </li>
+        <li>
+          <select name="analisis" id="analisis" onchange="location.href=this.value;">
+            <option value="1">Analisis</option>
+            <option value="{% url 'analisis_propietarios' %}">Propietarios</option>
+            <option value="{% url 'analisis_inquilinos' %}">Inquilinos</option>
+          </select>
+        </li>
+        <li><a href="{% url 'tareas' %}">Tareas</a></li>
+        <br>
+        <li><a href="{% url 'close_session' %}">Cerrar Sesión</a></li>
+        <li><a href="{% url 'noti' %}">Notificaciones</a></li>
+        <li><p>Foto</p></li>
+      </ul>
+    </nav>
+  </div>
+
+
 </body>
 </html>
