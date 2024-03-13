@@ -6,7 +6,6 @@ from cryptography.fernet import Fernet
 
 # Creations the views.
 def index(request):
-    
     return render(request, 'index.html')
 
 def close(request):
