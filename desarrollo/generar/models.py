@@ -20,6 +20,7 @@ class usuarios(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
     nombre = models.CharField(max_length=50)
     apellido = models.CharField(max_length = 100)
+    tipo_documento = models.CharField(max_length = 100)
     documento = models.CharField(max_length = 50)
     email = models.EmailField(max_length = 100)
     telefono = models.CharField(max_length = 50)

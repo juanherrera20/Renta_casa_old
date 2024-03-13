@@ -6,7 +6,6 @@
     <title>Propietarios</title>
 </head>
 <body>
-    <h2>Personas - Propietarios</h2>
     <div class="containerr">
       <nav>
         <ul style="list-style: none;"> <!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
@@ -36,5 +35,18 @@
         </ul>
       </nav>
     </div>
+    <h2>Propietarios</h2>
+    <h3>Seguimiento de Propietarios</h3>
+    <h5>Todos los propietarios Registrados en la plataforma</h5>
+    <p>Total de propietarios: ###</p> 
+    <input type="search" id="buscar" name="buscar" placeholder="Buscar..."> <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'addPropietario' %}"> + Añadir Propietario</a>
+    <br>
+    <p>Tabla donde se muestran a todos los propietarios.</p>
+
+
+
+
+
+
 </body>
 </html>

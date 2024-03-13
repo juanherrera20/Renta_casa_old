@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import superuser
+from .models import superuser, usuarios
 from cryptography.fernet import Fernet
 
 
@@ -45,7 +45,7 @@ def dash(request):
 
                 model = superuser(nombre = name, apellido = lastname, documento = encrypt_ide, password = encrypt_passw, telefono = phone, habilitar = 1)
                 model.save()
-            return render(request, 'dash.html')
+            return redirect('index')
         
 
 def inicio(request):
@@ -74,4 +74,39 @@ def tarea(request):
     return render(request, 'tareas.html')    
 
 def noti(request):
-    return render(request, 'noti.html')    
+    return render(request, 'noti.html')
+
+
+def add_propietario(request):
+    return render(request, 'personas/propietarios/add_propietario.html')
+
+def guardar(request):
+    """ if request.method == "POST":        
+        name = request.POST.get('nombre1', None)
+        name2 = request.POST.get('nombre2', None)
+        apellido = request.POST.get('apellido1', None)
+        apellido2 = request.POST.get('apellido2', None)
+
+        tipo = request.POST.get('tipo_documento', None)
+        diccionarioTipo = { #Se hace un mapeo para su facil modificación e implementación.
+            '1': 'Cedula',
+            '2': 'Pasaporte',
+            '3': 'Tarjeta de Identidad'
+        }
+        tipoDocumento = diccionarioTipo[tipo]
+        documento = request.POST.get('documento1', None)
+        email = request.POST.get('email', None)
+        telefono = request.POST.get('phone', None)
+        propietario = request.POST.get('propie_client', None)
+        model = usuarios(nombre = name + " " + name2, apellido = apellido +" "+ apellido2, tipo_documento = tipoDocumento, documento = documento,email = email, telefono = telefono, propie_client = propietario)
+        model.save() """
+
+    """ Hasta aquí son los datos de usuarios en general. """
+    
+    objeto = usuarios.objects.last()
+    ide_propie = objeto.id
+    """ objeto.nombre -> es una forma de acceder a los datos de forma individual """
+    """ for atributo in objeto._meta.fields: #Forma de iterarar los datos para mostrarlos tipo Lista.
+        print(atributo.name, getattr(objeto, atributo.name)) """
+
+    return redirect('personas_propietarios')
