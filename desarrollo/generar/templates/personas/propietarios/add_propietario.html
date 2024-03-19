@@ -39,50 +39,50 @@
                 {% csrf_token %}
                 <h3>Información general</h3>
                 
-                <label for="nombre1">Primer Nombre</label>
-                <input type="text" name="nombre1" id="nombre1" placeholder="Escribir"><br>
+                <label for="nombre1">Primer Nombre *</label>
+                <input type="text" name="nombre1" id="nombre1" placeholder="Escribir" required><br>
 
-                <label for="nombre2">Segundo Nombre</label>
-                <input type="text" name="nombre2" id="nombre2" placeholder="Escribir"><br>
+                <label for="nombre2">Segundo Nombre *</label>
+                <input type="text" name="nombre2" id="nombre2" placeholder="Escribir" required><br>
 
-                <label for="apellido1">Primer Apellido</label>
-                <input type="text" name="apellido1" id="apellido1" placeholder="Escribir"><br>
+                <label for="apellido1">Primer Apellido *</label>
+                <input type="text" name="apellido1" id="apellido1" placeholder="Escribir" required><br>
 
-                <label for="apellido2">Segundo Apellido</label>
-                <input type="text" name="apellido2" id="apellido2" placeholder="Escribir"><br>
+                <label for="apellido2">Segundo Apellido *</label>
+                <input type="text" name="apellido2" id="apellido2" placeholder="Escribir" required><br>
 
 
-                <label for="tipo_documento">Tipo de Documento</label>
-                <select name="tipo_documento" id="tipo_documento">
+                <label for="tipo_documento">Tipo de Documento *</label>
+                <select name="tipo_documento" id="tipo_documento" required>
                     <option value="">Seleccione el tipo de documento</option>
                     <option value="1">Cedula de Ciudadania</option>
                     <option value="2">Pasaporte</option>
                 </select><br>
 
-                <label for="documento1">Documento</label>
-                <input type="number" name="documento1" id="documento1" placeholder="10002545785"><br>
+                <label for="documento1">Documento *</label>
+                <input type="number" name="documento1" id="documento1" placeholder="10002545785" required><br>
 
-                <label for="email">Correo Electronico</label>
-                <input type="email" name="email" id="email" placeholder="Persona de contacto"><br>
+                <label for="email">Correo Electronico *</label>
+                <input type="email" name="email" id="email" placeholder="Persona de contacto" required><br>
 
-                <label for="phone">Telefono</label>
-                <input type="number" name="phone" id="phone" placeholder="3333333335"><br>
+                <label for="phone">Telefono *</label>
+                <input type="number" name="phone" id="phone" placeholder="3333333335" required><br>
 
                 <input type="hidden" name="propie_client" id="propie_client" value="1" ><br><br>
 
                 <!-- Guardado del usuario. -->
 
-                <label for="direc">Direccion</label>
-                <input type="text" name="direc" id="direc" placeholder="Escribir"><br>
+                <label for="direc">Direccion *</label>
+                <input type="text" name="direc" id="direc" placeholder="Escribir" required><br>
 
-                <label for="valor_pagar">Valor a Pagar</label>
-                <input type="number" name="valor_pagar" id="valor_pagar" placeholder="$$$$$"><br>
+                <label for="valor_pagar">Valor a Pagar *</label>
+                <input type="number" name="valor_pagar" id="valor_pagar" placeholder="$$$$$" required><br>
 
-                <label for="fecha_pagar">Fecha del pago</label>
-                <input type="date" name="fecha_pagar" id="fecha_pagar" placeholder="dd/mm/YYYY"><br>
+                <label for="fecha_pagar">Fecha del pago *</label>
+                <input type="date" name="fecha_pagar" id="fecha_pagar" placeholder="dd/mm/YYYY" required><br>
 
-                <label for="tipo_contrato">Tipo de contrato</label>
-                <select name="tipo_contrato" id="tipo_contrato">
+                <label for="tipo_contrato">Tipo de contrato *</label>
+                <select name="tipo_contrato" id="tipo_contrato" required>
                     <option value="">Seleccione el tipo de contrato</option>
                     <option value="1">Trimestral</option>
                     <option value="2">Semestral</option>
@@ -91,7 +91,7 @@
                 </select><br>
 
                 <label for="obs">Espacio para Observaciones</label>
-                <input type="date" name="obs" id="obs" placeholder="Detalles a tener en cuenta"><br><br><br>
+                <input type="text" name="obs" id="obs" placeholder="Detalles a tener en cuenta"><br><br><br>
 
                 
 

@@ -1,10 +1,26 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import superuser, usuarios
+from .models import superuser, usuarios, arrendatario, propietario
 from cryptography.fernet import Fernet
 
 
 # Creations the views.
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#Creación de diccionarios que se van a utilizar en la app.
+diccionarioTipo = { #Mapeo para el tipo de Identificación
+            '1': 'Cedula',
+            '2': 'Pasaporte',
+            '3': 'Tarjeta de Identidad'
+        }
+
+diccionarioContrato = { #Mapeo para guardar el tipo de contrato
+            '1': 'Trimestral',
+            '2': 'Semestral',
+            '3': 'Anual',
+            '4': 'Indefinido'
+        }
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 def index(request):
     
     return render(request, 'index.html')
@@ -80,33 +96,77 @@ def noti(request):
 def add_propietario(request):
     return render(request, 'personas/propietarios/add_propietario.html')
 
-def guardar(request):
-    """ if request.method == "POST":        
+def guardar(request): #Función para guardar propietarios
+    if request.method == "POST":        
+        name = request.POST.get('nombre1', None)
+        name2 = request.POST.get('nombre2', None)
+        apellido = request.POST.get('apellido1', None)
+        apellido2 = request.POST.get('apellido2', None)
+        tipo = request.POST.get('tipo_documento', None)
+        tipoDocumento = diccionarioTipo[tipo]
+        documento = request.POST.get('documento1', None)
+        email = request.POST.get('email', None)
+        telefono = request.POST.get('phone', None)
+        propieta = request.POST.get('propie_client', None)
+        model = usuarios(nombre = name + " " + name2, apellido = apellido +" "+ apellido2, tipo_documento = tipoDocumento, documento = documento,email = email, telefono = telefono, propie_client = propieta)
+        model.save()
+
+    """ Hasta aquí son los datos de usuarios en general. """
+
+    objeto = usuarios.objects.last() #Guarda todo el objeto del último registro
+    usuarios_id = objeto.id # id del último registro guardado en la dB
+    if request.method == "POST": 
+        direc = request.POST.get('direc', None)
+        valor_pagar = request.POST.get('valor_pagar', None)
+        fecha_pagar = request.POST.get('fecha_pagar', None)
+        tipo_contrato = request.POST.get('tipo_contrato', None)
+
+        tipoContrato = diccionarioContrato[tipo_contrato]
+        observ = request.POST.get('obs', None)
+        modelo = propietario(direccion = direc, valor_pago = valor_pagar, fecha_pago = fecha_pagar, tipo_contrato = tipoContrato, obs = observ, usuarios_id_id = usuarios_id)
+        modelo.save()
+    print("modelo usuario y propietario, se guardan con éxito!")
+
+
+    return redirect('personas_propietarios')
+#Funciones para añadir inquilinos
+
+def add_inquilino(request):
+    return render(request, 'personas/inquilinos/add_inquilino.html')
+
+
+def guardar_inquilino(request): #Función para guardar inquilinos
+    if request.method == "POST":
+        id_inmueble = request.POST.get('inmueble', None) #En este espacio debería de existir el id del inmueble al cual se le va a "asociar"
         name = request.POST.get('nombre1', None)
         name2 = request.POST.get('nombre2', None)
         apellido = request.POST.get('apellido1', None)
         apellido2 = request.POST.get('apellido2', None)
 
         tipo = request.POST.get('tipo_documento', None)
-        diccionarioTipo = { #Se hace un mapeo para su facil modificación e implementación.
-            '1': 'Cedula',
-            '2': 'Pasaporte',
-            '3': 'Tarjeta de Identidad'
-        }
         tipoDocumento = diccionarioTipo[tipo]
         documento = request.POST.get('documento1', None)
         email = request.POST.get('email', None)
         telefono = request.POST.get('phone', None)
-        propietario = request.POST.get('propie_client', None)
-        model = usuarios(nombre = name + " " + name2, apellido = apellido +" "+ apellido2, tipo_documento = tipoDocumento, documento = documento,email = email, telefono = telefono, propie_client = propietario)
-        model.save() """
+        client = request.POST.get('propie_client', None) #Recordar que el valor de '1' es para propietarios y '2' para clientes.
+        model = usuarios(nombre = name + " " + name2, apellido = apellido +" "+ apellido2, tipo_documento = tipoDocumento, documento = documento,email = email, telefono = telefono, propie_client = client)
+        model.save()
 
     """ Hasta aquí son los datos de usuarios en general. """
     
-    objeto = usuarios.objects.last()
-    ide_propie = objeto.id
-    """ objeto.nombre -> es una forma de acceder a los datos de forma individual """
-    """ for atributo in objeto._meta.fields: #Forma de iterarar los datos para mostrarlos tipo Lista.
-        print(atributo.name, getattr(objeto, atributo.name)) """
+    objeto = usuarios.objects.last() #Guarda todo el objeto del último registro
+    usuarios_id = objeto.id # id del último registro guardado en la dB
+    if request.method == "POST": 
+        direc = request.POST.get('direc', None)
+        valor_cobrar = request.POST.get('valor_cobrar', None)
+        fecha_cobrar = request.POST.get('fecha_cobro', None)
+        inicioContrato = request.POST.get('inicioContrato', None)
+        finalContrato = request.POST.get('finContrato', None)
+        tipo_contrato = request.POST.get('tipo_contrato', None)
 
-    return redirect('personas_propietarios')
+        tipoContrato = diccionarioContrato[tipo_contrato]
+        observ = request.POST.get('obs', None)
+        modelo = arrendatario(direccion = direc, valor_cobro = valor_cobrar, fecha_cobro = fecha_cobrar, inicio_contrato = inicioContrato, fin_contrato = finalContrato, tipo_contrato = tipoContrato, obs = observ, usuarios_id_id = usuarios_id)
+        modelo.save()
+    print("modelo usuario y Arrendatario, se guardan con éxito!")
+    return redirect('personas_inquilinos')
