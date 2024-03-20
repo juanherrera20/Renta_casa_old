@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de sesión</title>
+</head>
+<body>
+    <h2>Inicio de sesión</h2>
+
+    <form action="{% url 'dash' %}" method="POST">
+        {% csrf_token %} <!-- Token de seguridad obligatorio para formularios en Django -->
+        <label for="documento">Documento</label>
+        <input type="text" name="documento" id="documento">
+        <br>
+        <label for="pass">Password</label>
+        <input type="password" name="password" id="password">
+        <br>
+        <button type="submit" name="entrar" value="1">Entrar</button>
+        <button type="submit" name="registrar" value="2">Registrar</button>
+<br><br><br>
+    </form>
+    <p>Imagen</p>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Add Inquilino</title>
+    </head>
+    <body>
+        <div class="containerr">
+            <nav>
+                <ul style="list-style: none;"> <br><!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
+                    <li><p>Logo</p></li>
+                    <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                    <li><a href="{% url 'inmu' %}">Inmuebles</a></li>
+                    <li>
+                        <select name="personas" id="personas" onchange="location.href=this.value;">
+                            <option value="1">Personas</option>
+                            <option value="{% url 'personas_propietarios' %}">Propietarios</option>
+                            <option value="{% url 'personas_inquilinos' %}">Inquilinos</option>>
+                        </select>
+                    </li>
+                    <li>
+                        <select name="analisis" id="analisis" onchange="location.href=this.value;">
+                            <option value="1">Analisis</option>
+                            <option value="{% url 'analisis_propietarios' %}">Propietarios</option>
+                            <option value="{% url 'analisis_inquilinos' %}">Inquilinos</option>
+                        </select>
+                    </li>
+                    <li><a href="{% url 'tareas' %}">Tareas</a></li><br>
+                    <li><a href="{% url 'close_session' %}">Cerrar Sesión</a></li>
+                    <li><a href="{% url 'noti' %}">Notificaciones</a></li>
+                    <li><p>Foto</p></li>
+                </ul>
+            </nav>
+        </div>
+        <h2>Añadir Inquilino</h2>
+        <h4>Lo marcado con "*" es un campo obligatorio</h4><br><br>
+        <form action="{% url 'guardar_inquilino' %}" method="post">
+            {% csrf_token %}
+            <h3>Detalles Iniciales</h3>
+
+            <p>Se debe tener en cuenta que se debe enlistar todos los inmuebles disponibles.</p>
+            <p>Se esta pendiente si se muestra el cod de referencia. La dirección. O una descripción que ayude a ubicar el inmueble</p>
+            <label for="existe_inmueble">¿El inmueble existe? *</label>
+            <select name="existe_inmueble" id="existe_inmueble" required>
+                <option value="">Seleccionar</option>
+                <option value="1">Si</option>
+                <option value="2">No</option>
+            </select><br>
+
+            <label for="inmueble">Relacionar un inmueble *</label>
+            <select name="inmueble" id="inmueble" required>
+                <option value="">Seleccionar</option>
+                <option value="1">Casa</option>
+                <option value="2">Apartamento</option>
+                <option value="3">Local</option>
+            </select><br>
+
+            
+
+            <a href="">+ Crear Inmueble</a>
+
+
+
+            <h3>Información general</h3>
+            
+            <label for="nombre1">Primer Nombre *</label>
+            <input type="text" name="nombre1" id="nombre1" placeholder="Escribir" required><br>
+
+            <label for="nombre2">Segundo Nombre *</label>
+            <input type="text" name="nombre2" id="nombre2" placeholder="Escribir" required><br>
+
+            <label for="apellido1">Primer Apellido *</label>
+            <input type="text" name="apellido1" id="apellido1" placeholder="Escribir" required><br>
+
+            <label for="apellido2">Segundo Apellido *</label>
+            <input type="text" name="apellido2" id="apellido2" placeholder="Escribir" required><br>
+
+
+            <label for="tipo_documento">Tipo de Documento *</label>
+            <select name="tipo_documento" id="tipo_documento" required>
+                <option value="">Seleccione el tipo de documento</option>
+                <option value="1">Cedula de Ciudadania</option>
+                <option value="2">Pasaporte</option>
+            </select><br>
+
+            <label for="documento1">Documento *</label>
+            <input type="number" name="documento1" id="documento1" placeholder="10002545785" required><br>
+
+            <label for="email">Correo Electronico *</label>
+            <input type="email" name="email" id="email" placeholder="Persona de contacto" required><br>
+
+            <label for="phone">Telefono *</label>
+            <input type="number" name="phone" id="phone" placeholder="3333333335" required><br>
+
+            <input type="hidden" name="propie_client" id="propie_client" value="2" ><br><br>
+
+            <!-- Guardado del usuario. -->
+
+            <label for="direc">Direccion *</label>
+            <input type="text" name="direc" id="direc" placeholder="Escribir" required><br>
+
+            <label for="valor_cobrar">Valor a Cobrar *</label>
+            <input type="number" name="valor_cobrar" id="valor_cobrar" placeholder="$$$$$" required><br>
+
+            <label for="fecha_cobro">Fecha del Cobro *</label>
+            <input type="date" name="fecha_cobro" id="fecha_cobro" placeholder="dd/mm/YYYY" required><br>
+
+            <label for="inicioContrato">inicio del Contrato *</label>
+            <input type="date" name="inicioContrato" id="inicioContrato" placeholder="Escribir" required><br>
+
+            <label for="finContrato">fin del Contrato *</label>
+            <input type="date" name="finContrato" id="finContrato" placeholder="Escribir" required><br>
+
+
+            <label for="tipo_contrato">Tipo de contrato *</label>
+            <select name="tipo_contrato" id="tipo_contrato" required>
+                <option value="">Seleccione el tipo de contrato</option>
+                <option value="1">Trimestral</option>
+                <option value="2">Semestral</option>
+                <option value="3">Anual</option>
+                <option value="4">Indefinido</option>
+            </select><br>
+
+            <label for="obs">Espacio para Observaciones</label>
+            <input type="text" name="obs" id="obs" placeholder="Detalles a tener en cuenta"><br><br><br>
+
+            <label for="documento">Documentación</label>
+            <input type="file" name="documento" id="documento"><br>
+
+            <p>Toca revisar el espacio para arrastrar los archivos.</p>
+            <button type="submit" name="add" id="add" value="1">Guardar</button>
+        </form>
+        <button  name="borrar" id="borrar" value="2">Eliminar</button> <label for="cancelar">Eliminar, limpiara todos los campos</label><br><br><br> <!-- Se debe aplicar JS para limpiar los campos del Form -->
+    </body>
+</html>
