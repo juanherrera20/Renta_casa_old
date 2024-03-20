@@ -7,8 +7,9 @@
 </head>
 <body>
     <h3>Registar a un administrador</h3>
-    <form action="{% url 'dash' %}" method="POST">
+    <form action="{% url 'register' %}" method="POST">
         {% csrf_token %}
+
         <label for="nombre">Nombre</label>
         <input type="text" name="nombre" id="nombre" required>
         <br>
