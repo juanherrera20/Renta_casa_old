@@ -10,6 +10,7 @@ class superuser(models.Model): #Tabla usuarios
     documento = models.CharField(max_length = 50, unique = True)
     password = models.CharField(max_length = 250)
     telefono = models.CharField(max_length = 50)
+    email = models.EmailField(max_length = 100)
     habilitar = models.IntegerField() #Saber si un usuario está habilitado o no (declarar super usuario)
     urls = []
     
@@ -20,6 +21,7 @@ class usuarios(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
     nombre = models.CharField(max_length=50)
     apellido = models.CharField(max_length = 100)
+    tipo_documento = models.CharField(max_length = 100)
     documento = models.CharField(max_length = 50)
     email = models.EmailField(max_length = 100)
     telefono = models.CharField(max_length = 50)
