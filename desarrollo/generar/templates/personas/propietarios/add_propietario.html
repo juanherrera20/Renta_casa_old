@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Add Propietarios</title>
+    </head>
+    <body>
+        <div class="containerr">
+            <nav>
+                <ul style="list-style: none;"> <br><!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
+                    <li><p>Logo</p></li>
+                    <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                    <li><a href="{% url 'inmu' %}">Inmuebles</a></li>
+                    <li>
+                        <select name="personas" id="personas" onchange="location.href=this.value;">
+                            <option value="1">Personas</option>
+                            <option value="{% url 'personas_propietarios' %}">Propietarios</option>
+                            <option value="{% url 'personas_inquilinos' %}">Inquilinos</option>>
+                        </select>
+                    </li>
+                    <li>
+                        <select name="analisis" id="analisis" onchange="location.href=this.value;">
+                            <option value="1">Analisis</option>
+                            <option value="{% url 'analisis_propietarios' %}">Propietarios</option>
+                            <option value="{% url 'analisis_inquilinos' %}">Inquilinos</option>
+                        </select>
+                    </li>
+                    <li><a href="{% url 'tareas' %}">Tareas</a></li><br>
+                    <li><a href="{% url 'close_session' %}">Cerrar Sesión</a></li>
+                    <li><a href="{% url 'noti' %}">Notificaciones</a></li>
+                    <li><p>Foto</p></li>
+                </ul>
+            </nav>
+        </div>
+        <h2>Añadir Propietario</h2>
+        <h4>Lo marcado con "*" es un campo obligatorio</h4><br><br>
+            <form action="{% url 'guardar' %}" method="post">
+                {% csrf_token %}
+                <h3>Información general</h3>
+                
+                <label for="nombre1">Primer Nombre *</label>
+                <input type="text" name="nombre1" id="nombre1" placeholder="Escribir" required><br>
+
+                <label for="nombre2">Segundo Nombre *</label>
+                <input type="text" name="nombre2" id="nombre2" placeholder="Escribir" required><br>
+
+                <label for="apellido1">Primer Apellido *</label>
+                <input type="text" name="apellido1" id="apellido1" placeholder="Escribir" required><br>
+
+                <label for="apellido2">Segundo Apellido *</label>
+                <input type="text" name="apellido2" id="apellido2" placeholder="Escribir" required><br>
+
+
+                <label for="tipo_documento">Tipo de Documento *</label>
+                <select name="tipo_documento" id="tipo_documento" required>
+                    <option value="">Seleccione el tipo de documento</option>
+                    <option value="1">Cedula de Ciudadania</option>
+                    <option value="2">Pasaporte</option>
+                </select><br>
+
+                <label for="documento1">Documento *</label>
+                <input type="number" name="documento1" id="documento1" placeholder="10002545785" required><br>
+
+                <label for="email">Correo Electronico *</label>
+                <input type="email" name="email" id="email" placeholder="Persona de contacto" required><br>
+
+                <label for="phone">Telefono *</label>
+                <input type="number" name="phone" id="phone" placeholder="3333333335" required><br>
+
+                <input type="hidden" name="propie_client" id="propie_client" value="1" ><br><br>
+
+                <!-- Guardado del usuario. -->
+
+                <label for="direc">Direccion *</label>
+                <input type="text" name="direc" id="direc" placeholder="Escribir" required><br>
+
+                <label for="valor_pagar">Valor a Pagar *</label>
+                <input type="number" name="valor_pagar" id="valor_pagar" placeholder="$$$$$" required><br>
+
+                <label for="fecha_pagar">Fecha del pago *</label>
+                <input type="date" name="fecha_pagar" id="fecha_pagar" placeholder="dd/mm/YYYY" required><br>
+
+                <label for="tipo_contrato">Tipo de contrato *</label>
+                <select name="tipo_contrato" id="tipo_contrato" required>
+                    <option value="">Seleccione el tipo de contrato</option>
+                    <option value="1">Trimestral</option>
+                    <option value="2">Semestral</option>
+                    <option value="3">Anual</option>
+                    <option value="4">Indefinido</option>
+                </select><br>
+
+                <label for="obs">Espacio para Observaciones</label>
+                <input type="text" name="obs" id="obs" placeholder="Detalles a tener en cuenta"><br><br><br>
+
+                
+
+
+<h1>Preguntar si los siguientes datos son necesarios</h1>
+<h1>Por qué?, como influyen al propietario? existen más datos o quitar datos de arriba</h1><br><br>
+
+<!-- Tal vez si, tal vez no, tener pendiente -->
+<!--                 <label for="ciudad_expedicion">ciudad de expedición</label>
+                <select name="ciudad_expedicion" id="ciudad_expedicion">
+                    <option value="">Seleccione una ciudad</option>
+                    <option value="1">Pereira</option>
+                    <option value="2">Cartago</option>
+                    <option value="3">Manizales</option>
+                    <option value="4">Dosquebradas</option>
+                    <option value="5">Armenia</option>
+                    <option value="6">Santa Rosa</option>
+                </select><br> -->
+
+
+                <p>Dudas con -Responsabilidad Tributaria-</p>
+                <p>Necesidad de poner -Nacionalidad-</p>
+<!-- 
+                <label for="nacimiento">Fecha de Nacimiento</label>
+                <input type="date" name="nacimiento" id="nacimiento" placeholder="DD/MM/YYYY"><br>
+
+                <label for="genero">Genero</label>
+                <select name="genero" id="genero">
+                    <option value="1">Seleccionar</option>
+                    <option value="1">Hombre</option>
+                    <option value="2">Mujer</option>
+                </select><br> -->
+
+                <label for="nombre3">Persona de contacto</label>
+                <input type="text" name="nombre3" id="nombre3" placeholder="Persona de contacto"><br>
+
+                <label for="celular">Celular</label>
+                <input type="number" name="celular" id="celular" placeholder="Persona de contacto"><br>
+
+                <h3>Información de Contacto</h3><br>
+
+
+
+                <label for="pais">Pais</label>
+                <select name="pais" id="pais">
+                    <option value="">Seleccione un país</option>
+                    <option value="1">Colombia</option>
+                    <option value="2">España</option>
+                    <option value="3">Estados Unidos</option>
+                    <option value="4">Venezuela</option>
+                </select><br><br>
+
+                
+
+                <h3>Información de pago</h3>
+                <p>Espacios son necesarios?? </p><br>
+                <!--<label for="banco">Banco o entidad</label>
+                <select name="banco" id="banco">
+                    <option value="">Seleccione un Banco</option>
+                    <option value="1">Bancolombia</option>
+                    <option value="2">Banco Davivienda</option>
+                    <option value="3">Banco de Bogotá</option>
+                    <option value="4">Banco AV Villas</option>
+                </select> -->
+                <label for="documento">Documentación</label>
+                <input type="file" name="documento" id="documento"><br>
+
+                <p>Toca revisar el espacio para arrastrar los archivos.</p>
+                <button type="submit" name="add" id="add" value="1">Guardar</button>
+            </form>
+        <button  name="borrar" id="borrar" value="2">Eliminar</button> <label for="cancelar">Eliminar, limpiara todos los campos</label><br><br><br> <!-- Se debe aplicar JS para limpiar los campos del Form -->
+    </body>
+</html>
