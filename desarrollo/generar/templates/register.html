@@ -7,8 +7,9 @@
 </head>
 <body>
     <h3>Registar a un administrador</h3>
-    <form action="{% url 'dash' %}" method="POST">
+    <form action="{% url 'register' %}" method="POST">
         {% csrf_token %}
+
         <label for="nombre">Nombre</label>
         <input type="text" name="nombre" id="nombre" required>
         <br>
@@ -20,6 +21,9 @@
         <br>
         <label for="documento">Documento</label>
         <input type="text" name="documento" id="documento" required>
+        <br>
+        <label for="email">Email</label>
+        <input type="text" name="email" id="email" required>
         <br>
         <label for="pass">Password</label>
         <input type="password" name="pass" id="pass" required>
