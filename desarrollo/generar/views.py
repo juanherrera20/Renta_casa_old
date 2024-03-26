@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from .models import superuser, usuarios, arrendatario, propietario
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# Este es un cambio para hacer commit se puede eliminar despues de esto
+
 #Librerias y paquetes posbilemente utiles
 # from cryptography.fernet import Fernet
 # from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
