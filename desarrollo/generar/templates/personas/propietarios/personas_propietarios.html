@@ -41,7 +41,40 @@
     <p>Total de propietarios: ###</p> 
     <input type="search" id="buscar" name="buscar" placeholder="Buscar..."> <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'addPropietario' %}"> + Añadir Propietario</a>
     <br>
-    <p>Tabla donde se muestran a todos los propietarios.</p>
+    <p>Tabla donde se muestran a todos los propietarios.</p><br>
+    <table>
+      <thead>
+          <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Apellido</th>
+              <th>Tipo de documento</th>
+              <th>Documento</th>
+              <th>Email</th>
+              <th>Estado</th>
+              <th>telefono</th>
+          </tr>
+      </thead>
+      <tbody>
+        {% for usuario, estado in datosUsuario %}
+        <tr>
+            <td>{{ usuario.id }}</td>
+            <td>{{ usuario.nombre }}</td>
+            <td>{{ usuario.apellido }}</td>
+            <td>{{ usuario.tipo_documento }}</td>
+            <td>{{ usuario.documento }}</td>
+            <td>{{ usuario.email }}</td>
+            <td>
+              {{ estado }}
+               
+            </td>
+            <td>{{ usuario.telefono }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+
 
 
 

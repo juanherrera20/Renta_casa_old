@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import superuser, usuarios, arrendatario, propietario, tareas
@@ -38,6 +39,12 @@ diccionarioTareaEtiqueta = {
             #'6': 'Cancelar',
             #'7': 'Finalizar',
             #'8': 'Cancelar',
+}
+diccionarioHabilitar ={
+    '1': 'Activo',
+    '2': 'Inactivo',
+    '3': 'Vacaciones',
+    '4': 'Indefinido', 
 }
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -93,7 +100,7 @@ def register(request):
         encrypt_passw = generate_password_hash(passw)
         
         # Crear y guardar el objeto superuser
-        model = superuser(nombre=name, apellido=lastname, documento=ide, password=encrypt_passw, telefono=phone, email=email, habilitar=1)
+        model = superuser(nombre=name, apellido=lastname, documento=ide, password=encrypt_passw, telefono=phone, email=email)
         model.save()
         
         # Redireccionar a la página de inicio de sesión después del registro
@@ -111,7 +118,12 @@ def inmu(request):
 
 
 def personas_propietarios(request):
-    return render(request, 'personas/propietarios/personas_propietarios.html')
+    #Logica para la tabla de propietarios
+    objetoUsuario = usuarios.objects.filter(propie_client=1) #Se filtra para saber si son propietarios o clientes
+    habilitar = usuarios.objects.filter(propie_client=1).values_list('habilitar', flat=True) #Se filtra solo el campo de 'habilitar'
+    estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diciconarioHabilitar
+    usuarios_con_estados = list(zip(objetoUsuario, estados)) # Se implementan las dos listas en 1, así Django las puede iterar sin problemas en el HTML
+    return render(request, 'personas/propietarios/personas_propietarios.html',{'datosUsuario':usuarios_con_estados})
 
 
 def personas_inquilinos(request):
