@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import superuser, usuarios, arrendatario, propietario
+from .models import superuser, usuarios, arrendatario, propietario, tareas
 from werkzeug.security import generate_password_hash, check_password_hash
 
 #Librerias y paquetes posbilemente utiles
@@ -24,6 +24,21 @@ diccionarioContrato = { #Mapeo para guardar el tipo de contrato
             '3': 'Anual',
             '4': 'Indefinido'
         }
+diccionarioTareaEstado = { 
+            '1': 'Pendiente',
+            '2': 'Completa',
+            '3': 'Incompleta',
+}
+diccionarioTareaEtiqueta = { 
+            '1': 'Presentar',
+            '2': 'Visitar',
+            '3': 'Mantenimiento',
+            '4': 'Urgente',
+            #'5': 'Finalizar',
+            #'6': 'Cancelar',
+            #'7': 'Finalizar',
+            #'8': 'Cancelar',
+}
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 def index(request):
@@ -90,10 +105,6 @@ def register(request):
       
 def dash(request):
     return render(request, 'dash.html')
-        
-def inicio(request):
-    #Se elimino toda la logica aquí presente y se paso a cada vista
-    return render(request, 'dash.html')
 
 def inmu(request):
     return render(request, 'inmuebles/inmueble.html')
@@ -115,7 +126,26 @@ def analisis_inquilinos(request):
     return render(request, 'analisis/inquilinos/analisis_inquilinos.html')
 
 def tarea(request):
-    return render(request, 'tareas.html')    
+    return render(request, 'tareas/dash_tareas.html')    
+
+def add_tarea(request):
+    return render(request, 'tareas/add_tarea.html')
+
+def guardar_tarea(request):
+    if request.method == "POST":        
+        titulo = request.POST.get('titulo', None)
+        descrip = request.POST.get('descrip', None)
+        tipo_estado = request.POST.get('estado', None)
+        tipoEstado = diccionarioTareaEstado[tipo_estado]
+        """ fecha_inicio = request.POST.get('fecha_inicio', None) """
+        fecha_fin = request.POST.get('fecha_fin', None)
+        tipo_etiqueta = request.POST.get('etiqueta', None)
+        tipoEtiqueta = diccionarioTareaEtiqueta[tipo_etiqueta]
+        hora_inicio = request.POST.get('hora_programada', None)
+        model = tareas(titulo = titulo, descrip =descrip, estado = tipoEstado, fecha_fin = fecha_fin, etiqueta = tipoEtiqueta, hora_inicio = hora_inicio)
+        model.save()
+
+    return redirect('tareas')
 
 def noti(request):
     return render(request, 'noti.html')

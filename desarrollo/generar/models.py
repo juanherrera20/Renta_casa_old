@@ -33,7 +33,7 @@ class usuarios(models.Model): #Tabla usuarios
 class arrendatario(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
     usuarios_id = models.ForeignKey('usuarios', on_delete=models.PROTECT) #Declaracion de FK
-    propiedad_id = models.ForeignKey('propiedad', on_delete=models.PROTECT)
+    propiedad_id = models.ForeignKey('inmueble', on_delete=models.PROTECT)
     direccion = models.CharField(max_length = 200)
     valor_cobro = models.IntegerField()
     fecha_cobro = models.DateField(max_length = 20)
@@ -48,7 +48,7 @@ class arrendatario(models.Model): #Tabla usuarios
 class propietario(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
     usuarios_id = models.ForeignKey('usuarios', on_delete=models.PROTECT) #Declaracion de FK
-    propiedad_id = models.ForeignKey('propiedad', on_delete=models.PROTECT)
+    propiedad_id = models.ForeignKey('inmueble', on_delete=models.PROTECT)
     direccion = models.CharField(max_length = 200)
     valor_pago = models.IntegerField()
     fecha_pago = models.DateField(max_length = 20)
@@ -59,7 +59,7 @@ class propietario(models.Model): #Tabla usuarios
     class Meta:
         db_table = 'propietario'
         
-class propiedad(models.Model): #Tabla usuarios
+class inmueble(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
     propietario_id = models.ForeignKey('propietario', on_delete=models.PROTECT)
     arrendatario_id = models.ForeignKey('arrendatario', on_delete=models.PROTECT)
@@ -71,11 +71,26 @@ class propiedad(models.Model): #Tabla usuarios
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no.
     
     class Meta:
-        db_table = 'propiedad'
+        db_table = 'inmueble'
+
+#Datos ficticio...Investigar como se puede implementar con API Calendar o tipo de arrastre que cambie de estado con notificiación...
+class tareas(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    superuser_id = models.ForeignKey('superuser', on_delete=models.PROTECT)
+    titulo = models.CharField(max_length=300)
+    descrip = models.CharField(max_length = 400)
+    estado = models.CharField(max_length = 100) #Saber si esta en pendiente, completada o incompleta
+    fecha_inicio = models.DateTimeField(auto_now_add=True)
+    fecha_fin = models.DateField(max_length = 20)
+    etiqueta = models.CharField(max_length = 100)
+    hora_inicio = models.TimeField()
+
+    class Meta:
+        db_table = 'tareas'
         
 class documentos(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
-    propiedad_id = models.ForeignKey('propiedad', on_delete=models.PROTECT)
+    propiedad_id = models.ForeignKey('inmueble', on_delete=models.PROTECT)
     pdf = models.FileField(upload_to="pdf/") #Crea una carpeta para guardar los pdf's y tener mejor accebilidad
     descuento = models.IntegerField() #Descuento que se descuenta al propietario
     urls = []

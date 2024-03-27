@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Add Tareas</title>
+    </head>
+    <body>
+        <div class="containerr">
+            <nav>
+                <ul style="list-style: none;"> <br><!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
+                    <li><p>Logo</p></li>
+                    <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                    <li><a href="{% url 'inmu' %}">Inmuebles</a></li>
+                    <li>
+                        <select name="personas" id="personas" onchange="location.href=this.value;">
+                            <option value="1">Personas</option>
+                            <option value="{% url 'personas_propietarios' %}">Propietarios</option>
+                            <option value="{% url 'personas_inquilinos' %}">Inquilinos</option>>
+                        </select>
+                    </li>
+                    <li>
+                        <select name="analisis" id="analisis" onchange="location.href=this.value;">
+                            <option value="1">Analisis</option>
+                            <option value="{% url 'analisis_propietarios' %}">Propietarios</option>
+                            <option value="{% url 'analisis_inquilinos' %}">Inquilinos</option>
+                        </select>
+                    </li>
+                    <li><a href="{% url 'tareas' %}">Tareas</a></li><br>
+                    <li><a href="{% url 'close_session' %}">Cerrar Sesión</a></li>
+                    <li><a href="{% url 'noti' %}">Notificaciones</a></li>
+                    <li><p>Foto</p></li>
+                </ul>
+            </nav>
+        </div>
+        <h2>Añadir Tarea</h2>
+        <h4>Lo ideal es que este "Guardar" sea en una ventana emergente.</h4><br><br>
+        <form action="{% url 'GuardarTarea' %}" method="post">
+            {% csrf_token %}
+            
+            <label for="titulo">Tutilo</label>
+            <input type="text" name="titulo" id="titulo" placeholder="Escribir" required><br>
+
+            <label for="descrip">Descripcion</label>
+            <input type="text" name="descrip" id="descrip" placeholder="Escribir"><br>
+
+            <label for="estado">Estado</label>
+            <select name="estado" id="estado" required>
+                <option value="">Seleccione el tipo de estado</option>
+                <option value="1">Pendiente</option>
+                <option value="2">Completa</option>
+                <option value="3">Incompleta</option>
+            </select><br>
+
+<!--             <input type="hidden" name="fecha_inicio" id="fecha_inicio"><br>
+ -->
+            <label for="fecha_fin">Fecha de vencimiento</label>
+            <input type="date" name="fecha_fin" id="fecha_fin" placeholder="dd/mm/YYYY"><br>
+
+            <label for="etiqueta">Etiqueta</label>
+            <select name="etiqueta" id="etiqueta" required>
+                <option value="">Seleccione el tipo etiqueta</option>
+                <option value="1">Presentar</option>
+                <option value="2">Visitar</option>
+                <option value="3">Mantenimiento</option>
+                <option value="4">Urgente</option>
+            </select><br>
+
+            <label for="hora_programada">Hora Programada</label>
+            <input type="time" name="hora_programada" id="hora_programada"><br>
+
+            <label for="responsable">Responsable</label>
+            <select name="responsable" id="responsable" required>
+                <option value="">Seleccione el tipo etiqueta</option>
+                <option value="1">Pepito</option>
+                <option value="2">Terensejo</option>
+                <option value="3">Pepe</option>
+            </select><br>
+
+
+            <button type="submit" name="add" id="add" value="1">Guardar</button>
+        </form>
+        <button  name="borrar" id="borrar" value="2">Eliminar</button> <label for="cancelar">Eliminar, limpiara todos los campos</label><br><br><br> <!-- Se debe aplicar JS para limpiar los campos del Form -->
+    </body>
+</html>
