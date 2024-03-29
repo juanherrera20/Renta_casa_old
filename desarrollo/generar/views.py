@@ -120,15 +120,27 @@ def inmu(request):
 def personas_propietarios(request):
     #Logica para la tabla de propietarios
     objetoUsuario = usuarios.objects.filter(propie_client=1) #Se filtra para saber si son propietarios o clientes
+    num_usuarios = objetoUsuario.count()
+    rango_ids = range(1, num_usuarios + 1)
     habilitar = usuarios.objects.filter(propie_client=1).values_list('habilitar', flat=True) #Se filtra solo el campo de 'habilitar'
     estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diciconarioHabilitar
-    usuarios_con_estados = list(zip(objetoUsuario, estados)) # Se implementan las dos listas en 1, así Django las puede iterar sin problemas en el HTML
+    usuarios_con_estados = list(zip(objetoUsuario, estados, rango_ids)) # Se implementan las dos listas en 1, así Django las puede iterar sin problemas en el HTML
     return render(request, 'personas/propietarios/personas_propietarios.html',{'datosUsuario':usuarios_con_estados})
 
 
 def personas_inquilinos(request):
-    return render(request, 'personas/inquilinos/personas_inquilinos.html')
-
+    #Logica para la tabla de propietarios
+    objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
+    num_usuarios = objetoUsuario.count()
+    rango_ids = list(range(1, num_usuarios + 1)) # Convertir range en lista y pueda ser iterable
+    habilitar = usuarios.objects.filter(propie_client=2).values_list('habilitar', flat=True) # Se filtra solo el campo de 'habilitar'
+    estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diccionarioHabilitar
+    usuarios_con_estados = []
+    for usuario, estado in zip(objetoUsuario, estados):
+        direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
+        valorCobro = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
+        usuarios_con_estados.append((usuario, estado, direccion, rango_ids, valorCobro))
+    return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados})
 
 def analisis_propietarios(request):
     return render(request, 'analisis/propietarios/analisis_propietarios.html')

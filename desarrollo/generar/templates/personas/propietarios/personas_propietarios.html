@@ -56,18 +56,15 @@
           </tr>
       </thead>
       <tbody>
-        {% for usuario, estado in datosUsuario %}
+        {% for usuario, estado, rango_ids in datosUsuario %}
         <tr>
-            <td>{{ usuario.id }}</td>
+            <td>{{ rango_ids }}</td>
             <td>{{ usuario.nombre }}</td>
             <td>{{ usuario.apellido }}</td>
             <td>{{ usuario.tipo_documento }}</td>
             <td>{{ usuario.documento }}</td>
             <td>{{ usuario.email }}</td>
-            <td>
-              {{ estado }}
-               
-            </td>
+            <td>{{ estado }}</td>
             <td>{{ usuario.telefono }}</td>
         </tr>
         {% endfor %}
