@@ -53,7 +53,8 @@ class propietario(models.Model): #Tabla usuarios
     direccion = models.CharField(max_length = 200)
     valor_pago = models.IntegerField()
     fecha_pago = models.DateField(max_length = 20)
-    tipo_contrato = models.CharField(max_length = 100) 
+    tipo_contrato = models.CharField(max_length = 100)
+    habilitarPago = models.IntegerField(default=2)
     obs = models.CharField(max_length = 400) 
     urls = []
     

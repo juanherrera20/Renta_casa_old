@@ -46,6 +46,12 @@ diccionarioHabilitar ={
     '3': 'Vacaciones',
     '4': 'Indefinido', 
 }
+diccionarioPago ={
+    '1': 'Pagado',
+    '2': 'Debe',
+    '3': 'No pago',
+    '4': 'Indefinido', 
+}
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 def index(request):
@@ -118,7 +124,7 @@ def inmu(request):
 
 
 def personas_propietarios(request):
-    #Logica para la tabla de propietarios
+    #Logica para la tabla de propietarios-Personas
     objetoUsuario = usuarios.objects.filter(propie_client=1) #Se filtra para saber si son propietarios o clientes
     num_usuarios = objetoUsuario.count()
     rango_ids = range(1, num_usuarios + 1)
@@ -129,21 +135,33 @@ def personas_propietarios(request):
 
 
 def personas_inquilinos(request):
-    #Logica para la tabla de propietarios
+    #Logica para la tabla de Inquilinos-Personas
     objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
     num_usuarios = objetoUsuario.count()
-    rango_ids = list(range(1, num_usuarios + 1)) # Convertir range en lista y pueda ser iterable
+    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
     habilitar = usuarios.objects.filter(propie_client=2).values_list('habilitar', flat=True) # Se filtra solo el campo de 'habilitar'
     estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diccionarioHabilitar
     usuarios_con_estados = []
-    for usuario, estado in zip(objetoUsuario, estados):
+    for usuario, estado in zip(objetoUsuario, estados): #Enpaquetando variables para que quede en una sola y poder iteraralas
         direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
         valorCobro = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
         usuarios_con_estados.append((usuario, estado, direccion, rango_ids, valorCobro))
     return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados})
 
 def analisis_propietarios(request):
-    return render(request, 'analisis/propietarios/analisis_propietarios.html')
+    #Logica para la tabla de propietarios
+    objetoUsuario = usuarios.objects.filter(propie_client=1) # Se filtra para saber si son propietarios o clientes
+    num_usuarios = objetoUsuario.count()
+    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
+    usuarios_con_estados = []
+    for usuario in objetoUsuario:
+        direccion = usuario.propietario_set.first().direccion if usuario.propietario_set.exists() else None
+        fechaPago = usuario.propietario_set.first().fecha_pago if usuario.propietario_set.exists() else None
+        valorPago = usuario.propietario_set.first().valor_pago if usuario.propietario_set.exists() else None
+        estadosDiccionario = usuario.propietario_set.first().habilitarPago if usuario.propietario_set.exists() else None
+        estados = diccionarioPago[str(estadosDiccionario)]
+        usuarios_con_estados.append((usuario, direccion, rango_ids, fechaPago, valorPago, estados))
+    return render(request, 'analisis/propietarios/analisis_propietarios.html',{'datosUsuario': usuarios_con_estados})
 
 
 def analisis_inquilinos(request):
