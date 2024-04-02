@@ -40,7 +40,8 @@ class arrendatario(models.Model): #Tabla usuarios
     fecha_cobro = models.DateField(max_length = 20)
     inicio_contrato = models.DateField(max_length = 20)
     fin_contrato = models.DateField(max_length = 20)
-    tipo_contrato = models.CharField(max_length = 100) 
+    tipo_contrato = models.CharField(max_length = 100)
+    habilitarPago = models.IntegerField(default=2) 
     obs = models.CharField(max_length = 400) 
     
     class Meta:

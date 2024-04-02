@@ -70,13 +70,12 @@
             <input type="time" name="hora_programada" id="hora_programada"><br>
 
             <label for="responsable">Responsable</label>
-            <select name="responsable" id="responsable" required>
+            <select name="usuario">
                 <option value="">Seleccione el tipo etiqueta</option>
-                <option value="1">Pepito</option>
-                <option value="2">Terensejo</option>
-                <option value="3">Pepe</option>
+                {% for nombre, apellido, id in nombres_usuario %}
+                <option value="{{ id }}">{{ nombre |add:" "|add:apellido }}</option>
+                {% endfor %}
             </select><br>
-
 
             <button type="submit" name="add" id="add" value="1">Guardar</button>
         </form>

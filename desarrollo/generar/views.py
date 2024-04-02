@@ -165,13 +165,29 @@ def analisis_propietarios(request):
 
 
 def analisis_inquilinos(request):
-    return render(request, 'analisis/inquilinos/analisis_inquilinos.html')
+        #Logica para la tabla de Inquilinos
+    objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
+    num_usuarios = objetoUsuario.count()
+    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
+    usuarios_con_estados = []
+    for usuario in objetoUsuario:
+        direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
+        fechaPago = usuario.arrendatario_set.first().fecha_cobro if usuario.arrendatario_set.exists() else None
+        valorPago = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
+        estadosDiccionario = usuario.arrendatario_set.first().habilitarPago if usuario.arrendatario_set.exists() else None
+        estados = diccionarioPago[str(estadosDiccionario)]
+        usuarios_con_estados.append((usuario, direccion, rango_ids, fechaPago, valorPago, estados))
+    return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': usuarios_con_estados})
 
 def tarea(request):
     return render(request, 'tareas/dash_tareas.html')    
 
 def add_tarea(request):
-    return render(request, 'tareas/add_tarea.html')
+    id = superuser.objects.values_list('id', flat=True)
+    nombre = superuser.objects.values_list('nombre', flat=True)
+    apellido = superuser.objects.values_list('apellido', flat=True)
+    nombres_usuario = list(zip(nombre, apellido, id))
+    return render(request, 'tareas/add_tarea.html',{'nombres_usuario': nombres_usuario})
 
 def guardar_tarea(request):
     if request.method == "POST":        
@@ -184,7 +200,8 @@ def guardar_tarea(request):
         tipo_etiqueta = request.POST.get('etiqueta', None)
         tipoEtiqueta = diccionarioTareaEtiqueta[tipo_etiqueta]
         hora_inicio = request.POST.get('hora_programada', None)
-        model = tareas(titulo = titulo, descrip =descrip, estado = tipoEstado, fecha_fin = fecha_fin, etiqueta = tipoEtiqueta, hora_inicio = hora_inicio)
+        superUser=request.POST.get('usuario', None)
+        model = tareas(titulo = titulo, descrip =descrip, estado = tipoEstado, fecha_fin = fecha_fin, etiqueta = tipoEtiqueta, hora_inicio = hora_inicio, superuser_id_id = superUser)
         model.save()
 
     return redirect('tareas')
@@ -220,7 +237,6 @@ def guardar(request): #Función para guardar propietarios
         valor_pagar = request.POST.get('valor_pagar', None)
         fecha_pagar = request.POST.get('fecha_pagar', None)
         tipo_contrato = request.POST.get('tipo_contrato', None)
-
         tipoContrato = diccionarioContrato[tipo_contrato]
         observ = request.POST.get('obs', None)
         modelo = propietario(direccion = direc, valor_pago = valor_pagar, fecha_pago = fecha_pagar, tipo_contrato = tipoContrato, obs = observ, usuarios_id_id = usuarios_id)

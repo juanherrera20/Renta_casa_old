@@ -43,7 +43,35 @@
     <input type="search" id="buscar" name="buscar" placeholder="Buscar..."> <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'AddInquilinos' %}"> + Añadir Inquilino</a>
     <br>
     <p>Tabla donde se muestran a todos los Inquilinos.</p>
+    <table>
+      <thead>
+          <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Dirección</th>
+              <th>Fecha de pago</th>
+              <th>Telefono</th>
+              <th>Valor de Pago</th>
+              <th>Estado</th>
+              <th>Email</th>
+          </tr>
+      </thead>
+      <tbody>
+        {% for usuario, direccion, rango_ids, fechaPago, valorPago, estados in datosUsuario %}
+        <tr>
+            <td>{{ forloop.counter}}</td>
+            <td>{{ usuario.nombre |add:" "|add:usuario.apellido}}</td>
+            <td>{{ direccion }}</td>
+            <td>{{ fechaPago }}</td>
+            <td>{{ usuario.telefono }}</td>
+            <td>{{ valorPago }}</td>
+            <td>{{ estados }}</td>
+            <td>{{ usuario.email }}</td>
 
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table> <br><br><br>
 
 </body>
 </html>
