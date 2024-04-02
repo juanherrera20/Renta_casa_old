@@ -42,7 +42,39 @@
     <!-- Es necesario tener un input de busqueda dentro de la vista de tareas? -->
     <!-- <input type="search" id="buscar" name="buscar" placeholder="Buscar...">  --><button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'AddTarea' %}"> + Añadir Tarea</a>
     <br>
-    <p>"""Tabla de tareas"""</p> 
+
+    <h2>Pendientes</h2>
+    <ul>
+      {% for tarea in context.pendientes %}
+        <li>Etiqueta: {{ tarea.etiqueta }}</li>
+        <li><h3>Titulo: {{ tarea.titulo }}</h3></li>
+        <li>Fecha incio: {{ tarea.fecha_inicio }}      Fecha fin: {{ tarea.fecha_fin }}</li>
+        <h4>{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4>
+      ----------------------------------------------------- <!-- Estos guiones solo son para guiarnos y saber cuando termina cada tarea -->
+      {% endfor %}
+    </ul>
+
+    <h2>Completas</h2>
+    <ul>
+      {% for tarea in context.completas %}
+        <li>Etiqueta: {{ tarea.etiqueta }}</li>
+        <li><h3>Titulo: {{ tarea.titulo }}</h3></li>
+        <li>Fecha incio: {{ tarea.fecha_inicio }}      Fecha fin: {{ tarea.fecha_fin }}</li>
+        <h4>{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4>
+        -----------------------------------------------------
+      {% endfor %}
+    </ul>
+
+    <h2>Incompletas</h2>
+    <ul>
+      {% for tarea in context.incompletas %}
+        <li>Etiqueta: {{ tarea.etiqueta }}</li>
+        <li><h3>Titulo: {{ tarea.titulo }}</h3></li>
+        <li>Fecha incio: {{ tarea.fecha_inicio }}      Fecha fin: {{ tarea.fecha_fin }}</li>
+        <h4>{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4>
+        -----------------------------------------------------
+      {% endfor %}
+    </ul><br><br><br>
 
 
 

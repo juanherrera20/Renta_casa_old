@@ -165,7 +165,7 @@ def analisis_propietarios(request):
 
 
 def analisis_inquilinos(request):
-        #Logica para la tabla de Inquilinos
+    #Logica para la tabla de Inquilinos
     objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
     num_usuarios = objetoUsuario.count()
     rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
@@ -180,7 +180,17 @@ def analisis_inquilinos(request):
     return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': usuarios_con_estados})
 
 def tarea(request):
-    return render(request, 'tareas/dash_tareas.html')    
+    tareas_completas = tareas.objects.filter(estado='Completa').select_related('superuser_id')#Filtrar tareas Completas
+    tareas_incompletas = tareas.objects.filter(estado='Incompleta').select_related('superuser_id')#Filtrar tareas incompletas
+    tareas_pendientes = tareas.objects.filter(estado='Pendiente').select_related('superuser_id')#Filtrar tareas pendientes
+
+    contexto = { #Con el contexto se pueden pasar QuerySet's independientes
+        'completas': tareas_completas,
+        'incompletas': tareas_incompletas,
+        'pendientes': tareas_pendientes,
+    }
+
+    return render(request, 'tareas/dash_tareas.html',{'context': contexto})    
 
 def add_tarea(request):
     id = superuser.objects.values_list('id', flat=True)
@@ -245,7 +255,7 @@ def guardar(request): #Función para guardar propietarios
     
 
     return redirect('personas_propietarios')
-#Funciones para añadir inquilinos
+    #Funciones para añadir inquilinos
 
 def add_inquilino(request):
     return render(request, 'personas/inquilinos/add_inquilino.html')
