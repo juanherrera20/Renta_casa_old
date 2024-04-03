@@ -1,7 +1,7 @@
 from django.forms import model_to_dict
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import superuser, usuarios, arrendatario, propietario, tareas
+from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble
 from werkzeug.security import generate_password_hash, check_password_hash
 
 #Librerias y paquetes posbilemente utiles
@@ -117,7 +117,47 @@ def register(request):
         return render(request, 'register.html')
       
 def dash(request):
-    return render(request, 'dash.html')
+    objetoPropietario = usuarios.objects.filter(propie_client=1) #Propietarios
+    num_propietarios = objetoPropietario.count()
+    rango_propietarios = list(range(1, num_propietarios + 1))
+
+    objetoArrendatario = usuarios.objects.filter(propie_client=2) #Clientes
+    num_arrendatario = objetoArrendatario.count()
+    rango_arrendatarios = list(range(1, num_arrendatario + 1))
+
+
+    objetoInmueble = inmueble.objects.all()
+    num_inmueble = objetoInmueble.count()
+    rango_inmuebles = list(range(1, num_inmueble + 1))
+
+    tareas_pendientes = tareas.objects.filter(estado='Pendiente').select_related('superuser_id')
+    num_tareas = tareas_pendientes.count()
+
+    context = {
+        'propietarios': num_propietarios,
+        'arrendatarios': num_arrendatario,
+        'inmuebles': num_inmueble,
+        'tareas': num_tareas, 
+        'pendientes': tareas_pendientes,     
+        }
+    usuarios_propietarios = []
+    for propietario in objetoPropietario:
+        direccion = propietario.propietario_set.first().direccion if propietario.propietario_set.exists() else None
+        estadosDiccionario = propietario.propietario_set.first().habilitarPago if propietario.propietario_set.exists() else None
+        estados = diccionarioPago[str(estadosDiccionario)]
+        usuarios_propietarios.append((propietario, direccion, rango_propietarios, estados))
+
+    usuarios_arrendatarios = []
+    for arrendatario in objetoArrendatario:
+        direccionArrendatario = arrendatario.arrendatario_set.first().direccion if arrendatario.arrendatario_set.exists() else None
+        estadosDiccionarioArrendatario = arrendatario.arrendatario_set.first().habilitarPago if arrendatario.arrendatario_set.exists() else None
+        estadosArrendatario = diccionarioPago[str(estadosDiccionarioArrendatario)]
+        usuarios_arrendatarios.append((arrendatario, direccionArrendatario, rango_arrendatarios, estadosArrendatario))
+    
+    usuarios_inmuebles = []
+    #Espacio para listar los datos de los inmuebles
+
+    return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios})
 
 def inmu(request):
     return render(request, 'inmuebles/inmueble.html')

@@ -37,6 +37,96 @@
       </ul>
     </nav>
   </div>
+  <ul style="list-style: none;">
+    <h2>Inmuebles Totales</h2>
+    <li><h3>{{ context.inmuebles }}</h3></li>
+    <br>
+    <h2>Arrendatarios Totales</h2>
+    <li><h3>{{ context.arrendatarios }}</h3></li>
+    <br>
+    <h2>Propietarios Totales</h2>
+    <li><h3>{{ context.propietarios }}</h3></li>
+    <br>
+  </ul>
+  ---------------------------------------------------------------
+  <h2>Tareas</h2>
+  <a href="{% url 'AddTarea' %}"> + Crear Tarea</a>
+  <br><br>
+
+  <ul> <!-- Estos estilos luego toca pasarlos a una hoja de CSS para tenerlos más organizados -->
+    <li style="display: inline-block; margin-right: 20px;">
+      <h5 style="display: inline;">Pendientes:</h5>
+      <h6 style="display: inline;">{{ context.tareas }} tareas abiertas</h6>
+    </li>
+  </ul>
+  <ul>
+    {% for tarea in context.pendientes %}
+      <li>Etiqueta: {{ tarea.etiqueta }}</li>
+      <li><h3>Titulo: {{ tarea.titulo }}</h3></li>
+      <li>Fecha incio: {{ tarea.fecha_inicio }}      Fecha fin: {{ tarea.fecha_fin }}</li>
+      <h4>{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4>
+    ----------------------------------------------------- <!-- Estos guiones solo son para guiarnos y saber cuando termina cada tarea -->
+    {% endfor %}
+  </ul>
+  <h4 style="display: inline;">Propietarios</h4> <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
+
+  <table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Telefono</th>
+            <th>Estado</th>
+            <th>Dirección</th>
+        </tr>
+    </thead>
+    <tbody>
+      {% for propietario, direccion, rango_propietarios, estados in propietarios %}
+      <tr>
+          <td>{{ forloop.counter}}</td>
+          <td>{{ propietario.nombre |add:" "|add:propietario.apellido}}</td>
+          <td>{{ propietario.email }}</td>
+          <td>{{ propietario.telefono }}</td>
+          <td>{{ estados }}</td>
+          <td>{{ direccion }}</td>
+      </tr>
+      {% endfor %}
+  </tbody>
+</table>
+--------------------------------------------------------------------------------------------------<!-- Fin de la tabla de propietarios -->
+
+
+<h4 style="display: inline;">Clientes/Arrendatarios</h4> <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
+
+<table>
+  <thead>
+      <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Telefono</th>
+          <th>Estado</th>
+          <th>Dirección</th>
+      </tr>
+  </thead>
+  <tbody>
+    {% for arrendatario, direccionArrendatario, rango_arrendatarios, estadosArrendatario in arrendatarios %}
+    <tr>
+        <td>{{ forloop.counter}}</td>
+        <td>{{ arrendatario.nombre |add:" "|add:arrendatario.apellido}}</td>
+        <td>{{ arrendatario.email }}</td>
+        <td>{{ arrendatario.telefono }}</td>
+        <td>{{ estadosArrendatario }}</td>
+        <td>{{ direccionArrendatario }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+--------------------------------------------------------------------------------------------------------<!-- Fin de la tabla de Arrendatarios -->
+<!-- Enlistar el resumen de los inmuebles tipo lista-->
+<h4 style="display: inline;">Inmuebles</h4> <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
+<br><br><br><br>
 
 
 </body>
