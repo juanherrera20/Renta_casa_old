@@ -1,16 +1,18 @@
+{% load static %} <!-- Se carga la carpeta 'static' para cargar los estilos y animaciones. -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href='{% static "css/dash.css" %}' type="text/css"> <!-- Se implementa el archivo CSS -->
     <title>Bienvenido</title>
 </head>
 <body>
   <h2>Dashboard</h2>
   <div class="containerr">
     <nav>
-      <ul style="list-style: none;"> <!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
+      <ul>
       <br>
         <li><p>Logo</p></li>
         <li><a href="#">Inicio</a></li>
@@ -37,7 +39,7 @@
       </ul>
     </nav>
   </div>
-  <ul style="list-style: none;">
+  <ul>
     <h2>Inmuebles Totales</h2>
     <li><h3>{{ context.inmuebles }}</h3></li>
     <br>
@@ -48,15 +50,15 @@
     <li><h3>{{ context.propietarios }}</h3></li>
     <br>
   </ul>
-  ---------------------------------------------------------------
+  --------------------------------------------------------------- 
   <h2>Tareas</h2>
   <a href="{% url 'AddTarea' %}"> + Crear Tarea</a>
   <br><br>
 
-  <ul> <!-- Estos estilos luego toca pasarlos a una hoja de CSS para tenerlos más organizados -->
-    <li style="display: inline-block; margin-right: 20px;">
-      <h5 style="display: inline;">Pendientes:</h5>
-      <h6 style="display: inline;">{{ context.tareas }} tareas abiertas</h6>
+  <ul>
+    <li>
+      <h5>Pendientes:</h5>
+      <h6>{{ context.tareas }} tareas abiertas</h6>
     </li>
   </ul>
   <ul>
@@ -64,11 +66,11 @@
       <li>Etiqueta: {{ tarea.etiqueta }}</li>
       <li><h3>Titulo: {{ tarea.titulo }}</h3></li>
       <li>Fecha incio: {{ tarea.fecha_inicio }}      Fecha fin: {{ tarea.fecha_fin }}</li>
-      <h4>{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4>
-    ----------------------------------------------------- <!-- Estos guiones solo son para guiarnos y saber cuando termina cada tarea -->
+      <h4>{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4> <br>
+    ----------------------------------------------------- <br><br><!-- Estos guiones solo son para guiarnos y saber cuando termina cada tarea -->
     {% endfor %}
   </ul>
-  <h4 style="display: inline;">Propietarios</h4> <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
+  <h4>Propietarios</h4> <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
 
   <table>
     <thead>
@@ -94,10 +96,10 @@
       {% endfor %}
   </tbody>
 </table>
---------------------------------------------------------------------------------------------------<!-- Fin de la tabla de propietarios -->
+-------------------------------------------------------------------------------------------------- <br><br><!-- Fin de la tabla de propietarios -->
 
 
-<h4 style="display: inline;">Clientes/Arrendatarios</h4> <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
+<h4>Clientes/Arrendatarios</h4> <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
 
 <table>
   <thead>
@@ -123,9 +125,9 @@
     {% endfor %}
   </tbody>
 </table>
---------------------------------------------------------------------------------------------------------<!-- Fin de la tabla de Arrendatarios -->
+-------------------------------------------------------------------------------------------------------- <br><br><!-- Fin de la tabla de Arrendatarios -->
 <!-- Enlistar el resumen de los inmuebles tipo lista-->
-<h4 style="display: inline;">Inmuebles</h4> <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
+<h4>Inmuebles</h4> <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
 <br><br><br><br>
 
 

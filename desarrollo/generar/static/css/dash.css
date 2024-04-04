@@ -1,0 +1,6 @@
+ul {
+    list-style: none;
+}
+h4, h5, h6 {
+    display: inline
+}
