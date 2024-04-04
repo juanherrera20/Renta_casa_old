@@ -1,8 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript"  src='{% static "js/analisis/analisis_propietarios.js" %}'></script>
     <title>analisis</title>
 </head>
 <body>
@@ -39,7 +41,8 @@
     <h2>Seguimiento de propietarios activos</h2>
     <h5>Estado de los propietarios activos en la plataforma con respecto al pago mensual de la cuota del arrendamiento</h5>
     <p>Total de propietarios: ###</p> 
-    <input type="search" id="buscar" name="buscar" placeholder="Buscar..."> <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'addPropietario' %}"> + Añadir Propietario</a>
+    <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
+    <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'addPropietario' %}"> + Añadir Propietario</a>
     <br>
     <p>Tabla donde se muestran a todos los propietarios.</p>
     <table>
@@ -55,7 +58,7 @@
               <th>Email</th>
           </tr>
       </thead>
-      <tbody>
+      <tbody id="propietarios">
         {% for usuario, direccion, rango_ids, fechaPago, valorPago, estados in datosUsuario %}
         <tr>
             <td>{{ forloop.counter}}</td>
