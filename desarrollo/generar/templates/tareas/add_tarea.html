@@ -1,8 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript"  src='{% static "js/all.js" %}'></script>
         <title>Add Tareas</title>
     </head>
     <body>
@@ -35,7 +37,7 @@
         </div>
         <h2>Añadir Tarea</h2>
         <h4>Lo ideal es que este "Guardar" sea en una ventana emergente.</h4><br><br>
-        <form action="{% url 'GuardarTarea' %}" method="post">
+        <form action="{% url 'GuardarTarea' %}" method="post" id="addTarea">
             {% csrf_token %}
             
             <label for="titulo">Tutilo</label>
@@ -77,8 +79,8 @@
                 {% endfor %}
             </select><br>
 
-            <button type="submit" name="add" id="add" value="1">Guardar</button>
+            <button type="submit" name="add" id="add" value="1">Guardar</button> 
         </form>
-        <button  name="borrar" id="borrar" value="2">Eliminar</button> <label for="cancelar">Eliminar, limpiara todos los campos</label><br><br><br> <!-- Se debe aplicar JS para limpiar los campos del Form -->
+        <button  name="borrar" id="borrar" value="2" onclick="resetForm()">Eliminar</button> <label for="cancelar">Eliminar, limpiara todos los campos</label><br><br><br> <!-- Se debe aplicar JS para limpiar los campos del Form -->
     </body>
 </html>
