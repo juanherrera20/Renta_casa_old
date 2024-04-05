@@ -171,7 +171,7 @@ def personas_propietarios(request):
     habilitar = usuarios.objects.filter(propie_client=1).values_list('habilitar', flat=True) #Se filtra solo el campo de 'habilitar'
     estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diciconarioHabilitar
     usuarios_con_estados = list(zip(objetoUsuario, estados, rango_ids)) # Se implementan las dos listas en 1, así Django las puede iterar sin problemas en el HTML
-    return render(request, 'personas/propietarios/personas_propietarios.html',{'datosUsuario':usuarios_con_estados})
+    return render(request, 'personas/propietarios/personas_propietarios.html',{'datosUsuario':usuarios_con_estados, 'contador':num_usuarios})
 
 
 def personas_inquilinos(request):
@@ -186,7 +186,7 @@ def personas_inquilinos(request):
         direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
         valorCobro = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
         usuarios_con_estados.append((usuario, estado, direccion, rango_ids, valorCobro))
-    return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados})
+    return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
 
 def analisis_propietarios(request):
     #Logica para la tabla de propietarios
@@ -201,7 +201,7 @@ def analisis_propietarios(request):
         estadosDiccionario = usuario.propietario_set.first().habilitarPago if usuario.propietario_set.exists() else None
         estados = diccionarioPago[str(estadosDiccionario)]
         usuarios_con_estados.append((usuario, direccion, rango_ids, fechaPago, valorPago, estados))
-    return render(request, 'analisis/propietarios/analisis_propietarios.html',{'datosUsuario': usuarios_con_estados})
+    return render(request, 'analisis/propietarios/analisis_propietarios.html',{'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
 
 
 def analisis_inquilinos(request):
@@ -217,7 +217,7 @@ def analisis_inquilinos(request):
         estadosDiccionario = usuario.arrendatario_set.first().habilitarPago if usuario.arrendatario_set.exists() else None
         estados = diccionarioPago[str(estadosDiccionario)]
         usuarios_con_estados.append((usuario, direccion, rango_ids, fechaPago, valorPago, estados))
-    return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': usuarios_con_estados})
+    return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
 
 def tarea(request):
     tareas_completas = tareas.objects.filter(estado='Completa').select_related('superuser_id')#Filtrar tareas Completas
