@@ -1,15 +1,46 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript"  src='{% static "js/tareas/dash_tareas.js" %}'></script>
+    <link rel="stylesheet" href='{% static "css/tareas/dash_tareas.css" %}' type="text/css">
     <title>Tareas</title>
+
+
+
+
+
 </head>
 <body>
+
+  <style>
+    /* Estilos CSS para la ventana emergente */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+    }
+</style>
+
     <h2>Tareas</h2>
     <div class="containerr">
       <nav>
-        <ul style="list-style: none;"> <!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
+        <ul> <!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
         <br>
           <li><p>Logo</p></li>
           <li><a href="{% url 'inicio' %}">Inicio</a></li>
@@ -44,12 +75,14 @@
     <br>
 
     <h2>Pendientes</h2>
-    <ul>
+    <ul id="lista-tareas">
       {% for tarea in context.pendientes %}
-        <li>Etiqueta: {{ tarea.etiqueta }}</li>
-        <li><h3>Titulo: {{ tarea.titulo }}</h3></li>
-        <li>Fecha incio: {{ tarea.fecha_inicio }}      Fecha fin: {{ tarea.fecha_fin }}</li>
+      <li data-id="{{ tarea.id }}" class="tarea-item">
+        Etiqueta: {{ tarea.etiqueta }}
+        <h3>Titulo: {{ tarea.titulo }}</h3>
+        Fecha inicio: {{ tarea.fecha_inicio }} Fecha fin: {{ tarea.fecha_fin }}
         <h4>{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4>
+      </li>
       ----------------------------------------------------- <!-- Estos guiones solo son para guiarnos y saber cuando termina cada tarea -->
       {% endfor %}
     </ul>
@@ -76,9 +109,46 @@
       {% endfor %}
     </ul><br><br><br>
 
+    <div id="modal" class="modal">
+      <div class="modal-content" id="modal-content"></div>
+  </div>
+  <script>
+    // Obtener la lista de elementos de tarea
+    const listaTareas = document.getElementById('lista-tareas');
 
+    // Agregar un evento de clic a cada elemento de tarea
+    listaTareas.addEventListener('click', function(event) {
+        const tarea = event.target.closest('.tarea-item');
+        if (tarea) {
+            // Obtener los datos de la tarea
+            const etiqueta = tarea.querySelector('li:nth-child(1)').textContent.trim();
+            const titulo = tarea.querySelector('h3').textContent.trim();
+            const fechas = tarea.querySelector('li:nth-child(3)').textContent.trim();
+            const superusuario = tarea.querySelector('h4').textContent.trim();
 
+            // Crear el contenido de la ventana emergente
+            const contenidoModal = `
+                <p><strong>Etiqueta:</strong> ${etiqueta}</p>
+                <p><strong>Título:</strong> ${titulo}</p>
+                <p><strong>Fechas:</strong> ${fechas}</p>
+                <p><strong>Superusuario:</strong> ${superusuario}</p>
+            `;
 
+            // Mostrar la ventana emergente con los datos de la tarea
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            modalContent.innerHTML = contenidoModal;
+            modal.style.display = 'block';
+
+            // Cerrar la ventana emergente si se hace clic fuera de ella
+            window.onclick = function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

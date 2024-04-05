@@ -1,15 +1,17 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href='{% static "css/noti.css" %}' type="text/css">
     <title>Notificaciones</title>
 </head>
 <body>
     <h2>Notificaciones y demás</h2>
     <div class="containerr">
       <nav>
-        <ul style="list-style: none;"> <!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
+        <ul> <!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
         <br>
           <li><p>Logo</p></li>
           <li><a href="{% url 'inicio' %}">Inicio</a></li>
