@@ -74,7 +74,7 @@
 
             <label for="responsable">Responsable</label>
             <select name="usuario">
-                <option value="">Seleccione el tipo etiqueta</option>
+                <option value="">Responsable de la tarea</option>
                 {% for nombre, apellido, id in nombres_usuario %}
                 <option value="{{ id }}">{{ nombre |add:" "|add:apellido }}</option>
                 {% endfor %}

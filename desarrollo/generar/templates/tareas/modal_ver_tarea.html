@@ -6,8 +6,24 @@
     <title>Document</title>
 </head>
 <body>
+    <h2>Titulo:</h2>
+    <form action="">
+        {% csrf_token %}
+        
+        <input type="text" name="titulo" id="titulo" value="{{ objetoTarea.titulo }}">
+        <h4>{{ objetoTarea.estado }}</h4> <br><br><br>
 
-    Aqui se puede desarrollar el {{ id }}
-    
+        <h4>Descripción:</h4>
+        <input type="text" name="descrip" id="descrip" value="{{ objetoTarea.descrip }}">
+        <br><br><br>
+        <h4>Responsable:</h4>
+        <select name="usuario">
+            <option value="{{ objetoTarea.superuser_id_id }}">Cambiar de responsable</option>
+            {% for nombre, apellido, id in nombres_usuario %}
+            <option value="{{ idSuperuser }}">{{ nombre |add:" "|add:apellido }}</option>
+            {% endfor %}
+        </select><br>
+    </form>
+    <br><br>
 </body>
 </html>

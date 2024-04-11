@@ -258,9 +258,13 @@ def guardar_tarea(request):
 
 def modal_ver_tarea(request, id):
     template_path = 'tareas/modal_ver_tarea.html'
-
-
-    return render(request, template_path, context={'id': id})
+    objetoTarea = tareas.objects.filter(id = id).first()
+    nombre = superuser.objects.values_list('nombre', flat=True)
+    apellido = superuser.objects.values_list('apellido', flat=True)
+    idSuperuser = superuser.objects.values_list('id', flat=True)
+    nombres_usuario = list(zip(nombre, apellido, idSuperuser))
+    print(objetoTarea.superuser_id_id)
+    return render(request, template_path, {'nombres_usuario': nombres_usuario, 'objetoTarea': objetoTarea})
 
 def noti(request):
     return render(request, 'noti.html')
