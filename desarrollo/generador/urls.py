@@ -18,7 +18,7 @@ Including another URLconf
 from django.urls import path
 #Se importan las vistas que se deseen ver en la página
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
-from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino, prueba, add_tarea, guardar_tarea
+from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino, prueba, add_tarea, guardar_tarea, modal_ver_tarea
    
 
 urlpatterns = [
@@ -34,6 +34,7 @@ urlpatterns = [
     path('Analisis/Inquilinos/', analisis_inquilinos, name="analisis_inquilinos"),
     path('CloseSession/', close, name="close_session"),
     path('Tareas/', tarea, name="tareas"),
+    path('Tareas/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
     path('Notificaciones/', noti, name="noti"),
     #Añadir propietarios.
     path('AddPropietario/', add_propietario, name="addPropietario"),

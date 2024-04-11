@@ -256,6 +256,12 @@ def guardar_tarea(request):
 
     return redirect('tareas')
 
+def modal_ver_tarea(request, id):
+    template_path = 'tareas/modal_ver_tarea.html'
+
+
+    return render(request, template_path, context={'id': id})
+
 def noti(request):
     return render(request, 'noti.html')
 
