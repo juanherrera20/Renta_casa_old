@@ -346,3 +346,10 @@ def guardar_inquilino(request): #Función para guardar inquilinos
         modelo.save()
     print("modelo usuario y Arrendatario, se guardan con éxito!")
     return redirect('personas_inquilinos')
+
+def individuo_propietario(request, id):
+    objetoPropietarios = propietario.objects.filter(id = id).first()
+    id_usuario = objetoPropietarios.usuarios_id_id
+    objetoUser = usuarios.objects.filter( id = id_usuario).first()
+    print(objetoUser.nombre)
+    return render(request, 'personas/propietarios/individuo_propietario.html', {'id':id})

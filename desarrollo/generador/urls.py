@@ -19,7 +19,7 @@ from django.urls import path
 #Se importan las vistas que se deseen ver en la página
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
 from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino, prueba, add_tarea, guardar_tarea, modal_ver_tarea
-   
+from generar.views import individuo_propietario
 
 urlpatterns = [
 
@@ -32,10 +32,12 @@ urlpatterns = [
     path('Personas/Inquilinos/', personas_inquilinos, name="personas_inquilinos"),
     path('Analisis/Propietarios/', analisis_propietarios, name="analisis_propietarios"),
     path('Analisis/Inquilinos/', analisis_inquilinos, name="analisis_inquilinos"),
-    path('CloseSession/', close, name="close_session"),
+    path('CloseSession/', close, name="close_session"), #URL para cerrar sesión
     path('Tareas/', tarea, name="tareas"),
+    #Ver modales de tareas y de dashboard
     path('Tareas/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
     path('Inicio/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
+
     path('Notificaciones/', noti, name="noti"),
     #Añadir propietarios.
     path('AddPropietario/', add_propietario, name="addPropietario"),
@@ -46,5 +48,6 @@ urlpatterns = [
     path('prueba/', prueba, name = "prueba"),
     #Añadir tareas.
     path('AddTarea/', add_tarea, name="AddTarea"),
-    path('GuardarTarea/', guardar_tarea, name="GuardarTarea")
+    path('GuardarTarea/', guardar_tarea, name="GuardarTarea"),
+    path('Personas/Propietarios/Code/<int:id>', individuo_propietario, name="IndividuoPropietario")
 ]

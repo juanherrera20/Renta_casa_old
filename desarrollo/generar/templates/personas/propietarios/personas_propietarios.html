@@ -61,20 +61,22 @@
       <tbody id="propietarios">
         {% for usuario, estado, rango_ids in datosUsuario %}
         <tr>
-            <td>{{ rango_ids }}</td>
-            <td>{{ usuario.nombre }}</td>
-            <td>{{ usuario.apellido }}</td>
-            <td>{{ usuario.tipo_documento }}</td>
-            <td>{{ usuario.documento }}</td>
-            <td>{{ usuario.email }}</td>
-            <td>{{ estado }}</td>
-            <td>{{ usuario.telefono }}</td>
+            
+          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ rango_ids }}</button></td>
+          <td><button>{{ usuario.nombre }}</button></td>
+          <td><button>{{ usuario.apellido }}</button></td>
+          <td><button>{{ usuario.tipo_documento }}</button></td>
+          <td><button>{{ usuario.documento }}</button></td>
+          <td><button>{{ usuario.email }}</button></td>
+          <td><button>{{ estado }}</button></td>
+          <td><button>{{ usuario.telefono }}</button></td>
+        
         </tr>
         {% endfor %}
     </tbody>
   </table>
 
-
+  
 
 
 
