@@ -35,6 +35,8 @@ urlpatterns = [
     path('CloseSession/', close, name="close_session"),
     path('Tareas/', tarea, name="tareas"),
     path('Tareas/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
+    path('Inicio/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
+
     path('Notificaciones/', noti, name="noti"),
     #Añadir propietarios.
     path('AddPropietario/', add_propietario, name="addPropietario"),
