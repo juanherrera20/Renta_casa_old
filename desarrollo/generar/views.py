@@ -357,3 +357,8 @@ def individuo_inquilino(request, id):
     objetoUser = usuarios.objects.filter( id = objetoArrendatario.usuarios_id_id).first()
     estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
     return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'propietario':objetoArrendatario, 'estado':estados})
+
+def all_values(request, id):
+    ObjetoUsuario = usuarios.objects.filter( id = id ).first()
+    print(ObjetoUsuario.nombre)
+    return render(request, 'analisis/all_values.html', )

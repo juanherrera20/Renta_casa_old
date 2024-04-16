@@ -62,14 +62,14 @@
       <tbody id="propietarios">
         {% for usuario, direccion, rango_ids, fechaPago, valorPago, estados in datosUsuario %}
         <tr>
-            <td>{{ forloop.counter}}</td>
-            <td>{{ usuario.nombre |add:" "|add:usuario.apellido}}</td>
-            <td>{{ direccion }}</td>
-            <td>{{ fechaPago }}</td>
-            <td>{{ usuario.telefono }}</td>
-            <td>{{ valorPago }}</td>
-            <td>{{ estados }}</td>
-            <td>{{ usuario.email }}</td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ forloop.counter}}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.nombre |add:" "|add:usuario.apellido}}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ direccion }}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ fechaPago }}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.telefono }}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ valorPago }}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ estados }}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email }}</button></td>
 
         </tr>
         {% endfor %}
