@@ -348,7 +348,12 @@ def guardar_inquilino(request): #Función para guardar inquilinos
     return redirect('personas_inquilinos')
 
 def individuo_propietario(request, id):
-    objetoPropietarios = propietario.objects.filter(id = id).first()
+    objetoPropietarios = propietario.objects.filter(usuarios_id_id = id).first()
     objetoUser = usuarios.objects.filter( id = objetoPropietarios.usuarios_id_id).first()
-    print(objetoUser.nombre)
-    return render(request, 'personas/propietarios/individuo_propietario.html', {'id':id})
+    return render(request, 'personas/propietarios/individuo_propietario.html', {'usuario':objetoUser, 'propietario':objetoPropietarios})
+
+def individuo_inquilino(request, id):
+    objetoArrendatario= arrendatario.objects.filter(usuarios_id_id = id).first()
+    objetoUser = usuarios.objects.filter( id = objetoArrendatario.usuarios_id_id).first()
+    estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
+    return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'propietario':objetoArrendatario, 'estado':estados})

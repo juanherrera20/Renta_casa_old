@@ -63,15 +63,15 @@
       <tbody id="inquilinos">
         {% for usuario, estado, direccion, rango_ids, valorCobro in datosUsuario %}
         <tr>
-            <td>{{ forloop.counter}}</td>
-            <td>{{ usuario.nombre |add:" "|add:usuario.apellido}}</td>
-            <td>{{ direccion }}</td>
-            <td>{{ usuario.tipo_documento }}</td>
-            <td>{{ usuario.documento }}</td>
-            <td>{{ valorCobro }}</td>
-            <td>{{ estado }}</td>
-            <td>{{ usuario.email }}</td>
-            <td>{{ usuario.telefono }}</td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoInquilino' id=usuario.id %}')" value="{{ usuario.id }}">{{ forloop.counter}}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoInquilino' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.nombre |add:" "|add:usuario.apellido}}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoInquilino' id=usuario.id %}')" value="{{ usuario.id }}">{{ direccion }}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoInquilino' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.tipo_documento }}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoInquilino' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.documento }}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoInquilino' id=usuario.id %}')" value="{{ usuario.id }}">{{ valorCobro }}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoInquilino' id=usuario.id %}')" value="{{ usuario.id }}">{{ estado }}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoInquilino' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email }}</button></td>
+            <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoInquilino' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.telefono }}</button></td>
         </tr>
         {% endfor %}
     </tbody>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href='{% static "css/personas/propietarios/individuo_propietario.css" %}' type="text/css">
+    <link rel="stylesheet" href='{% static "css/personas/Inquilinos/individuo_inquilino.css" %}' type="text/css">
     <title>Persona</title>
 </head>
 <body>
@@ -66,11 +66,23 @@
         <label for="direccion">Dirección</label>
         <input type="text" name="direccion" value="{{ propietario.direccion }}" readonly><br>
 
-        <label for="valor_pago">Valor a Pagar</label>
-        <input type="number" name="valor_pago" value="{{ propietario.valor_pago }}" readonly><br>
+        <label for="fecha_cobro">Fecha de Cobro</label>
+        <input type="datetime" name="fecha_cobro" value="{{ propietario.fecha_cobro }}" readonly><br>
 
-        <label for="fecha_pago">Fecha de Pago</label>
-        <input type="datetime" name="fecha_pago" value="{{ propietario.fecha_pago }}" readonly><br>
+        <label for="inicio_contrato">Inicio del contrato</label>
+        <input type="datetime" name="inicio_contrato" value="{{ propietario.inicio_contrato }}" readonly><br>
+
+        <label for="fin_contrato">Fin del contrato</label>
+        <input type="datetime" name="fin_contrato" value="{{ propietario.fin_contrato }}" readonly><br>
+        
+        <label for="Estado">Estado</label>
+        <select name="Estado" id="Estado" readnoly>
+            <option value="{{ propietario.habilitarPago }}">{{ estado }}</option>
+            <option value="1">Pagado</option>
+            <option value="2">Debe</option>
+            <option value="3">No pago</option>
+            <option value="4">Indefinido</option>
+        </select><br>
 
         <label for="tipo_contrato">Tipo de Contrato</label>
         <select name="tipo_contrato" id="tipo_contrato" readnoly>
@@ -81,9 +93,10 @@
             <option value="Indefinido">Indefinido</option>
         </select><br>
 
+
         <label for="obs">Observaciones</label>
         <input type="text" name="obs" value="{{ propietario.obs }}" readonly><br>
-
     </form>
+
 </body>
 </html>
