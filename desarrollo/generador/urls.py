@@ -19,7 +19,7 @@ from django.urls import path
 #Se importan las vistas que se deseen ver en la página
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
 from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino, prueba, add_tarea, guardar_tarea, modal_ver_tarea
-from generar.views import individuo_propietario, individuo_inquilino,all_values
+from generar.views import individuo_propietario, individuo_inquilino,all_values, add_inmueble
 
 urlpatterns = [
 
@@ -28,6 +28,9 @@ urlpatterns = [
     path('Inicio/', dash, name="inicio"),
     path('Dashboard/', dash, name="dash"),
     path('Inmuebles/', inmu, name="inmu"),
+    #añadir inmuebles
+    path('AddInmuebles/', add_inmueble, name="addInmu"),
+    
     path('Personas/Propietarios/', personas_propietarios, name="personas_propietarios"),
     path('Personas/Inquilinos/', personas_inquilinos, name="personas_inquilinos"),
     path('Analisis/Propietarios/', analisis_propietarios, name="analisis_propietarios"),

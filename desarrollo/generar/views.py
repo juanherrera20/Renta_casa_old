@@ -52,6 +52,13 @@ diccionarioPago ={
     '3': 'No pago',
     '4': 'Indefinido', 
 }
+
+diccionarioInmueble={
+    '1':'Activo',
+    '2':'Inactivo',
+    '3':'En proceso',
+    '4':'Indefinido'
+}
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 def index(request):
@@ -161,6 +168,13 @@ def dash(request):
 
 def inmu(request):
     return render(request, 'inmuebles/inmueble.html')
+
+def add_inmueble(request):
+    objetoPropietario = usuarios.objects.filter(propie_client=1)
+    objetoArrendatario = usuarios.objects.filter(propie_client=2)
+
+
+    return render(request, 'inmuebles/add_inmueble.html', {'propietarios': objetoPropietario, 'arrendatarios':objetoArrendatario})
 
 
 def personas_propietarios(request):
@@ -360,5 +374,6 @@ def individuo_inquilino(request, id):
 
 def all_values(request, id):
     ObjetoUsuario = usuarios.objects.filter( id = id ).first()
-    print(ObjetoUsuario.nombre)
+    objetoPropietario =  propietario.objects.filter(usuarios_id_id = id).first()
+    objetoArrendatario =  arrendatario.objects.filter(usuarios_id_id = id).first()
     return render(request, 'analisis/all_values.html', )

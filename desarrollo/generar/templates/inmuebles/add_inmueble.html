@@ -1,0 +1,100 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript"  src='{% static "js/all.js" %}'></script>
+        <link rel="stylesheet" href='{% static "css/inmuebles/add_inmueble.css" %}' type="text/css">
+        <title>Add Propietarios</title>
+    </head>
+    <body>
+        <div class="containerr">
+            <nav>
+                <ul> <br><!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
+                    <li><p>Logo</p></li>
+                    <li><a href="{% url 'inicio' %}">Inicio</a></li>
+                    <li><a href="{% url 'inmu' %}">Inmuebles</a></li>
+                    <li>
+                        <select name="personas" id="personas" onchange="location.href=this.value;">
+                            <option value="1">Personas</option>
+                            <option value="{% url 'personas_propietarios' %}">Propietarios</option>
+                            <option value="{% url 'personas_inquilinos' %}">Inquilinos</option>>
+                        </select>
+                    </li>
+                    <li>
+                        <select name="analisis" id="analisis" onchange="location.href=this.value;">
+                            <option value="1">Analisis</option>
+                            <option value="{% url 'analisis_propietarios' %}">Propietarios</option>
+                            <option value="{% url 'analisis_inquilinos' %}">Inquilinos</option>
+                        </select>
+                    </li>
+                    <li><a href="{% url 'tareas' %}">Tareas</a></li><br>
+                    <li><a href="{% url 'close_session' %}">Cerrar Sesión</a></li>
+                    <li><a href="{% url 'noti' %}">Notificaciones</a></li>
+                    <li><p>Foto</p></li>
+                </ul>
+            </nav>
+        </div>
+        <h2>Añadir Inmueble</h2>
+        <h4>Lo marcado con "*" es un campo obligatorio</h4><br><br>
+            <form action="{% url 'guardar' %}" method="post" id="addPropietario">
+                {% csrf_token %}
+                <h3>Información general</h3>
+                
+                <label for="propietario">Propietario:</label>
+                <select name="propietario">
+                    <option value="">Seleccionar el propietario</option>
+                    {% for propietario in propietarios %}
+                    <option value="{{ propietario.id }}">{{ propietario.nombre |add:" "|add:propietario.apellido }}</option>
+                    {% endfor %}
+                </select><br>
+
+                <label for="direccion">Direccion</label>
+                <input type="text" name="direccion" id="direccion" placeholder="Escribir" required><br>
+
+                <label for="tipo">Tipo de inmueble</label>
+                <input type="text" name="tipo" id="tipo" placeholder="Escribir" required><br>
+
+                <p>*Solo eligiendo al propietario, se le añadará el telefono*</p>
+                <label for="telefono">Telefono Propietario *</label>
+                <select name="telefono">
+                    <option value="">Seleccionar el propietario</option>
+                    {% for propietario in propietarios %}
+                    <option value="{{ propietario.telefono }}">{{ propietario.nombre |add:" "|add:propietario.apellido }}</option>
+                    {% endfor %}
+                </select><br>
+
+                <label for="valor">Canon - Valor</label>
+                <input type="number" name="valor" id="valor" placeholder="$$$$$$$$" required><br>
+
+                <label for="tipo_estado">Tipo de estado</label>
+                <select name="tipo_estado" id="tipo_estado" required>
+                    <option value="">Seleccione el estado</option>
+                    <option value="1">Activo</option>
+                    <option value="2">Inactivo</option>
+                    <option value="3">En proceso</option>
+                    <option value="4">Indefinido</option>
+                </select><br>
+
+                <label for="arrendatario">Arrendatario:</label>
+                <select name="arrendatario">
+                    <option value="">Seleccionar el propietario</option>
+                    <option value="0">Aún no tiene arrendatario</option>
+                    {% for arrendatario in arrendatarios %}
+                    <option value="{{ arrendatario.id }}">{{ arrendatario.nombre |add:" "|add:arrendatario.apellido }}</option>
+                    {% endfor %}
+                </select><br>
+
+                <label for="documento">Imagenes</label>
+                <input type="file" name="documento" id="documento"><br>
+
+                <label for="documento">Documentos</label>
+                <input type="file" name="documento" id="documento"><br>
+
+                <p>Toca revisar el espacio para arrastrar los archivos.</p>
+                <button type="submit" name="add" id="add" value="1">Guardar</button>
+            </form>
+        <button  name="borrar" id="borrar" value="2" onclick="resetForm()">Eliminar</button> <label for="cancelar">Eliminar, limpiara todos los campos</label><br><br><br> <!-- Se debe aplicar JS para limpiar los campos del Form -->
+    </body>
+</html>

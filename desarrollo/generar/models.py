@@ -95,6 +95,7 @@ class documentos(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
     propiedad_id = models.ForeignKey('inmueble', on_delete=models.PROTECT)
     pdf = models.FileField(upload_to="pdf/") #Crea una carpeta para guardar los pdf's y tener mejor accebilidad
+    imagen = models.ImageField(upload_to="images/")
     descuento = models.IntegerField() #Descuento que se descuenta al propietario
     urls = []
     
