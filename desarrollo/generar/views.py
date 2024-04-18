@@ -1,7 +1,8 @@
 from django.forms import model_to_dict
+from django.db.models import Max
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble
+from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, documentos
 from werkzeug.security import generate_password_hash, check_password_hash
 
 #Librerias y paquetes posbilemente utiles
@@ -58,6 +59,13 @@ diccionarioInmueble={
     '2':'Inactivo',
     '3':'En proceso',
     '4':'Indefinido'
+}
+
+diccionarioTipoInmueble={
+    '1':'Casa',
+    '2':'Apartamento',
+    '3':'Local',
+    '4':'Aparta-estudio'
 }
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -175,7 +183,34 @@ def add_inmueble(request):
 
 
     return render(request, 'inmuebles/add_inmueble.html', {'propietarios': objetoPropietario, 'arrendatarios':objetoArrendatario})
+def guardar_inmueble(request):
+      if request.method == "POST":
+        id_propietario = request.POST.get('propietario', None)
+        direc = request.POST.get('direccion', None)
+        tipo_inmueble = request.POST.get('tipo_inmueble', None)
+        valor = request.POST.get('valor', None)
+        estado = request.POST.get('tipo_estado', None)
+        descrip = request.POST.get('descrip', None)
 
+        ultimo_ref = inmueble.objects.all().aggregate(Max('ref'))['ref__max']
+        if ultimo_ref is None:
+            nuevo_ref = "1"
+        else:
+            nuevo_ref = str(int(ultimo_ref) + 1)
+
+        id_arrendatario = request.POST.get('arrendatario', None)
+        model=inmueble(propietario_id_id = id_propietario, arrendatario_id_id = id_arrendatario, ref= nuevo_ref, tipo = tipo_inmueble, valor_seguro= valor, descripcion= descrip, habilitada = estado, direccion= direc)
+        model.save()
+
+      if request.method == "POST":
+        objetoInmueble = inmueble.objects.last() #Guarda todo el objeto del último registro
+        inmueble_id = objetoInmueble.id
+        document = request.FILES.get('documento')
+        imagen = request.FILES.get('imagen')
+        descuento = 0
+        model1 = documentos(propiedad_id_id = inmueble_id, pdf = document, imagen = imagen, descuento = descuento)
+        model1.save()
+      return redirect('inmu')
 
 def personas_propietarios(request):
     #Logica para la tabla de propietarios-Personas
@@ -259,7 +294,6 @@ def guardar_tarea(request):
         descrip = request.POST.get('descrip', None)
         tipo_estado = request.POST.get('estado', None)
         tipoEstado = diccionarioTareaEstado[tipo_estado]
-        """ fecha_inicio = request.POST.get('fecha_inicio', None) """
         fecha_fin = request.POST.get('fecha_fin', None)
         tipo_etiqueta = request.POST.get('etiqueta', None)
         tipoEtiqueta = diccionarioTareaEtiqueta[tipo_etiqueta]

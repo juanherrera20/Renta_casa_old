@@ -16,10 +16,12 @@ Including another URLconf
 """
 
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 #Se importan las vistas que se deseen ver en la página
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
 from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino, prueba, add_tarea, guardar_tarea, modal_ver_tarea
-from generar.views import individuo_propietario, individuo_inquilino,all_values, add_inmueble
+from generar.views import individuo_propietario, individuo_inquilino,all_values, add_inmueble, guardar_inmueble
 
 urlpatterns = [
 
@@ -30,7 +32,8 @@ urlpatterns = [
     path('Inmuebles/', inmu, name="inmu"),
     #añadir inmuebles
     path('AddInmuebles/', add_inmueble, name="addInmu"),
-    
+    path('GuardarInmueble/', guardar_inmueble, name="guardarInmueble"),
+
     path('Personas/Propietarios/', personas_propietarios, name="personas_propietarios"),
     path('Personas/Inquilinos/', personas_inquilinos, name="personas_inquilinos"),
     path('Analisis/Propietarios/', analisis_propietarios, name="analisis_propietarios"),
@@ -57,3 +60,6 @@ urlpatterns = [
     #Visualizar todos los datos
     path('Analisis/All/Values/<int:id>', all_values, name="AllValues"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -66,13 +66,12 @@ class inmueble(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
     propietario_id = models.ForeignKey('propietario', on_delete=models.PROTECT)
     arrendatario_id = models.ForeignKey('arrendatario', on_delete=models.PROTECT)
-    documento_id = models.ForeignKey('documentos', on_delete=models.PROTECT)
     ref = models.CharField(max_length = 10) #referencia unica que se pueda mostrar al usuario
     tipo = models.IntegerField() #Si es casa, edificio, local...
     valor_seguro = models.IntegerField()
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no.
-    
+    direccion = models.CharField(max_length =300)
     class Meta:
         db_table = 'inmueble'
 

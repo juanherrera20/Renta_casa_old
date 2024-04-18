@@ -38,12 +38,12 @@
         </div>
         <h2>Añadir Inmueble</h2>
         <h4>Lo marcado con "*" es un campo obligatorio</h4><br><br>
-            <form action="{% url 'guardar' %}" method="post" id="addPropietario">
+            <form action="{% url 'guardarInmueble' %}" method="post" id="addInmueble" enctype="multipart/form-data">
                 {% csrf_token %}
                 <h3>Información general</h3>
                 
                 <label for="propietario">Propietario:</label>
-                <select name="propietario">
+                <select name="propietario" required>
                     <option value="">Seleccionar el propietario</option>
                     {% for propietario in propietarios %}
                     <option value="{{ propietario.id }}">{{ propietario.nombre |add:" "|add:propietario.apellido }}</option>
@@ -53,16 +53,13 @@
                 <label for="direccion">Direccion</label>
                 <input type="text" name="direccion" id="direccion" placeholder="Escribir" required><br>
 
-                <label for="tipo">Tipo de inmueble</label>
-                <input type="text" name="tipo" id="tipo" placeholder="Escribir" required><br>
-
-                <p>*Solo eligiendo al propietario, se le añadará el telefono*</p>
-                <label for="telefono">Telefono Propietario *</label>
-                <select name="telefono">
-                    <option value="">Seleccionar el propietario</option>
-                    {% for propietario in propietarios %}
-                    <option value="{{ propietario.telefono }}">{{ propietario.nombre |add:" "|add:propietario.apellido }}</option>
-                    {% endfor %}
+                <label for="tipo_inmueble">Tipo de Inmueble</label>
+                <select name="tipo_inmueble" id="tipo_inmueble" required>
+                    <option value="">Selecciona el Inmueble</option>
+                    <option value="1">Casa</option>
+                    <option value="2">Apartamento</option>
+                    <option value="3">Local</option>
+                    <option value="4">Aparta-estudio</option>
                 </select><br>
 
                 <label for="valor">Canon - Valor</label>
@@ -79,20 +76,24 @@
 
                 <label for="arrendatario">Arrendatario:</label>
                 <select name="arrendatario">
-                    <option value="">Seleccionar el propietario</option>
+                    <option value="">Seleccionar al arrendatario
+                    </option>
                     <option value="0">Aún no tiene arrendatario</option>
                     {% for arrendatario in arrendatarios %}
                     <option value="{{ arrendatario.id }}">{{ arrendatario.nombre |add:" "|add:arrendatario.apellido }}</option>
                     {% endfor %}
                 </select><br>
+                <label for="descrip">Descripción</label>
+                <input type="text" name="descrip" id="descrip" placeholder="Escribir"><br>
 
-                <label for="documento">Imagenes</label>
-                <input type="file" name="documento" id="documento"><br>
+                <label for="imagen">Imagenes</label>
+                <input type="file" name="imagen" id="imagen" accept="image/*"><br>
 
                 <label for="documento">Documentos</label>
-                <input type="file" name="documento" id="documento"><br>
+                <input type="file" name="documento" id="documento" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf"><br>
 
-                <p>Toca revisar el espacio para arrastrar los archivos.</p>
+                
+
                 <button type="submit" name="add" id="add" value="1">Guardar</button>
             </form>
         <button  name="borrar" id="borrar" value="2" onclick="resetForm()">Eliminar</button> <label for="cancelar">Eliminar, limpiara todos los campos</label><br><br><br> <!-- Se debe aplicar JS para limpiar los campos del Form -->
