@@ -78,7 +78,7 @@
                 <select name="arrendatario">
                     <option value="">Seleccionar al arrendatario
                     </option>
-                    <option value="0">Aún no tiene arrendatario</option>
+                    <option value="">Aún no tiene arrendatario</option>
                     {% for arrendatario in arrendatarios %}
                     <option value="{{ arrendatario.id }}">{{ arrendatario.nombre |add:" "|add:arrendatario.apellido }}</option>
                     {% endfor %}

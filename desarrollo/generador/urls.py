@@ -20,7 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 #Se importan las vistas que se deseen ver en la página
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
-from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino, prueba, add_tarea, guardar_tarea, modal_ver_tarea
+from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino,  add_tarea, guardar_tarea, modal_ver_tarea
 from generar.views import individuo_propietario, individuo_inquilino,all_values, add_inmueble, guardar_inmueble
 
 urlpatterns = [
@@ -51,7 +51,7 @@ urlpatterns = [
     #Añadir Inquilinos.
     path('AddInquilinos/', add_inquilino, name="AddInquilinos"),
     path('GuardarInquilino/', guardar_inquilino, name="guardar_inquilino"),
-    path('prueba/', prueba, name = "prueba"),
+    
     #Añadir tareas.
     path('AddTarea/', add_tarea, name="AddTarea"),
     path('GuardarTarea/', guardar_tarea, name="GuardarTarea"),

@@ -50,20 +50,32 @@
           <tr>
               <th>ID</th>
               <th>Propietario</th>
+              <th>Telefono</th>
+              <th>Referencia</th>
               <th>Dirección</th>
               <th>Tipo</th>
-              <th>Telefono</th>
               <th>Valor</th>
               <th>Estado</th>
               <th>Inquilino</th>
           </tr>
       </thead>
       <tbody>
-        <td></td>
+        {% for inmu in inmuebles %}
+        <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ inmu.nombre_propietario |add:" "|add:inmu.apellido_propietario}}</td>
+        <td>{{ inmu.telefono_propietario }}</td>
+        <td>{{ inmu.ref }}</td>
+        <td>{{ inmu.direccion }}</td>
+        <td>{{ inmu.tipo }}</td>
+        <td>{{ inmu.valor_seguro }}</td>
+        <td>{{ inmu.habilitada }}</td>
+        <td>{{ inmu.nombre_arrendatario |add:" "|add:inmu.apellido_arrendatario }}</td>
 
 
-
-
+        {% endfor %}
+        </tr>
+        
       </tbody>
 </body>
 </html>

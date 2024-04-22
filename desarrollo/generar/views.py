@@ -1,9 +1,12 @@
+from django.db.models import F, Value, CharField
+from django.db.models.functions import Coalesce
 from django.forms import model_to_dict
 from django.db.models import Max
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, documentos
 from werkzeug.security import generate_password_hash, check_password_hash
+
 
 #Librerias y paquetes posbilemente utiles
 # from cryptography.fernet import Fernet
@@ -90,18 +93,7 @@ def index(request):
             return render(request, 'index.html', {"error": "Usuario no encontrado en la base de datos"})
 
 
-def prueba(request):  #Esta vista es solo para hacer pruebas
-    # Obtener todos los objetos almacenados en la base de datos
-    superusers = superuser.objects.all()
-    
-    # Crear una lista para almacenar los nombres de los superusuarios
-    nombres = [su.nombre for su in superusers]
-    
-    # Convertir la lista de nombres en una cadena para mostrar en la respuesta HTTP
-    nombres_str = ", ".join(nombres)
-    
-    # Devolver una respuesta HTTP con los nombres de los superusuarios
-    return HttpResponse(f"Estos son los nombres de los superusuarios: {nombres_str}")
+
     
 def close(request):
     return redirect(request,'index')
@@ -175,7 +167,17 @@ def dash(request):
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios})
 
 def inmu(request):
-    return render(request, 'inmuebles/inmueble.html')
+    inmuebles = inmueble.objects.all()
+    inmueblesAll = inmuebles.annotate(
+    nombre_propietario=F('propietario_id__usuarios_id__nombre'),
+    apellido_propietario=F('propietario_id__usuarios_id__apellido'),
+    telefono_propietario=F('propietario_id__usuarios_id__telefono'),
+
+    nombre_arrendatario=Coalesce(F('arrendatario_id__usuarios_id__nombre'), Value('No existe')),
+    apellido_arrendatario=Coalesce(F('arrendatario_id__usuarios_id__apellido'), Value('No existe'))
+    )
+
+    return render(request, 'inmuebles/inmueble.html', {'inmuebles': inmueblesAll})
 
 def add_inmueble(request):
     objetoPropietario = usuarios.objects.filter(propie_client=1)
