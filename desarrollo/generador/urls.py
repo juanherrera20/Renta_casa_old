@@ -51,7 +51,6 @@ urlpatterns = [
     #Añadir Inquilinos.
     path('AddInquilinos/', add_inquilino, name="AddInquilinos"),
     path('GuardarInquilino/', guardar_inquilino, name="guardar_inquilino"),
-    
     #Añadir tareas.
     path('AddTarea/', add_tarea, name="AddTarea"),
     path('GuardarTarea/', guardar_tarea, name="GuardarTarea"),

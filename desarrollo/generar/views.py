@@ -182,9 +182,25 @@ def inmu(request):
 def add_inmueble(request):
     objetoPropietario = usuarios.objects.filter(propie_client=1)
     objetoArrendatario = usuarios.objects.filter(propie_client=2)
-
-
-    return render(request, 'inmuebles/add_inmueble.html', {'propietarios': objetoPropietario, 'arrendatarios':objetoArrendatario})
+    propietarios_info = []
+    for propietario in objetoPropietario:
+        primer_propietario = propietario.propietario_set.first()
+        if primer_propietario:
+            # Crea un diccionario con el ID y el nombre completo del propietario
+            propietarios_info.append({
+                'id': primer_propietario.id,
+                'nombre_completo': f"{propietario.nombre} {propietario.apellido}"
+            })
+    arrendatarios_info = []
+    for arrendatario in objetoArrendatario:
+        primer_arrendatario = arrendatario.arrendatario_set.first()
+        if primer_arrendatario:
+            # Crea un diccionario con el ID y el nombre completo del propietario
+            arrendatarios_info.append({
+                'id': primer_arrendatario.id,
+                'nombre_completo': f"{arrendatario.nombre} {arrendatario.apellido}"
+            })
+    return render(request, 'inmuebles/add_inmueble.html', {'propietarios': objetoPropietario, 'arrendatarios':objetoArrendatario, 'propietarios_info': propietarios_info, 'arrendatarios_info': arrendatarios_info})
 def guardar_inmueble(request):
       if request.method == "POST":
         id_propietario = request.POST.get('propietario', None)
