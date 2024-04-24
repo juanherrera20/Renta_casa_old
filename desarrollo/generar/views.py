@@ -157,10 +157,17 @@ def dash(request):
         estadosArrendatario = diccionarioPago[str(estadosDiccionarioArrendatario)]
         usuarios_arrendatarios.append((arrendatario, direccionArrendatario, rango_arrendatarios, estadosArrendatario))
     
-    usuarios_inmuebles = []
-    #Espacio para listar los datos de los inmuebles
+    
+    objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').all()
 
-    return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios})
+    objetoTipo = inmueble.objects.values_list('tipo', flat=True)
+    tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
+
+    objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
+    habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
+    All = list(zip(objetoInmuebles, tipoInmueble, habilitada))
+
+    return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
 
 def inmu(request):
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').all()
