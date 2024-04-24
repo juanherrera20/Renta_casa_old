@@ -1,9 +1,5 @@
-from django.db.models import F, Value, CharField
-from django.db.models.functions import Coalesce
-from django.forms import model_to_dict
 from django.db.models import Max
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, documentos
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -59,7 +55,7 @@ diccionarioPago ={
 
 diccionarioInmueble={
     '1':'Activo',
-    '2':'Inactivo',
+    '2':'No utilizado',
     '3':'En proceso',
     '4':'Indefinido'
 }
@@ -167,17 +163,16 @@ def dash(request):
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios})
 
 def inmu(request):
-    inmuebles = inmueble.objects.all()
-    inmueblesAll = inmuebles.annotate(
-    nombre_propietario=F('propietario_id__usuarios_id__nombre'),
-    apellido_propietario=F('propietario_id__usuarios_id__apellido'),
-    telefono_propietario=F('propietario_id__usuarios_id__telefono'),
+    objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').all()
 
-    nombre_arrendatario=Coalesce(F('arrendatario_id__usuarios_id__nombre'), Value('No existe')),
-    apellido_arrendatario=Coalesce(F('arrendatario_id__usuarios_id__apellido'), Value('No existe'))
-    )
+    objetoTipo = inmueble.objects.values_list('tipo', flat=True)
+    tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
 
-    return render(request, 'inmuebles/inmueble.html', {'inmuebles': inmueblesAll})
+    objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
+    habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
+    All = list(zip(objetoInmuebles, tipoInmueble, habilitada))
+
+    return render(request, 'inmuebles/inmueble.html', {'inmuebles': All})
 
 def add_inmueble(request):
     objetoPropietario = usuarios.objects.filter(propie_client=1)

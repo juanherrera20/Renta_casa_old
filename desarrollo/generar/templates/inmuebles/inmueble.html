@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href='{% static "css/inmuebles/inmueble.css" %}' type="text/css">
+    <script type="text/javascript"  src='{% static "js/inmuebles/inmueble.js" %}'></script>
     <title>Inmuebles</title>
 </head>
 <body>
@@ -59,23 +60,25 @@
               <th>Inquilino</th>
           </tr>
       </thead>
-      <tbody>
-        {% for inmu in inmuebles %}
-        <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ inmu.nombre_propietario |add:" "|add:inmu.apellido_propietario}}</td>
-        <td>{{ inmu.telefono_propietario }}</td>
-        <td>{{ inmu.ref }}</td>
-        <td>{{ inmu.direccion }}</td>
-        <td>{{ inmu.tipo }}</td>
-        <td>{{ inmu.valor_seguro }}</td>
-        <td>{{ inmu.habilitada }}</td>
-        <td>{{ inmu.nombre_arrendatario |add:" "|add:inmu.apellido_arrendatario }}</td>
-
-
+      <tbody id="inmuebles">
+        {% for inmueble, tipoInmueble, habilitada in inmuebles %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ inmueble.propietario_id.usuarios_id.nombre |add:" "|add:inmueble.propietario_id.usuarios_id.apellido }}</td>
+            <td>{{ inmueble.propietario_id.usuarios_id.telefono }}</td>
+            <td>{{ inmueble.ref }}</td>
+            <td>{{ inmueble.direccion }}</td>
+            <td>{{ tipoInmueble }}</td>
+            <td>{{ inmueble.valor_seguro }}</td>
+            <td>{{ habilitada }}</td>
+            <td>{% if inmueble.arrendatario_id_id %}
+                  {{ inmueble.arrendatario_id.usuarios_id.nombre |add:" "|add:inmueble.arrendatario_id.usuarios_id.apellido}}
+                {% else %}
+                  No existe  
+                {% endif %}
+            </td>
+          </tr>
         {% endfor %}
-        </tr>
-        
       </tbody>
 </body>
 </html>
