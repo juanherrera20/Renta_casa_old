@@ -2,6 +2,7 @@ from django.db.models import Max
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, documentos
 from werkzeug.security import generate_password_hash, check_password_hash
+from django.db.models import F 
 
 
 #Librerias y paquetes posbilemente utiles
@@ -156,7 +157,6 @@ def dash(request):
         estadosDiccionarioArrendatario = arrendatario.arrendatario_set.first().habilitarPago if arrendatario.arrendatario_set.exists() else None
         estadosArrendatario = diccionarioPago[str(estadosDiccionarioArrendatario)]
         usuarios_arrendatarios.append((arrendatario, direccionArrendatario, rango_arrendatarios, estadosArrendatario))
-    
     
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').all()
 
@@ -425,6 +425,19 @@ def individuo_inquilino(request, id):
     objetoUser = usuarios.objects.filter( id = objetoArrendatario.usuarios_id_id).first()
     estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
     return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'propietario':objetoArrendatario, 'estado':estados})
+
+def individuo_inmueble(request, id):
+    objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(id = id)
+    objetoDoc = documentos.objects.filter(propiedad_id_id = id)
+    
+    objetoTipo = inmueble.objects.values_list('tipo', flat=True)
+    tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
+
+    objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
+    habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
+    All = list(zip(objetoInmuebles, objetoDoc, tipoInmueble, habilitada))
+    
+    return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All})
 
 def all_values(request, id):
     ObjetoUsuario = usuarios.objects.filter( id = id ).first()
