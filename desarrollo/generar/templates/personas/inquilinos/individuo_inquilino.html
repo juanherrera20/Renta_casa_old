@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href='{% static "css/personas/Inquilinos/individuo_inquilino.css" %}' type="text/css">
+    <script type="text/javascript"  src='{% static "js/personas/individuo_arrendatario.js" %}'></script>
+
     <title>Persona</title>
 </head>
 <body>
@@ -41,16 +43,19 @@
     
     
     <h2>Propietario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h2>
-    <form action="">
+    <button type="button" id="btnEdit"name="btnEdit">Edit</button>
+    <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
+    <form action="{% url 'ActualizarInquilino' %}" id="miFormulario" method="post">
         {% csrf_token %}
-        <button type="">Edit</button><br><br>
+        <input type="hidden" name="id" id="id" value="{{ usuario.id }}">
+        <input type="hidden" name="idP" id="idP" value="{{ propietario.id }}">
         <label for="nombre">Nombre</label>
         <input type="text" name="nombre" value="{{ usuario.nombre }}" readonly><br>
         <label for="apellido">Apellido</label>
         <input type="text" name="apellido" value="{{ usuario.apellido }}" readonly><br>
 
         <label for="tipo_documento">Tipo de Documento</label>
-                <select name="tipo_documento" id="tipo_documento" readonly> <!-- Cambiar y desarrollar el select para luego editar -->
+                <select name="tipo_documento" id="tipo_documento" disabled> <!-- Cambiar y desarrollar el select para luego editar -->
                     <option value="{{ usuario.tipo_documento }}">{{ usuario.tipo_documento }}</option>
                     <option value="Cedula">Cedula de Ciudadania</option>
                     <option value="Pasaporte">Pasaporte</option>
@@ -76,7 +81,7 @@
         <input type="datetime" name="fin_contrato" value="{{ propietario.fin_contrato }}" readonly><br>
         
         <label for="Estado">Estado</label>
-        <select name="Estado" id="Estado" readnoly>
+        <select name="Estado" id="Estado" disabled>
             <option value="{{ propietario.habilitarPago }}">{{ estado }}</option>
             <option value="1">Pagado</option>
             <option value="2">Debe</option>
@@ -85,7 +90,7 @@
         </select><br>
 
         <label for="tipo_contrato">Tipo de Contrato</label>
-        <select name="tipo_contrato" id="tipo_contrato" readnoly>
+        <select name="tipo_contrato" id="tipo_contrato" disabled>
             <option value="{{ propietario.tipo_contrato }}">{{ propietario.tipo_contrato }}</option>
             <option value="Trimestral">Trimestral</option>
             <option value="Semestral">Semestral</option>
@@ -96,7 +101,9 @@
 
         <label for="obs">Observaciones</label>
         <input type="text" name="obs" value="{{ propietario.obs }}" readonly><br>
-    </form>
+        <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
+
+      </form>
 
 </body>
 </html>

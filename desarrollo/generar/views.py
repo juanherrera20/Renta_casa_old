@@ -375,6 +375,54 @@ def guardar(request): #Función para guardar propietarios
     return redirect('personas_propietarios')
     #Funciones para añadir inquilinos
 
+def actualizar_propietario(request):
+    idUsuario = request.POST.get('id')
+    nombre = request.POST.get('nombre')
+    apellido = request.POST.get('apellido')
+    tipo_documento = request.POST.get('tipo_documento')
+    documento = request.POST.get('documento')
+    telefono = request.POST.get('telefono')
+    email = request.POST.get('email')
+    
+    guardar = usuarios.objects.get(id=idUsuario)
+    guardar.nombre = nombre
+    guardar.apellido = apellido
+    guardar.tipo_documento = tipo_documento
+    guardar.documento = documento
+    guardar.telefono = telefono
+    guardar.email = email
+    guardar.save()
+
+    idPropietario = request.POST.get('idP')
+    direccion = request.POST.get('direccion')
+    valor_pago = request.POST.get('valor_pago')
+    respaldo_fecha = request.POST.get('respaldo_fecha') 
+    fecha_pago = request.POST.get('fecha_pago')
+
+    if fecha_pago:
+        fechaPago = fecha_pago
+    else:
+        fechaPago = respaldo_fecha
+
+    tipo_contrato= request.POST.get('tipo_contrato')
+    habilitarPago = request.POST.get('habilitarPago')
+    obs = request.POST.get('obs')
+
+    guardar2 = propietario.objects.get(id=idPropietario)
+    guardar2.direccion = direccion
+    guardar2.tipo_documento = tipo_documento
+    guardar2.valor_pago = valor_pago
+    guardar2.fecha_pago = fechaPago
+    guardar2.tipo_contrato = tipo_contrato
+    guardar2.habilitarPago = habilitarPago
+    guardar2.obs = obs
+    guardar2.save()
+
+    return redirect('personas_propietarios')
+
+def actualizar_inquilino(request):
+    return redirect('personas_inquilinos')
+
 def add_inquilino(request):
     return render(request, 'personas/inquilinos/add_inquilino.html')
 
@@ -417,8 +465,9 @@ def guardar_inquilino(request): #Función para guardar inquilinos
 
 def individuo_propietario(request, id):
     objetoPropietarios = propietario.objects.filter(usuarios_id_id = id).first()
+    pago = diccionarioPago[str(objetoPropietarios.habilitarPago)]
     objetoUser = usuarios.objects.filter( id = objetoPropietarios.usuarios_id_id).first()
-    return render(request, 'personas/propietarios/individuo_propietario.html', {'usuario':objetoUser, 'propietario':objetoPropietarios})
+    return render(request, 'personas/propietarios/individuo_propietario.html', {'usuario':objetoUser, 'propietario':objetoPropietarios, 'pago': pago})
 
 def individuo_inquilino(request, id):
     objetoArrendatario= arrendatario.objects.filter(usuarios_id_id = id).first()
