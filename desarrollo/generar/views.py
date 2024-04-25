@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db.models import Max
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, documentos
@@ -402,7 +403,8 @@ def actualizar_propietario(request):
     if fecha_pago:
         fechaPago = fecha_pago
     else:
-        fechaPago = respaldo_fecha
+        date =  datetime.strptime(respaldo_fecha, "%B %d, %Y")
+        fechaPago = date.strftime("%Y-%m-%d")
 
     tipo_contrato= request.POST.get('tipo_contrato')
     habilitarPago = request.POST.get('habilitarPago')
@@ -410,7 +412,6 @@ def actualizar_propietario(request):
 
     guardar2 = propietario.objects.get(id=idPropietario)
     guardar2.direccion = direccion
-    guardar2.tipo_documento = tipo_documento
     guardar2.valor_pago = valor_pago
     guardar2.fecha_pago = fechaPago
     guardar2.tipo_contrato = tipo_contrato
@@ -421,6 +422,65 @@ def actualizar_propietario(request):
     return redirect('personas_propietarios')
 
 def actualizar_inquilino(request):
+    idUsuario = request.POST.get('id')
+    nombre = request.POST.get('nombre')
+    apellido = request.POST.get('apellido')
+    tipo_documento = request.POST.get('tipo_documento')
+    documento = request.POST.get('documento')
+    telefono = request.POST.get('telefono')
+    email = request.POST.get('email')
+    
+    guardar = usuarios.objects.get(id=idUsuario)
+    guardar.nombre = nombre
+    guardar.apellido = apellido
+    guardar.tipo_documento = tipo_documento
+    guardar.documento = documento
+    guardar.telefono = telefono
+    guardar.email = email
+    guardar.save()
+
+    idA = request.POST.get('idP')
+    direccion = request.POST.get('direccion')
+    valor_cobro = request.POST.get('valor')
+    fecha_cobro = request.POST.get('fecha_cobro')
+    fecha_cobroRes = request.POST.get('fecha_cobroRes')
+    
+    if fecha_cobro:
+        fechaCobro = fecha_cobro
+    else:
+        date =  datetime.strptime(fecha_cobroRes, "%B %d, %Y")
+        fechaCobro = date.strftime("%Y-%m-%d")
+    
+    inicio_contrato = request.POST.get('inicio_contrato')
+    inicio_contratoRes = request.POST.get('inicio_contratoRes')
+    if inicio_contrato:
+        inicioContrato = inicio_contrato
+    else:
+        date =  datetime.strptime(inicio_contratoRes, "%B %d, %Y")
+        inicioContrato = date.strftime("%Y-%m-%d")
+
+    fin_contrato = request.POST.get('fin_contrato')
+    fin_contratoRes = request.POST.get('fin_contratoRes')
+    if fin_contrato:
+        finContrato = fin_contrato
+    else:
+        date =  datetime.strptime(fin_contratoRes, "%B %d, %Y")
+        finContrato = date.strftime("%Y-%m-%d")
+
+    habilitarPago = request.POST.get('estado')
+    tipo_contrato = request.POST.get('tipo_contrato')
+    obs = request.POST.get('obs')
+
+    guardar2 = arrendatario.objects.get(id=idA)
+    guardar2.direccion = direccion
+    guardar2.valor_cobro = valor_cobro
+    guardar2.fecha_cobro = fechaCobro
+    guardar2.inicio_contrato = inicioContrato
+    guardar2.fin_contrato = finContrato
+    guardar2.habilitarPago = habilitarPago
+    guardar2.obs = obs
+    guardar2.save()
+
     return redirect('personas_inquilinos')
 
 def add_inquilino(request):

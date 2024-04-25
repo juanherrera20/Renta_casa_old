@@ -73,15 +73,20 @@
 
         <label for="fecha_cobro">Fecha de Cobro</label>
         <input type="datetime" name="fecha_cobro" value="{{ propietario.fecha_cobro }}" readonly><br>
+        <input type="hidden" name="fecha_cobroRes" value="{{ propietario.fecha_cobro }}">
+        <label for="valor">Valor a Cobrar</label>
+        <input type="number" name="valor" value="{{ propietario.valor_cobro }}" readonly><br>
 
         <label for="inicio_contrato">Inicio del contrato</label>
         <input type="datetime" name="inicio_contrato" value="{{ propietario.inicio_contrato }}" readonly><br>
+        <input type="hidden" name="inicio_contratoRes" value="{{ propietario.inicio_contrato }}">
 
         <label for="fin_contrato">Fin del contrato</label>
         <input type="datetime" name="fin_contrato" value="{{ propietario.fin_contrato }}" readonly><br>
-        
-        <label for="Estado">Estado</label>
-        <select name="Estado" id="Estado" disabled>
+        <input type="hidden" name="fin_contratoRes" value="{{ propietario.fin_contrato }}">
+
+        <label for="estado">Estado</label>
+        <select name="estado" id="estado" disabled>
             <option value="{{ propietario.habilitarPago }}">{{ estado }}</option>
             <option value="1">Pagado</option>
             <option value="2">Debe</option>

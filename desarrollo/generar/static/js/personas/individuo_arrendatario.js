@@ -6,12 +6,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (btnEdit) {
         btnEdit.addEventListener('click', function() {
-            var inputs = miFormulario.querySelectorAll('input, select');// Hacer todos los campos editables
+            var inputs = miFormulario.querySelectorAll('input, select');
             inputs.forEach(function(input) {
                 input.removeAttribute('readonly');
                 input.removeAttribute('disabled');
             });
-            this.style.display = 'none';// Oculta el botón "Edit" y mostrar el botón "Actualizar" y "Cancelar"
+            var fechaPagoInput = miFormulario.querySelector('input[name="fecha_cobro"]');
+            if (fechaPagoInput) {
+                fechaPagoInput.dataset.originalValue = fechaPagoInput.value;
+                fechaPagoInput.type = 'date';
+            }
+            var inicioContratoInput = miFormulario.querySelector('input[name="inicio_contrato"]');
+            if (inicioContratoInput) {
+                inicioContratoInput.dataset.originalValue = inicioContratoInput.value;
+                inicioContratoInput.type = 'date';
+            }
+            var finContratoInput = miFormulario.querySelector('input[name="fin_contrato"]');
+            if (finContratoInput) {
+                finContratoInput.dataset.originalValue = finContratoInput.value;
+                finContratoInput.type = 'date';
+            }
+
+            this.style.display = 'none';
             if (btnActualizar) {
                 btnActualizar.style.display = 'block';
             }
@@ -23,12 +39,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (btnCancel) {
         btnCancel.addEventListener('click', function() {
-            var inputs = miFormulario.querySelectorAll('input, select');// Volver a establecer todo
+            var inputs = miFormulario.querySelectorAll('input, select');
             inputs.forEach(function(input) {
                 input.setAttribute('readonly', '');
                 input.setAttribute('disabled', '');
-            });            
-            this.style.display = 'none';// Ocultar el botón "Cancelar" y mostrar el botón "Edit"
+            });
+            var fechaPagoInput = miFormulario.querySelector('input[name="fecha_cobro"]');
+            if (fechaPagoInput) {
+                fechaPagoInput.type = 'datetime';
+                fechaPagoInput.value = fechaPagoInput.dataset.originalValue; 
+            }
+            var inicioContratoInput = miFormulario.querySelector('input[name="inicio_contrato"]');
+            if (inicioContratoInput) {
+                inicioContratoInput.type = 'datetime';
+                inicioContratoInput.value = inicioContratoInput.dataset.originalValue;
+            }
+            var finContratoInput = miFormulario.querySelector('input[name="fin_contrato"]');
+            if (finContratoInput) {
+                finContratoInput.type = 'datetime';
+                finContratoInput.value = finContratoInput.dataset.originalValue; // Restaurar el valor original
+            }
+            this.style.display = 'none';
             if (btnEdit) {
                 btnEdit.style.display = 'block';
             }
