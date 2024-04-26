@@ -1,104 +1,77 @@
+{% extends "barra_navegacion.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href='{% static "css/personas/propietarios/individuo_propietario.css" %}' type="text/css">
-    <script type="text/javascript"  src='{% static "js/personas/individuo_propietario.js" %}'></script>
-    <title>Persona</title>
-</head>
-<body>
-    <div class="containerr">
-        <nav>
-          <ul> <!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
-          <br>
-            <li><p>Logo</p></li>
-            <li><a href="{% url 'inicio' %}">Inicio</a></li>
-            <li><a href="{% url 'inmu' %}">Inmuebles</a></li>
-            <li>
-              <select name="personas" id="personas" onchange="location.href=this.value;">
-                <option value="1">Personas</option>
-                <option value="{% url 'personas_propietarios' %}">Propietarios</option>
-                <option value="{% url 'personas_inquilinos' %}">Inquilinos</option>>
-              </select>
-            </li>
-            <li>
-              <select name="analisis" id="analisis" onchange="location.href=this.value;">
-                <option value="1">Analisis</option>
-                <option value="{% url 'analisis_propietarios' %}">Propietarios</option>
-                <option value="{% url 'analisis_inquilinos' %}">Inquilinos</option>
-              </select>
-            </li>
-            <li><a href="{% url 'tareas' %}">Tareas</a></li>
-            <br>
-            <li><a href="{% url 'close_session' %}">Cerrar Sesión</a></li>
-            <li><a href="{% url 'noti' %}">Notificaciones</a></li>
-            <li><p>Foto</p></li>
-          </ul>
-        </nav>
-      </div>
-    
-    
-    
-    <h2>Propietario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h2>
-    <button type="button" id="btnEdit"name="btnEdit">Edit</button>
-    <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
-    <form action="{% url 'ActualizarPropietario' %}" id="miFormulario" method="post">
-        {% csrf_token %}
-        <br><br>
-        <input type="hidden" name="id" id="id" value="{{ usuario.id }}">
-        <input type="hidden" name="idP" id="idP" value="{{ propietario.id }}">
-        <label for="nombre">Nombre</label>
-        <input type="text" name="nombre" value="{{ usuario.nombre }}" readonly><br>
-        <label for="apellido">Apellido</label>
-        <input type="text" name="apellido" value="{{ usuario.apellido }}" readonly><br>
 
-        <label for="tipo_documento">Tipo de Documento</label>
-                <select name="tipo_documento" id="tipo_documento" disabled> 
-                    <option value="{{ usuario.tipo_documento }}">{{ usuario.tipo_documento }}</option>
-                    <option value="Cedula">Cedula de Ciudadania</option>
-                    <option value="Pasaporte">Pasaporte</option>
-                </select><br>
+{% block static %}
+  <link rel="stylesheet" href='{% static "css/personas/propietarios/individuo_propietario.css" %}' type="text/css">
+  <script type="text/javascript"  src='{% static "js/personas/individuo_propietario.js" %}'></script>
+{% endblock static %}
 
-        <label for="documento">Documento</label>
-        <input type="number" name="documento" value="{{ usuario.documento }}" readonly><br>
-        <label for="telefono">Telefono</label>
-        <input type="number" name="telefono" value="{{ usuario.telefono }}" readonly><br>
-        <label for="email">Email</label>
-        <input type="email" name="email" value="{{ usuario.email }}" readonly><br>
+{% block encabezado %}
+  Persona
+{% endblock encabezado %}
 
-        <label for="direccion">Dirección</label>
-        <input type="text" name="direccion" value="{{ propietario.direccion }}" readonly><br>
+{% block title %}
+{% endblock title %}
 
-        <label for="valor_pago">Valor a Pagar</label>
-        <input type="number" name="valor_pago" value="{{ propietario.valor_pago }}" readonly><br>
+{% block contenido %}
+  <h2>Propietario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h2>
+  <button type="button" id="btnEdit"name="btnEdit">Edit</button>
+  <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
+  <form action="{% url 'ActualizarPropietario' %}" id="miFormulario" method="post">
+      {% csrf_token %}
+      <br><br>
+      <input type="hidden" name="id" id="id" value="{{ usuario.id }}">
+      <input type="hidden" name="idP" id="idP" value="{{ propietario.id }}">
+      <label for="nombre">Nombre</label>
+      <input type="text" name="nombre" value="{{ usuario.nombre }}" readonly><br>
+      <label for="apellido">Apellido</label>
+      <input type="text" name="apellido" value="{{ usuario.apellido }}" readonly><br>
 
-        <label for="fecha_pago">Fecha de Pago</label>
-        <input type="datetime" name="fecha_pago" value="{{ propietario.fecha_pago }}" readonly><br>
-        <input type="hidden" name="respaldo_fecha" value="{{ propietario.fecha_pago }}">
+      <label for="tipo_documento">Tipo de Documento</label>
+              <select name="tipo_documento" id="tipo_documento" disabled> 
+                  <option value="{{ usuario.tipo_documento }}">{{ usuario.tipo_documento }}</option>
+                  <option value="Cedula">Cedula de Ciudadania</option>
+                  <option value="Pasaporte">Pasaporte</option>
+              </select><br>
 
-        <label for="tipo_contrato">Tipo de Contrato</label>
-        <select name="tipo_contrato" id="tipo_contrato" disabled>
-            <option value="{{ propietario.tipo_contrato }}">{{ propietario.tipo_contrato }}</option>
-            <option value="Trimestral">Trimestral</option>
-            <option value="Semestral">Semestral</option>
-            <option value="Anual">Anual</option>
-            <option value="Indefinido">Indefinido</option>
-        </select><br>
+      <label for="documento">Documento</label>
+      <input type="number" name="documento" value="{{ usuario.documento }}" readonly><br>
+      <label for="telefono">Telefono</label>
+      <input type="number" name="telefono" value="{{ usuario.telefono }}" readonly><br>
+      <label for="email">Email</label>
+      <input type="email" name="email" value="{{ usuario.email }}" readonly><br>
 
-        <label for="habilitarPago">Estado del Pago</label>
-        <select name="habilitarPago" id="habilitarPago" disabled>
-            <option value="{{ propietario.habilitarPago }}">{{ pago }}</option>
-            <option value="1">Pagado</option>
-            <option value="2">Debe</option>
-            <option value="3">No pago</option>
-            <option value="4">Indefinido</option>
-        </select><br>
+      <label for="direccion">Dirección</label>
+      <input type="text" name="direccion" value="{{ propietario.direccion }}" readonly><br>
 
-        <label for="obs">Observaciones</label>
-        <input type="text" name="obs" value="{{ propietario.obs }}" readonly><br>
-        <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
-    </form>
-</body>
-</html>
+      <label for="valor_pago">Valor a Pagar</label>
+      <input type="number" name="valor_pago" value="{{ propietario.valor_pago }}" readonly><br>
+
+      <label for="fecha_pago">Fecha de Pago</label>
+      <input type="datetime" name="fecha_pago" value="{{ propietario.fecha_pago }}" readonly><br>
+      <input type="hidden" name="respaldo_fecha" value="{{ propietario.fecha_pago }}">
+
+      <label for="tipo_contrato">Tipo de Contrato</label>
+      <select name="tipo_contrato" id="tipo_contrato" disabled>
+          <option value="{{ propietario.tipo_contrato }}">{{ propietario.tipo_contrato }}</option>
+          <option value="Trimestral">Trimestral</option>
+          <option value="Semestral">Semestral</option>
+          <option value="Anual">Anual</option>
+          <option value="Indefinido">Indefinido</option>
+      </select><br>
+
+      <label for="habilitarPago">Estado del Pago</label>
+      <select name="habilitarPago" id="habilitarPago" disabled>
+          <option value="{{ propietario.habilitarPago }}">{{ pago }}</option>
+          <option value="1">Pagado</option>
+          <option value="2">Debe</option>
+          <option value="3">No pago</option>
+          <option value="4">Indefinido</option>
+      </select><br>
+
+      <label for="obs">Observaciones</label>
+      <input type="text" name="obs" value="{{ propietario.obs }}" readonly><br>
+      <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
+  </form>
+
+{% endblock %}

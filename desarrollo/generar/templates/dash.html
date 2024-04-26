@@ -1,48 +1,20 @@
-{% load static %} <!-- Se carga la carpeta 'static' para cargar los estilos y animaciones. -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href='{% static "css/dash.css" %}' type="text/css"> <!-- Se implementa el archivo CSS -->
-    <script type="text/javascript"  src='{% static "js/dash.js" %}'></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+{% extends "barra_navegacion.html" %}
+{% load static %}
 
-    <title>Bienvenido</title>
-</head>
-<body>
-  <h2>Dashboard</h2>
-  <div class="containerr">
-    <nav>
-      <ul>
-      <br>
-        <li><p>Logo</p></li>
-        <li><a href="#">Inicio</a></li>
-        <li><a href="{% url 'inmu' %}">Inmuebles</a></li>
-        <li>
-          <select name="personas" id="personas" onchange="location.href=this.value;">
-            <option value="1">Personas</option>
-            <option value="{% url 'personas_propietarios' %}">Propietarios</option>
-            <option value="{% url 'personas_inquilinos' %}">Inquilinos</option>>
-          </select>
-        </li>
-        <li>
-          <select name="analisis" id="analisis" onchange="location.href=this.value;">
-            <option value="1">Analisis</option>
-            <option value="{% url 'analisis_propietarios' %}">Propietarios</option>
-            <option value="{% url 'analisis_inquilinos' %}">Inquilinos</option>
-          </select>
-        </li>
-        <li><a href="{% url 'tareas' %}">Tareas</a></li>
-        <br>
-        <li><a href="{% url 'close_session' %}">Cerrar Sesión</a></li>
-        <li><a href="{% url 'noti' %}">Notificaciones</a></li>
-        <li><p>Foto</p></li>
-      </ul>
-    </nav>
-  </div>
+{% block static %}
+  <link rel="stylesheet" href='{% static "css/dash.css" %}' type="text/css"> <!-- Se implementa el archivo CSS -->
+  <script type="text/javascript"  src='{% static "js/dash.js" %}'></script>
+{% endblock static %}
+
+{% block encabezado %}
+  Bienvenido
+{% endblock encabezado %}
+
+{% block title %}
+  Dashboard
+{% endblock title %}
+
+{% block contenido %}
   <ul>
     <h2>Inmuebles Totales</h2>
     <li><h3>{{ context.inmuebles }}</h3></li>
@@ -100,80 +72,79 @@
       </tr>
       {% endfor %}
   </tbody>
-</table>
+  </table>
 -------------------------------------------------------------------------------------------------- <br><br><!-- Fin de la tabla de propietarios -->
 
 
-<h4>Clientes/Arrendatarios</h4> <input type="search" id="buscar1" name="buscar1" placeholder="Buscar...">
+  <h4>Clientes/Arrendatarios</h4> <input type="search" id="buscar1" name="buscar1" placeholder="Buscar...">
 
-<table>
-  <thead>
+  <table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Telefono</th>
+            <th>Estado</th>
+            <th>Dirección</th>
+        </tr>
+    </thead>
+    <tbody id="inquilinos">
+      {% for arrendatario, direccionArrendatario, rango_arrendatarios, estadosArrendatario in arrendatarios %}
       <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Email</th>
-          <th>Telefono</th>
-          <th>Estado</th>
-          <th>Dirección</th>
+          <td>{{ forloop.counter}}</td>
+          <td>{{ arrendatario.nombre |add:" "|add:arrendatario.apellido}}</td>
+          <td>{{ arrendatario.email }}</td>
+          <td>{{ arrendatario.telefono }}</td>
+          <td>{{ estadosArrendatario }}</td>
+          <td>{{ direccionArrendatario }}</td>
       </tr>
-  </thead>
-  <tbody id="inquilinos">
-    {% for arrendatario, direccionArrendatario, rango_arrendatarios, estadosArrendatario in arrendatarios %}
-    <tr>
-        <td>{{ forloop.counter}}</td>
-        <td>{{ arrendatario.nombre |add:" "|add:arrendatario.apellido}}</td>
-        <td>{{ arrendatario.email }}</td>
-        <td>{{ arrendatario.telefono }}</td>
-        <td>{{ estadosArrendatario }}</td>
-        <td>{{ direccionArrendatario }}</td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+      {% endfor %}
+    </tbody>
+  </table>
 -------------------------------------------------------------------------------------------------------- <br><br><!-- Fin de la tabla de Arrendatarios -->
-<!-- Enlistar el resumen de los inmuebles tipo lista-->
-<h4>Inmuebles</h4> <input type="search" id="buscar2" name="buscar" placeholder="Buscar..."> <br>
-<table>
-  <thead>
-      <tr>
-          <th>ID</th>
-          <th>Propietario</th>
-          <th>Telefono</th>
-          <th>Dirección</th>
-          <th>Tipo</th>
-          <th>Estado</th>
-      </tr>
-  </thead>
-  <tbody id="inmuebles">
-    {% for inmueble, tipoInmueble, habilitada in inmuebles %}
-          <tr>
-            <td>{{ forloop.counter }}</td>
-            <td>{{ inmueble.propietario_id.usuarios_id.nombre |add:" "|add:inmueble.propietario_id.usuarios_id.apellido }}</td>
-            <td>{{ inmueble.propietario_id.usuarios_id.telefono }}</td>
-            <td>{{ inmueble.direccion }}</td>
-            <td>{{ tipoInmueble }}</td>
-            <td>{{ habilitada }}</td>
-          </tr>
-    {% endfor %}
-  </tbody>
+  <!-- Enlistar el resumen de los inmuebles tipo lista-->
+  <h4>Inmuebles</h4> <input type="search" id="buscar2" name="buscar" placeholder="Buscar..."> <br>
+  <table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Propietario</th>
+            <th>Telefono</th>
+            <th>Dirección</th>
+            <th>Tipo</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody id="inmuebles">
+      {% for inmueble, tipoInmueble, habilitada in inmuebles %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ inmueble.propietario_id.usuarios_id.nombre |add:" "|add:inmueble.propietario_id.usuarios_id.apellido }}</td>
+              <td>{{ inmueble.propietario_id.usuarios_id.telefono }}</td>
+              <td>{{ inmueble.direccion }}</td>
+              <td>{{ tipoInmueble }}</td>
+              <td>{{ habilitada }}</td>
+            </tr>
+      {% endfor %}
+    </tbody>
 
-<!-- Modal para tareas. -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Descripción de tarea</h5>
-        <button type="button" class="btn-close closeModal" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary closeModal" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary">Actualizar</button>
+  <!-- Modal para tareas. -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Descripción de tarea</h5>
+          <button type="button" class="btn-close closeModal" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary closeModal" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary">Actualizar</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-</body>
-</html>
+{% endblock %}

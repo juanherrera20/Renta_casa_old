@@ -1,87 +1,56 @@
+{% extends "barra_navegacion.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="text/javascript"  src='{% static "js/personas/personas_propietarios.js" %}'></script>
-    <link rel="stylesheet" href='{% static "css/personas/propietarios/personas_propietarios.css" %}' type="text/css">
-    <title>Propietarios</title>
-</head>
-<body>
-    <div class="containerr">
-      <nav>
-        <ul> <!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
-        <br>
-          <li><p>Logo</p></li>
-          <li><a href="{% url 'inicio' %}">Inicio</a></li>
-          <li><a href="{% url 'inmu' %}">Inmuebles</a></li>
-          <li>
-            <select name="personas" id="personas" onchange="location.href=this.value;">
-              <option value="1">Personas</option>
-              <option value="#">Propietarios</option>
-              <option value="{% url 'personas_inquilinos' %}">Inquilinos</option>>
-            </select>
-          </li>
-          <li>
-            <select name="analisis" id="analisis" onchange="location.href=this.value;">
-              <option value="1">Analisis</option>
-              <option value="{% url 'analisis_propietarios' %}">Propietarios</option>
-              <option value="{% url 'analisis_inquilinos' %}">Inquilinos</option>
-            </select>
-          </li>
-          <li><a href="{% url 'tareas' %}">Tareas</a></li>
-          <br>
-          <li><a href="{% url 'close_session' %}">Cerrar Sesión</a></li>
-          <li><a href="{% url 'noti' %}">Notificaciones</a></li>
-          <li><p>Foto</p></li>
-        </ul>
-      </nav>
-    </div>
-    <h2>Propietarios</h2>
-    <h3>Seguimiento de Propietarios</h3>
-    <h5>Todos los propietarios Registrados en la plataforma</h5>
-    <p>Total de propietarios: {{ contador }}</p> 
-    <input type="search" id="buscar" name="buscar" placeholder="Buscar..."> <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'addPropietario' %}"> + Añadir Propietario</a>
-    <br>
-    <p>Tabla donde se muestran a todos los propietarios.</p><br>
-    <table>
-      <thead>
-          <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>Tipo de documento</th>
-              <th>Documento</th>
-              <th>Email</th>
-              <th>Estado</th>
-              <th>telefono</th>
-          </tr>
-      </thead>
-      <tbody id="propietarios">
-        {% for usuario, estado, rango_ids in datosUsuario %}
+
+{% block static %}
+  <script type="text/javascript"  src='{% static "js/personas/personas_propietarios.js" %}'></script>
+  <link rel="stylesheet" href='{% static "css/personas/propietarios/personas_propietarios.css" %}' type="text/css">
+{% endblock static %}
+
+{% block encabezado %}
+  Propietarios
+{% endblock encabezado %}
+
+{% block title %}
+
+{% endblock title %}
+
+
+{% block contenido %}
+  <h3>Seguimiento de Propietarios</h3>
+  <h5>Todos los propietarios Registrados en la plataforma</h5>
+  <p>Total de propietarios: {{ contador }}</p> 
+  <input type="search" id="buscar" name="buscar" placeholder="Buscar..."> <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'addPropietario' %}"> + Añadir Propietario</a>
+  <br>
+  <p>Tabla donde se muestran a todos los propietarios.</p><br>
+  <table>
+    <thead>
         <tr>
-            
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ rango_ids }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.nombre }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.apellido }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.tipo_documento }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.documento }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ estado }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.telefono }}</button></td>
-        
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Tipo de documento</th>
+            <th>Documento</th>
+            <th>Email</th>
+            <th>Estado</th>
+            <th>telefono</th>
         </tr>
-        {% endfor %}
+    </thead>
+    <tbody id="propietarios">
+      {% for usuario, estado, rango_ids in datosUsuario %}
+      <tr>
+          
+        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ rango_ids }}</button></td>
+        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.nombre }}</button></td>
+        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.apellido }}</button></td>
+        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.tipo_documento }}</button></td>
+        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.documento }}</button></td>
+        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email }}</button></td>
+        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ estado }}</button></td>
+        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.telefono }}</button></td>
+      
+      </tr>
+      {% endfor %}
     </tbody>
   </table>
 
-  
-
-
-
-
-
-
-</body>
-</html>
+{% endblock %}
