@@ -22,6 +22,7 @@ from django.conf.urls.static import static
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
 from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino,  add_tarea, guardar_tarea, modal_ver_tarea
 from generar.views import individuo_propietario, individuo_inquilino,all_values, add_inmueble, guardar_inmueble, individuo_inmueble, actualizar_propietario, actualizar_inquilino
+from generar.views import actualizar_modal
 
 urlpatterns = [
 
@@ -44,6 +45,7 @@ urlpatterns = [
     #Ver modales de tareas y de dashboard
     path('Tareas/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
     path('Inicio/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
+    path('Tareas/Modal/Actualizado', actualizar_modal, name="actualizarModal"),
 
     path('Notificaciones/', noti, name="noti"),
     #Añadir propietarios.

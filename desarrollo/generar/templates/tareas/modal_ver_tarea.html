@@ -7,20 +7,44 @@
 </head>
 <body>
     <h2>Titulo:</h2>
-    <form action="">
+    <form action="{% url 'actualizarModal' %}"  id="form_modal" method="post">
         {% csrf_token %}
-        
+        <input type="hidden" name="idTarea" value="{{ objetoTarea.id }}">
         <input type="text" name="titulo" id="titulo" value="{{ objetoTarea.titulo }}">
-        <h4>{{ objetoTarea.estado }}</h4> <br><br><br>
+        <h4>{{ objetoTarea.estado }}</h4> <br><br><br><!-- Ponerle color depende del estado. -->
+
+        <h4>Fecha de inicio:</h4>
+        <input type="date" name="fechaInicio" id="fechaInicio">
+        <input type="hidden" name="inicioRes" id="inicioRes" value="{{ objetoTarea.fecha_inicio }}">
+        <br><br>
+        <h4>Fecha de fin:</h4>
+        <input type="date" name="fechaFin" id="fechaFin" value="{{ objetoTarea.descrip }}">
+        <input type="hidden" name="finRes" id="finRes" value="{{ objetoTarea.fecha_fin }}">
+        <br><br>
+
+        <h4>Hora:</h4>
+        <input type="time" name="hora_inicio" id="hora_inicio">
+        <input type="hidden" name="horaRes" id="horaRes" value="{{ objetoTarea.hora_inicio }}">
 
         <h4>Descripción:</h4>
         <input type="text" name="descrip" id="descrip" value="{{ objetoTarea.descrip }}">
+        <br><br>
+        <h4>Etiqueta:</h4>
+        <select name="etiqueta" id="etiqueta">
+            <option value="{{ objetoTarea.etiqueta }}">{{ objetoTarea.etiqueta }}</option>
+            <option value="Presentar">Presentar</option>
+            <option value="Visitar">Visitar</option>
+            <option value="Mantenimiento">Mantenimiento</option>
+            <option value="Urgente">Urgente</option>
+        </select>
         <br><br><br>
+
+
         <h4>Responsable:</h4>
         <select name="usuario">
-            <option value="{{ objetoTarea.superuser_id_id }}">Cambiar de responsable</option>
+            <option value="{{ objetoTarea.superuser_id_id }}">Cambiar a</option>
             {% for nombre, apellido, id in nombres_usuario %}
-            <option value="{{ idSuperuser }}">{{ nombre |add:" "|add:apellido }}</option>
+            <option value="{{ id }}">{{ nombre |add:" "|add:apellido }}</option>
             {% endfor %}
         </select><br>
     </form>

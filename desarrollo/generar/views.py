@@ -332,8 +332,63 @@ def modal_ver_tarea(request, id):
     apellido = superuser.objects.values_list('apellido', flat=True)
     idSuperuser = superuser.objects.values_list('id', flat=True)
     nombres_usuario = list(zip(nombre, apellido, idSuperuser))
-    print(objetoTarea.superuser_id_id)
     return render(request, template_path, {'nombres_usuario': nombres_usuario, 'objetoTarea': objetoTarea})
+
+def actualizar_modal(request):
+    id = request.POST.get('idTarea')
+    titulo = request.POST.get('titulo')
+    fechaInicio = request.POST.get('fechaInicio')
+    inicioRes = request.POST.get('inicioRes')
+
+
+
+
+    if fechaInicio:
+        fecha_inicio = fechaInicio
+    else:
+        date = datetime.strptime(inicioRes, "%B %d, %Y")
+        fecha_inicio = date.strftime("%Y-%m-%d")
+
+    fechaFin = request.POST.get('fechaFin')
+    finRes = request.POST.get('finRes')
+
+    if fechaFin:
+        fecha_fin = fechaFin
+    else:
+        date2 = datetime.strptime(finRes, "%B %d, %Y")
+        fecha_fin = date2.strftime("%Y-%m-%d")    
+
+    hora_inicio = request.POST.get('hora_inicio')
+    horaRes = request.POST.get('horaRes')
+
+    if hora_inicio:
+        hora = hora_inicio
+    else: 
+        hour = datetime.strptime(horaRes, "%I:%M %p")
+        hora = hour.strftime("%H:%M")
+    
+    
+    print(hora) 
+
+
+    
+    descrip = request.POST.get('descrip')
+    etiqueta = request.POST.get('etiqueta')
+    responsable = request.POST.get('usuario')
+
+    guardarT = tareas.objects.get(id=id)
+    guardarT.titulo = titulo
+    guardarT.descrip = descrip
+    guardarT.fecha_inicio = fecha_inicio
+    guardarT.fecha_fin = fecha_fin
+    guardarT.etiqueta = etiqueta
+
+    guardarT.superuser_id_id = responsable
+    guardarT.save()
+
+
+
+    return redirect('tareas')
 
 def noti(request):
     return render(request, 'noti.html')

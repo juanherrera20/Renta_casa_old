@@ -82,7 +82,7 @@ class tareas(models.Model):
     titulo = models.CharField(max_length=300)
     descrip = models.CharField(max_length = 400)
     estado = models.CharField(max_length = 100) #Saber si esta en pendiente, completada o incompleta
-    fecha_inicio = models.DateTimeField(auto_now_add=True)
+    fecha_inicio = models.DateField(auto_now_add=True)
     fecha_fin = models.DateField(max_length = 20)
     etiqueta = models.CharField(max_length = 100)
     hora_inicio = models.TimeField()
