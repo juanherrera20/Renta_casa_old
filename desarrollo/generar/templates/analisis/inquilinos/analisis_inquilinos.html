@@ -1,80 +1,57 @@
+{% extends "barra_navegacion.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="text/javascript"  src='{% static "js/analisis/analisis_inquilinos.js" %}'></script>
-    <link rel="stylesheet" href='{% static "css/analisis/inquilinos/analisis_inquilinos.css" %}' type="text/css">
-    <title>Analisis</title>
-</head>
-<body>
-    <h2>Analisis - Inquilinos</h2>
-    <div class="containerr">
-      <nav>
-        <ul> <!-- Este estilo se debe poner luego en el CSS. Estilo temporal para mejor visualidad -->
-        <br>
-          <li><p>Logo</p></li>
-          <li><a href="{% url 'inicio' %}">Inicio</a></li>
-          <li><a href="{% url 'inmu' %}">Inmuebles</a></li>
-          <li>
-            <select name="personas" id="personas" onchange="location.href=this.value;">
-              <option value="1">Personas</option>
-              <option value="{% url 'personas_propietarios' %}">Propietarios</option>
-              <option value="{% url 'personas_inquilinos' %}">Inquilinos</option>>
-            </select>
-          </li>
-          <li>
-            <select name="analisis" id="analisis" onchange="location.href=this.value;">
-              <option value="1">Analisis</option>
-              <option value="{% url 'analisis_propietarios' %}">Propietarios</option>
-              <option value="#">Inquilinos</option>
-            </select>
-          </li>
-          <li><a href="{% url 'tareas' %}">Tareas</a></li>
-          <br>
-          <li><a href="{% url 'close_session' %}">Cerrar Sesión</a></li>
-          <li><a href="{% url 'noti' %}">Notificaciones</a></li>
-          <li><p>Foto</p></li>
-        </ul>
-      </nav>
-    </div>
-    <h2>Inquilinos</h2>
-    <h3>Seguimiento de los inquilinos</h3>
-    <h5>Estado de los inquilinos activos en la plataforma con respecto al pago mensual de la cuota del arrendamiento</h5>
-    <p>Total de Inquilinos: {{ contador }}</p> 
-    <input type="search" id="buscar" name="buscar" placeholder="Buscar..."> <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'AddInquilinos' %}"> + Añadir Inquilino</a>
-    <br>
-    <p>Tabla donde se muestran a todos los Inquilinos.</p>
-    <table>
-      <thead>
-          <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Dirección</th>
-              <th>Fecha de pago</th>
-              <th>Telefono</th>
-              <th>Valor de Pago</th>
-              <th>Estado</th>
-              <th>Email</th>
-          </tr>
-      </thead>
-      <tbody id="inquilinos">
-        {% for usuario, direccion, rango_ids, fechaPago, valorPago, estados in datosUsuario %}
-        <tr>
-            <td>{{ forloop.counter}}</td>
-            <td>{{ usuario.nombre |add:" "|add:usuario.apellido}}</td>
-            <td>{{ direccion }}</td>
-            <td>{{ fechaPago }}</td>
-            <td>{{ usuario.telefono }}</td>
-            <td>{{ valorPago }}</td>
-            <td>{{ estados }}</td>
-            <td>{{ usuario.email }}</td>
 
+{% block static %}
+  <script type="text/javascript"  src='{% static "js/analisis/analisis_inquilinos.js" %}'></script>
+  <link rel="stylesheet" href='{% static "css/analisis/inquilinos/analisis_inquilinos.css" %}' type="text/css">
+{% endblock static %}
+
+{% block encabezado %}
+  Analisis
+{% endblock encabezado %}
+
+{% block title %}
+  Analisis - Inquilinos
+{% endblock title %}
+
+{% block contenido %}
+  <h2>Inquilinos</h2>
+  <h3>Seguimiento de los inquilinos</h3>
+  <h5>Estado de los inquilinos activos en la plataforma con respecto al pago mensual de la cuota del arrendamiento</h5>
+  <p>Total de Inquilinos: {{ contador }}</p> 
+  <input type="search" id="buscar" name="buscar" placeholder="Buscar..."> <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'AddInquilinos' %}"> + Añadir Inquilino</a>
+  <br>
+  <p>Tabla donde se muestran a todos los Inquilinos.</p>
+  <table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Fecha de pago</th>
+            <th>Telefono</th>
+            <th>Valor de Pago</th>
+            <th>Estado</th>
+            <th>Email</th>
         </tr>
-        {% endfor %}
+    </thead>
+    <tbody id="inquilinos">
+      {% for usuario, direccion, rango_ids, fechaPago, valorPago, estados in datosUsuario %}
+      <tr>
+          <td>{{ forloop.counter}}</td>
+          <td>{{ usuario.nombre |add:" "|add:usuario.apellido}}</td>
+          <td>{{ direccion }}</td>
+          <td>{{ fechaPago }}</td>
+          <td>{{ usuario.telefono }}</td>
+          <td>{{ valorPago }}</td>
+          <td>{{ estados }}</td>
+          <td>{{ usuario.email }}</td>
+
+      </tr>
+      {% endfor %}
     </tbody>
   </table> <br><br><br>
 
-</body>
-</html>
+{% endblock %}
+
+

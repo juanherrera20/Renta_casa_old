@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, documentos
 from werkzeug.security import generate_password_hash, check_password_hash
 from django.db.models import F 
+from django.contrib.auth import logout, login #Inicio y fin de sesión
 
 
 #Librerias y paquetes posbilemente utiles
@@ -84,6 +85,8 @@ def index(request):
         if user is not None:
             # Verifico si la contraseña coincide con la almacenada en la base de datos
             if check_password_hash(user.password, password_form): #Permite autenticar la contraseña del usuario encontrado
+                # login(request, user) 
+                # if request.method == 'POST':
                 return redirect('dash')
             else:
                 return render(request, 'index.html', {"error": "Contraseña incorrecta"})
@@ -94,7 +97,8 @@ def index(request):
 
     
 def close(request):
-    return redirect(request,'index')
+    logout(request)  # Cierra la sesión del usuario actual
+    return redirect('index')  # Redirige a la página de inicio de sesión
 
 def register(request):
     if request.method == 'POST':
