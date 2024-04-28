@@ -341,12 +341,9 @@ def modal_ver_tarea(request, id):
 def actualizar_modal(request):
     id = request.POST.get('idTarea')
     titulo = request.POST.get('titulo')
+
     fechaInicio = request.POST.get('fechaInicio')
     inicioRes = request.POST.get('inicioRes')
-
-
-
-
     if fechaInicio:
         fecha_inicio = fechaInicio
     else:
@@ -355,7 +352,6 @@ def actualizar_modal(request):
 
     fechaFin = request.POST.get('fechaFin')
     finRes = request.POST.get('finRes')
-
     if fechaFin:
         fecha_fin = fechaFin
     else:
@@ -364,17 +360,12 @@ def actualizar_modal(request):
 
     hora_inicio = request.POST.get('hora_inicio')
     horaRes = request.POST.get('horaRes')
-
     if hora_inicio:
         hora = hora_inicio
     else: 
+        horaRes = horaRes.strip()
         hour = datetime.strptime(horaRes, "%I:%M %p")
         hora = hour.strftime("%H:%M")
-    
-    
-    print(hora) 
-
-
     
     descrip = request.POST.get('descrip')
     etiqueta = request.POST.get('etiqueta')
@@ -385,12 +376,10 @@ def actualizar_modal(request):
     guardarT.descrip = descrip
     guardarT.fecha_inicio = fecha_inicio
     guardarT.fecha_fin = fecha_fin
+    guardarT.hora_inicio = hora
     guardarT.etiqueta = etiqueta
-
     guardarT.superuser_id_id = responsable
     guardarT.save()
-
-
 
     return redirect('tareas')
 
@@ -604,8 +593,14 @@ def individuo_inmueble(request, id):
     objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
     habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
     All = list(zip(objetoInmuebles, objetoDoc, tipoInmueble, habilitada))
+    objetoArrendatario = usuarios.objects.filter(propie_client=2)
+    return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario})
+
+def actualizar_inmueble(request):
+    #Recordar en el tipo de inmueble, invertir el valor que tenga por determinado, utilizando un diccionario inverso.
     
-    return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All})
+    return redirect('inmu')
+
 
 def all_values(request, id):
     ObjetoUsuario = usuarios.objects.filter( id = id ).first()

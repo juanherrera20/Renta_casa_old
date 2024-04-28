@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block static %}
-  <script type="text/javascript"  src='{% static "js/personas/personas_propietarios.js" %}'></script>
+  <script type="text/javascript"  src='{% static "js/inmuebles/individuo_inmueble.js" %}'></script>
   <link rel="stylesheet" href='{% static "css/inmuebles/individuo_inmueble.css" %}' type="text/css">
 {% endblock static %}
 
@@ -16,31 +16,62 @@
 {% block contenido %}
   {% for inmueble, doc, tipo, habilitada in inmueble %}
     <h2>Propietario del inmueble: {{ inmueble.propietario_id.usuarios_id.nombre }} {{ inmueble.propietario_id.usuarios_id.apellido }}</h2>
-    <form action="">
-      <button type="">Edit</button><br><br>
+    <button type="button" id="btnEdit"name="btnEdit">Edit</button>
+    <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
+    <form action="{% url 'actualizarInmueble' %}" id="miFormulario">
       <label for="propietario_name">Nombre del Propietario</label>
       <input type="text" name="propietario_name" value="{{ inmueble.propietario_id.usuarios_id.nombre }}" readonly><br>
       <label for="propietario_apellido">Apellido del Propietario</label>
       <input type="text" name="propietario_name" value="{{ inmueble.propietario_id.usuarios_id.apellido }}" readonly><br>
+
+      <label for="addPropietario" id="pripietarioTitle" style="display:none;">Añadir o cambiar propietario:</label>
+      <select name="addPropietario" id="addPropietario" style="display:none;">
+          <option value="">Seleccionar al propietario</option>
+          {% for info in arrendatario %}
+          <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
+          {% endfor %}
+      </select>
+
+
       <label for="propietario_telefono">Telefono del Propietario</label>
-      <input type="text" name="propietario_telefono" value="{{ inmueble.propietario_id.usuarios_id.telefono }}" readonly><br>
+      <input type="number" name="propietario_telefono" value="{{ inmueble.propietario_id.usuarios_id.telefono }}" readonly><br>
       <label for="direccion">Dirección</label>
       <input type="text" name="direccion" value="{{ inmueble.direccion}}" readonly><br>
-      <label for="tipo">Tipo de inmueble</label>
-      <input type="text" name="tipo" value="{{ tipo }}" readonly><br>
+
+      <label for="tipo_inmueble">Tipo de Inmueble</label>
+        <select name="tipo_inmueble" id="tipo_inmueble" disabled>
+            <option value="{{ tipo }}">{{ tipo }}</option>
+            <option value="1">Casa</option>
+            <option value="2">Apartamento</option>
+            <option value="3">Local</option>
+            <option value="4">Aparta-estudio</option>
+        </select><br>
+
       <label for="arrendatario">Arrendatario: </label>
       {% if inmueble.arrendatario_id_id %}
       <input type="text" name="arrendatario" value="{{ inmueble.arrendatario_id.usuarios_id.nombre |add:' '|add:inmueble.arrendatario_id.usuarios_id.apellido }}" readonly><br>
       {% else %}
       <p>No tiene ningún arrendatario</p>
       {% endif %}
-
-      <label for="estado">Estado del inmueble</label>
+      
+      <label for="addArrendatario" id="arrendatarioTitle" style="display:none;">Añadir o cambiar arrendatario:</label>
+      <select name="addArrendatario" id="addArrendatario" style="display:none;">
+          <option value="">Seleccionar al arrendatario
+          </option>
+          <option value="">Aún no tiene arrendatario</option>
+          {% for info in arrendatario %}
+          <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
+          {% endfor %}
+      </select>
+      
+      <label for="estado">Estado del inmueble:</label>
       <input type="text" name="estado" value="{{ habilitada }}" readonly><br>
       <label for="ref">Ref</label>
       <input type="text" name="ref" value="{{ inmueble.ref }}" readonly><br>
       <label for="valor">Valor del inmueble</label>
-      <input type="text" name="valor" value="{{ inmueble.valor_seguro }}" readonly><br>
+      <input type="number" name="valor" value="{{ inmueble.valor_seguro }}" readonly><br>
+      <label for="descuento">Descuento del inmueble</label>
+      <input type="number" name="descuento" value="{{ doc.descuento }}" readonly><br>
       <label for="decrip">Descripción</label>
       <input type="text" name="decrip" value="{{ inmueble.descripcion }}" readonly><br>
       <label for="documento">Documentos: </label>
@@ -49,13 +80,15 @@
       {% else %}
       <p>No hay documentos relacionados</p>
       {% endif %}
+      <input type="file" name="documentoRes" id="documentoInput" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" style="display:none;"><!-- CSS -->
       <label for="imagen">Imagen: </label>
       {% if doc.imagen %}
       <br><img src="{{ doc.imagen.url }}" name="imagen" width="200" height="200"><br>
       {% else %}
       <p>Este inmueble no tiene imagenes asociadas</p>
       {% endif %}
-    
+      <input type="file" name="imagenRes" id="imagenInput" accept="image/*" style="display:none;"> <!-- CSS -->
+      <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
     </form>
   {% endfor %}
 

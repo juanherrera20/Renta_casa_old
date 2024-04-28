@@ -74,6 +74,12 @@
             openModalWithContent(tareaId);
         });
     });
+    document.getElementById('exampleModal').addEventListener('click', function(event) {
+        if (event.target.classList.contains('actualizarM') && event.target.textContent === 'Actualizar') {
+          // Submit the form programmatically if clicked
+          document.getElementById('form_modal').submit();
+        }
+      });
 });
 
 

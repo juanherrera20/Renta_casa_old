@@ -10,21 +10,21 @@
     <form action="{% url 'actualizarModal' %}"  id="form_modal" method="post">
         {% csrf_token %}
         <input type="hidden" name="idTarea" value="{{ objetoTarea.id }}">
-        <input type="text" name="titulo" id="titulo" value="{{ objetoTarea.titulo }}">
+        <input type="text" name="titulo" id="titulo" value="{{ objetoTarea.titulo }}"><br>
         <h4>{{ objetoTarea.estado }}</h4> <br><br><br><!-- Ponerle color depende del estado. -->
 
-        <h4>Fecha de inicio:</h4>
+        <h4>Fecha de inicio:</h4> <br>
         <input type="date" name="fechaInicio" id="fechaInicio">
-        <input type="hidden" name="inicioRes" id="inicioRes" value="{{ objetoTarea.fecha_inicio }}">
+        <input type="hidden" name="inicioRes" id="inicioRes" value="{{ objetoTarea.fecha_inicio }}"> <input type="datetime" name="inicioRes2" id="inicioRes2" value="{{ objetoTarea.fecha_inicio }}" readonly>
         <br><br>
-        <h4>Fecha de fin:</h4>
-        <input type="date" name="fechaFin" id="fechaFin" value="{{ objetoTarea.descrip }}">
-        <input type="hidden" name="finRes" id="finRes" value="{{ objetoTarea.fecha_fin }}">
+        <h4>Fecha de fin:</h4><br>
+        <input type="date" name="fechaFin" id="fechaFin"> 
+        <input type="hidden" name="finRes" id="finRes" value="{{ objetoTarea.fecha_fin }}"> <input type="datetime" name="finRes2" id="finRes2" value="{{ objetoTarea.fecha_fin }}" readonly>
         <br><br>
 
-        <h4>Hora:</h4>
+        <h4>Hora:</h4><br>
         <input type="time" name="hora_inicio" id="hora_inicio">
-        <input type="hidden" name="horaRes" id="horaRes" value="{{ objetoTarea.hora_inicio }}">
+        <input type="hidden" name="horaRes" id="horaRes" value="{{ objetoTarea.hora_inicio }}"> <input type="datetime" name="horaRes2" id="horaRes2" value="{{ objetoTarea.hora_inicio }}" readonly><br><br>
 
         <h4>Descripción:</h4>
         <input type="text" name="descrip" id="descrip" value="{{ objetoTarea.descrip }}">
