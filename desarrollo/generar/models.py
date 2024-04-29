@@ -12,7 +12,6 @@ class superuser(models.Model): #Tabla usuarios
     telefono = models.CharField(max_length = 50)
     email = models.EmailField(max_length = 100)
     habilitar = models.IntegerField(default=1) #Saber si un usuario está habilitado o no (declarar super usuario)
-    urls = []
     
     class Meta:
         db_table = 'superuser' #Se le agrega el nombre que tendrá la tabla
@@ -23,8 +22,13 @@ class usuarios(models.Model): #Tabla usuarios
     apellido = models.CharField(max_length = 100)
     tipo_documento = models.CharField(max_length = 100)
     documento = models.CharField(max_length = 50)
+    expedida = models.CharField(max_length =100)
     email = models.EmailField(max_length = 100)
+    email2 = models.EmailField(max_length = 100)
+    email3 = models.EmailField(max_length = 100)
     telefono = models.CharField(max_length = 50)
+    telefono2 = models.CharField(max_length = 50)
+    telefono3 = models.CharField(max_length = 50)
     habilitar = models.IntegerField(default=1)
     propie_client = models.IntegerField() 
     
@@ -37,10 +41,11 @@ class arrendatario(models.Model): #Tabla usuarios
     propiedad_id = models.ForeignKey('inmueble', on_delete=models.PROTECT)
     direccion = models.CharField(max_length = 200)
     valor_cobro = models.IntegerField()
-    fecha_cobro = models.DateField(max_length = 20)
+    fecha_inicio_cobro = models.DateField(max_length = 20)
+    fecha_fin_cobro = models.DateField(max_length = 20)
     inicio_contrato = models.DateField(max_length = 20)
     fin_contrato = models.DateField(max_length = 20)
-    tipo_contrato = models.CharField(max_length = 100)
+    tipo_contrato = models.CharField(max_length = 100) #Se puede hacer la alarma mediante este campo.
     habilitarPago = models.IntegerField(default=2) 
     obs = models.CharField(max_length = 400) 
     
@@ -52,12 +57,10 @@ class propietario(models.Model): #Tabla usuarios
     usuarios_id = models.ForeignKey('usuarios', on_delete=models.PROTECT) #Declaracion de FK
     propiedad_id = models.ForeignKey('inmueble', on_delete=models.PROTECT)
     direccion = models.CharField(max_length = 200)
-    valor_pago = models.IntegerField()
     fecha_pago = models.DateField(max_length = 20)
-    tipo_contrato = models.CharField(max_length = 100)
     habilitarPago = models.IntegerField(default=2)
-    obs = models.CharField(max_length = 400) 
-    urls = []
+    bancos = models.CharField(max_length = 200)
+    obs = models.CharField(max_length = 400)
     
     class Meta:
         db_table = 'propietario'
@@ -68,10 +71,13 @@ class inmueble(models.Model): #Tabla usuarios
     arrendatario_id = models.ForeignKey('arrendatario', on_delete=models.PROTECT)
     ref = models.CharField(max_length = 10) #referencia unica que se pueda mostrar al usuario
     tipo = models.IntegerField() #Si es casa, edificio, local...
-    valor_seguro = models.IntegerField()
+    valor = models.IntegerField()
+    porcentaje = models.IntegerField()
+    servicios = models.CharField(max_length =200)
+    direccion = models.CharField(max_length =300)
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no.
-    direccion = models.CharField(max_length =300)
+    
     class Meta:
         db_table = 'inmueble'
 
@@ -96,7 +102,7 @@ class documentos(models.Model): #Tabla usuarios
     pdf = models.FileField(upload_to="pdf/") #Crea una carpeta para guardar los pdf's y tener mejor accebilidad
     imagen = models.ImageField(upload_to="images/")
     descuento = models.IntegerField() #Descuento que se descuenta al propietario
-    urls = []
-    
     class Meta:
         db_table = 'documentos'
+
+#Revisar el tema de documentos e imagenes - con columnas independientes o relacionado.

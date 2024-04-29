@@ -16,12 +16,6 @@ from django.contrib.auth import logout, login #Inicio y fin de sesión
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #Creación de diccionarios que se van a utilizar en la app.
-diccionarioTipo = { #Mapeo para el tipo de Identificación
-            '1': 'Cedula',
-            '2': 'Pasaporte',
-            '3': 'Tarjeta de Identidad'
-        }
-
 diccionarioContrato = { #Mapeo para guardar el tipo de contrato
             '1': 'Trimestral',
             '2': 'Semestral',
@@ -49,7 +43,7 @@ diccionarioHabilitar ={
     '3': 'Vacaciones',
     '4': 'Indefinido', 
 }
-diccionarioPago ={
+diccionarioPago ={ #Va realcionado a tabla Propietarios - Campo habilitarPago
     '1': 'Pagado',
     '2': 'Debe',
     '3': 'No pago',
@@ -397,12 +391,16 @@ def guardar(request): #Función para guardar propietarios
         apellido = request.POST.get('apellido1', None)
         apellido2 = request.POST.get('apellido2', None)
         tipo = request.POST.get('tipo_documento', None)
-        tipoDocumento = diccionarioTipo[tipo]
         documento = request.POST.get('documento1', None)
+        expedida = request.POST.get('expedida', None)
         email = request.POST.get('email', None)
+        email2 = request.POST.get('email2', None)
+        email3 = request.POST.get('email3', None)
         telefono = request.POST.get('phone', None)
+        telefono2 = request.POST.get('phone2', None)
+        telefono3 = request.POST.get('phone3', None)
         propieta = request.POST.get('propie_client', None)
-        model = usuarios(nombre = name + " " + name2, apellido = apellido +" "+ apellido2, tipo_documento = tipoDocumento, documento = documento,email = email, telefono = telefono, propie_client = propieta)
+        model = usuarios(nombre = name + " " + name2, apellido = apellido +" "+ apellido2, tipo_documento = tipo, documento = documento,expedida = expedida,email = email,email2 = email2,email3 = email3, telefono = telefono, telefono2 = telefono2,telefono3 = telefono3, propie_client = propieta)
         model.save()
 
     """ Hasta aquí son los datos de usuarios en general. """
@@ -411,16 +409,12 @@ def guardar(request): #Función para guardar propietarios
     usuarios_id = objeto.id # id del último registro guardado en la dB
     if request.method == "POST": 
         direc = request.POST.get('direc', None)
-        valor_pagar = request.POST.get('valor_pagar', None)
         fecha_pagar = request.POST.get('fecha_pagar', None)
-        tipo_contrato = request.POST.get('tipo_contrato', None)
-        tipoContrato = diccionarioContrato[tipo_contrato]
+        tipo_banco = request.POST.get('tipo_banco', None)
+        #Aca se supone que se debe guardar el documento...
         observ = request.POST.get('obs', None)
-        modelo = propietario(direccion = direc, valor_pago = valor_pagar, fecha_pago = fecha_pagar, tipo_contrato = tipoContrato, obs = observ, usuarios_id_id = usuarios_id)
+        modelo = propietario(direccion = direc, fecha_pago = fecha_pagar, bancos = tipo_banco, obs = observ, usuarios_id_id = usuarios_id)
         modelo.save()
-    print("modelo usuario y propietario, se guardan con éxito!")
-    
-
     return redirect('personas_propietarios')
     #Funciones para añadir inquilinos
 
