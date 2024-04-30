@@ -38,7 +38,7 @@
             <option value="3">Local</option>
         </select><br>
 
-        <a href="">+ Crear Inmueble</a>
+        <a href="{% url 'addInmu' %}">+ Crear Inmueble</a>
 
         <h3>Información general</h3>
         
@@ -54,22 +54,36 @@
         <label for="apellido2">Segundo Apellido *</label>
         <input type="text" name="apellido2" id="apellido2" placeholder="Escribir" required><br>
 
-
         <label for="tipo_documento">Tipo de Documento *</label>
         <select name="tipo_documento" id="tipo_documento" required>
             <option value="">Seleccione el tipo de documento</option>
-            <option value="1">Cedula de Ciudadania</option>
-            <option value="2">Pasaporte</option>
+            <option value="Cedula">Cedula de Ciudadania</option>
+            <option value="Pasaporte">Pasaporte</option>
         </select><br>
 
         <label for="documento1">Documento *</label>
         <input type="number" name="documento1" id="documento1" placeholder="10002545785" required><br>
 
+        <label for="expedida">Expedida en *</label>
+        <input type="text" name="expedida" id="expedida" placeholder="Ciudad" required><br>
+
         <label for="email">Correo Electronico *</label>
         <input type="email" name="email" id="email" placeholder="Persona de contacto" required><br>
 
+        <label for="email2">Correo Electronico 2 *</label>
+        <input type="email" name="email2" id="email2" placeholder="Persona de contacto"><br>
+
+        <label for="email3">Correo Electronico 3 *</label>
+        <input type="email" name="email3" id="email3" placeholder="Persona de contacto"><br>
+
         <label for="phone">Telefono *</label>
         <input type="number" name="phone" id="phone" placeholder="3333333335" required><br>
+
+        <label for="phone2">Telefono 2 *</label>
+        <input type="number" name="phone2" id="phone2" placeholder="3333333335"><br>
+
+        <label for="phone3">Telefono 3 *</label>
+        <input type="number" name="phone3" id="phone3" placeholder="3333333335"><br>
 
         <input type="hidden" name="propie_client" id="propie_client" value="2" ><br><br>
 
@@ -81,8 +95,8 @@
         <label for="valor_cobrar">Valor a Cobrar *</label>
         <input type="number" name="valor_cobrar" id="valor_cobrar" placeholder="$$$$$" required><br>
 
-        <label for="fecha_cobro">Fecha del Cobro *</label>
-        <input type="date" name="fecha_cobro" id="fecha_cobro" placeholder="dd/mm/YYYY" required><br>
+        <label for="inicio_cobro">Fecha del Cobro *</label>
+        <input type="date" name="inicio_cobro" id="inicio_cobro" placeholder="dd/mm/YYYY" required><br>
 
         <label for="inicioContrato">inicio del Contrato *</label>
         <input type="date" name="inicioContrato" id="inicioContrato" placeholder="Escribir" required><br>
@@ -90,14 +104,13 @@
         <label for="finContrato">Fin del Contrato *</label>
         <input type="date" name="finContrato" id="finContrato" placeholder="Escribir" required><br>
 
-
         <label for="tipo_contrato">Tipo de contrato *</label>
         <select name="tipo_contrato" id="tipo_contrato" required>
             <option value="">Seleccione el tipo de contrato</option>
-            <option value="1">Trimestral</option>
-            <option value="2">Semestral</option>
-            <option value="3">Anual</option>
-            <option value="4">Indefinido</option>
+            <option value="Trimestral">Trimestral</option>
+            <option value="Semestral">Semestral</option>
+            <option value="Anual">Anual</option>
+            <option value="Indefinido">Indefinido</option>
         </select><br>
 
         <label for="obs">Espacio para Observaciones</label>
@@ -106,7 +119,6 @@
         <label for="documento">Documentación</label>
         <input type="file" name="documento" id="documento"><br>
 
-        <p>Toca revisar el espacio para arrastrar los archivos.</p>
         <button type="submit" name="add" id="add" value="1">Guardar</button>
     </form>
     <button  name="borrar" id="borrar" value="2" onclick="resetForm()">Eliminar</button> <label for="cancelar">Eliminar, limpiara todos los campos</label><br><br><br> <!-- Se debe aplicar JS para limpiar los campos del Form -->

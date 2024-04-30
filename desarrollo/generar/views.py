@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.db.models import Max
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, documentos
@@ -87,9 +87,6 @@ def index(request):
         else:
             return render(request, 'index.html', {"error": "Usuario no encontrado en la base de datos"})
 
-
-
-    
 def close(request):
     logout(request)  # Cierra la sesión del usuario actual
     return redirect('index')  # Redirige a la página de inicio de sesión
@@ -118,7 +115,7 @@ def register(request):
     else:
         # Renderizar el formulario vacío cuando la solicitud es GET
         return render(request, 'register.html')
-      
+#-------------------------------------------------------------------------Logica del Dashboard------------------------------------------------------------------------------------------------s
 def dash(request):
     objetoPropietario = usuarios.objects.filter(propie_client=1) #Propietarios
     num_propietarios = objetoPropietario.count()
@@ -127,7 +124,6 @@ def dash(request):
     objetoArrendatario = usuarios.objects.filter(propie_client=2) #Clientes
     num_arrendatario = objetoArrendatario.count()
     rango_arrendatarios = list(range(1, num_arrendatario + 1))
-
 
     objetoInmueble = inmueble.objects.all()
     num_inmueble = objetoInmueble.count()
@@ -168,7 +164,8 @@ def dash(request):
 
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
 
-def inmu(request):
+#------------------------------------------------------------------------------Funciones para inmuebles-----------------------------------------------------------------------------
+def inmu(request): #Visualizar los inmuebles (Tabla)
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').all()
 
     objetoTipo = inmueble.objects.values_list('tipo', flat=True)
@@ -180,7 +177,7 @@ def inmu(request):
 
     return render(request, 'inmuebles/inmueble.html', {'inmuebles': All})
 
-def add_inmueble(request):
+def add_inmueble(request): #ayuda a la Vista para añadir inmueble
     objetoPropietario = usuarios.objects.filter(propie_client=1)
     objetoArrendatario = usuarios.objects.filter(propie_client=2)
     propietarios_info = []
@@ -202,7 +199,7 @@ def add_inmueble(request):
                 'nombre_completo': f"{arrendatario.nombre} {arrendatario.apellido}"
             })
     return render(request, 'inmuebles/add_inmueble.html', {'propietarios': objetoPropietario, 'arrendatarios':objetoArrendatario, 'propietarios_info': propietarios_info, 'arrendatarios_info': arrendatarios_info})
-def guardar_inmueble(request):
+def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
       if request.method == "POST":
         id_propietario = request.POST.get('propietario', None)
         direc = request.POST.get('direccion', None)
@@ -231,160 +228,43 @@ def guardar_inmueble(request):
         model1.save()
       return redirect('inmu')
 
-def personas_propietarios(request):
-    #Logica para la tabla de propietarios-Personas
+def individuo_inmueble(request, id):
+    objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(id = id)
+    objetoDoc = documentos.objects.filter(propiedad_id_id = id)
+    
+    objetoTipo = inmueble.objects.values_list('tipo', flat=True)
+    tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
+
+    objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
+    habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
+    All = list(zip(objetoInmuebles, objetoDoc, tipoInmueble, habilitada))
+    objetoArrendatario = usuarios.objects.filter(propie_client=2)
+    return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario})
+
+def actualizar_inmueble(request):
+    #Recordar en el tipo de inmueble, invertir el valor que tenga por determinado, utilizando un diccionario inverso.
+    
+    return redirect('inmu')
+
+
+#----------------------------------------------------------------Logica para Propietarios----------------------------------------------------------
+
+def personas_propietarios(request): #Tabla en vista de personas propietarios
     objetoUsuario = usuarios.objects.filter(propie_client=1) #Se filtra para saber si son propietarios o clientes
-    num_usuarios = objetoUsuario.count()
-    rango_ids = range(1, num_usuarios + 1)
     habilitar = usuarios.objects.filter(propie_client=1).values_list('habilitar', flat=True) #Se filtra solo el campo de 'habilitar'
     estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diciconarioHabilitar
-    usuarios_con_estados = list(zip(objetoUsuario, estados, rango_ids)) # Se implementan las dos listas en 1, así Django las puede iterar sin problemas en el HTML
-    return render(request, 'personas/propietarios/personas_propietarios.html',{'datosUsuario':usuarios_con_estados, 'contador':num_usuarios})
-
-
-def personas_inquilinos(request):
-    #Logica para la tabla de Inquilinos-Personas
-    objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
-    num_usuarios = objetoUsuario.count()
-    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
-    habilitar = usuarios.objects.filter(propie_client=2).values_list('habilitar', flat=True) # Se filtra solo el campo de 'habilitar'
-    estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diccionarioHabilitar
+    
     usuarios_con_estados = []
     for usuario, estado in zip(objetoUsuario, estados): #Enpaquetando variables para que quede en una sola y poder iteraralas
-        direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
-        valorCobro = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
-        usuarios_con_estados.append((usuario, estado, direccion, rango_ids, valorCobro))
-    return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
-
-def analisis_propietarios(request):
-    #Logica para la tabla de propietarios
-    objetoUsuario = usuarios.objects.filter(propie_client=1) # Se filtra para saber si son propietarios o clientes
-    num_usuarios = objetoUsuario.count()
-    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
-    usuarios_con_estados = []
-    for usuario in objetoUsuario:
-        direccion = usuario.propietario_set.first().direccion if usuario.propietario_set.exists() else None
-        fechaPago = usuario.propietario_set.first().fecha_pago if usuario.propietario_set.exists() else None
-        valorPago = usuario.propietario_set.first().valor_pago if usuario.propietario_set.exists() else None
-        estadosDiccionario = usuario.propietario_set.first().habilitarPago if usuario.propietario_set.exists() else None
-        estados = diccionarioPago[str(estadosDiccionario)]
-        usuarios_con_estados.append((usuario, direccion, rango_ids, fechaPago, valorPago, estados))
-    return render(request, 'analisis/propietarios/analisis_propietarios.html',{'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
-
-
-def analisis_inquilinos(request):
-    #Logica para la tabla de Inquilinos
-    objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
-    num_usuarios = objetoUsuario.count()
-    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
-    usuarios_con_estados = []
-    for usuario in objetoUsuario:
-        direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
-        fechaPago = usuario.arrendatario_set.first().fecha_cobro if usuario.arrendatario_set.exists() else None
-        valorPago = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
-        estadosDiccionario = usuario.arrendatario_set.first().habilitarPago if usuario.arrendatario_set.exists() else None
-        estados = diccionarioPago[str(estadosDiccionario)]
-        usuarios_con_estados.append((usuario, direccion, rango_ids, fechaPago, valorPago, estados))
-    return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
-
-def tarea(request):
-    tareas_completas = tareas.objects.filter(estado='Completa').select_related('superuser_id')#Filtrar tareas Completas
-    tareas_incompletas = tareas.objects.filter(estado='Incompleta').select_related('superuser_id')#Filtrar tareas incompletas
-    tareas_pendientes = tareas.objects.filter(estado='Pendiente').select_related('superuser_id')#Filtrar tareas pendientes
-
-    contexto = { #Con el contexto se pueden pasar QuerySet's independientes
-        'completas': tareas_completas,
-        'incompletas': tareas_incompletas,
-        'pendientes': tareas_pendientes,
-    }
-
-    return render(request, 'tareas/dash_tareas.html',{'context': contexto})    
-
-def add_tarea(request):
-    id = superuser.objects.values_list('id', flat=True)
-    nombre = superuser.objects.values_list('nombre', flat=True)
-    apellido = superuser.objects.values_list('apellido', flat=True)
-    nombres_usuario = list(zip(nombre, apellido, id))
-    return render(request, 'tareas/add_tarea.html',{'nombres_usuario': nombres_usuario})
-
-def guardar_tarea(request):
-    if request.method == "POST":        
-        titulo = request.POST.get('titulo', None)
-        descrip = request.POST.get('descrip', None)
-        tipo_estado = request.POST.get('estado', None)
-        tipoEstado = diccionarioTareaEstado[tipo_estado]
-        fecha_fin = request.POST.get('fecha_fin', None)
-        tipo_etiqueta = request.POST.get('etiqueta', None)
-        tipoEtiqueta = diccionarioTareaEtiqueta[tipo_etiqueta]
-        hora_inicio = request.POST.get('hora_programada', None)
-        superUser=request.POST.get('usuario', None)
-        model = tareas(titulo = titulo, descrip =descrip, estado = tipoEstado, fecha_fin = fecha_fin, etiqueta = tipoEtiqueta, hora_inicio = hora_inicio, superuser_id_id = superUser)
-        model.save()
-
-    return redirect('tareas')
-
-def modal_ver_tarea(request, id):
-    template_path = 'tareas/modal_ver_tarea.html'
-    objetoTarea = tareas.objects.filter(id = id).first()
-    nombre = superuser.objects.values_list('nombre', flat=True)
-    apellido = superuser.objects.values_list('apellido', flat=True)
-    idSuperuser = superuser.objects.values_list('id', flat=True)
-    nombres_usuario = list(zip(nombre, apellido, idSuperuser))
-    return render(request, template_path, {'nombres_usuario': nombres_usuario, 'objetoTarea': objetoTarea})
-
-def actualizar_modal(request):
-    id = request.POST.get('idTarea')
-    titulo = request.POST.get('titulo')
-
-    fechaInicio = request.POST.get('fechaInicio')
-    inicioRes = request.POST.get('inicioRes')
-    if fechaInicio:
-        fecha_inicio = fechaInicio
-    else:
-        date = datetime.strptime(inicioRes, "%B %d, %Y")
-        fecha_inicio = date.strftime("%Y-%m-%d")
-
-    fechaFin = request.POST.get('fechaFin')
-    finRes = request.POST.get('finRes')
-    if fechaFin:
-        fecha_fin = fechaFin
-    else:
-        date2 = datetime.strptime(finRes, "%B %d, %Y")
-        fecha_fin = date2.strftime("%Y-%m-%d")    
-
-    hora_inicio = request.POST.get('hora_inicio')
-    horaRes = request.POST.get('horaRes')
-    if hora_inicio:
-        hora = hora_inicio
-    else: 
-        horaRes = horaRes.strip()
-        hour = datetime.strptime(horaRes, "%I:%M %p")
-        hora = hour.strftime("%H:%M")
+        banco = usuario.propietario_set.first().bancos if usuario.propietario_set.exists() else None
+        usuarios_con_estados.append((usuario, estado, banco))
     
-    descrip = request.POST.get('descrip')
-    etiqueta = request.POST.get('etiqueta')
-    responsable = request.POST.get('usuario')
+    return render(request, 'personas/propietarios/personas_propietarios.html',{'datosUsuario':usuarios_con_estados})
 
-    guardarT = tareas.objects.get(id=id)
-    guardarT.titulo = titulo
-    guardarT.descrip = descrip
-    guardarT.fecha_inicio = fecha_inicio
-    guardarT.fecha_fin = fecha_fin
-    guardarT.hora_inicio = hora
-    guardarT.etiqueta = etiqueta
-    guardarT.superuser_id_id = responsable
-    guardarT.save()
-
-    return redirect('tareas')
-
-def noti(request):
-    return render(request, 'noti.html')
-
-
-def add_propietario(request):
+def add_propietario(request): #Vista para añadir un propietario
     return render(request, 'personas/propietarios/add_propietario.html')
 
-def guardar(request): #Función para guardar propietarios
+def guardar(request): #Logica para guardar propietarios en dB
     if request.method == "POST":        
         name = request.POST.get('nombre1', None)
         name2 = request.POST.get('nombre2', None)
@@ -416,31 +296,39 @@ def guardar(request): #Función para guardar propietarios
         modelo = propietario(direccion = direc, fecha_pago = fecha_pagar, bancos = tipo_banco, obs = observ, usuarios_id_id = usuarios_id)
         modelo.save()
     return redirect('personas_propietarios')
-    #Funciones para añadir inquilinos
 
-def actualizar_propietario(request):
+def actualizar_propietario(request): #Actualizar propietario.
     idUsuario = request.POST.get('id')
     nombre = request.POST.get('nombre')
     apellido = request.POST.get('apellido')
     tipo_documento = request.POST.get('tipo_documento')
     documento = request.POST.get('documento')
+    expedida = request.POST.get('expedida')
     telefono = request.POST.get('telefono')
+    telefono2 = request.POST.get('telefono2')
+    telefono3 = request.POST.get('telefono3')
     email = request.POST.get('email')
+    email2 = request.POST.get('email2')
+    email3 = request.POST.get('email3')
     
     guardar = usuarios.objects.get(id=idUsuario)
     guardar.nombre = nombre
     guardar.apellido = apellido
     guardar.tipo_documento = tipo_documento
     guardar.documento = documento
+    guardar.expedida = expedida
     guardar.telefono = telefono
+    guardar.telefono2 = telefono2
+    guardar.telefono3 = telefono3
     guardar.email = email
+    guardar.email2 = email2
+    guardar.email3 = email3
     guardar.save()
 
     idPropietario = request.POST.get('idP')
     direccion = request.POST.get('direccion')
-    valor_pago = request.POST.get('valor_pago')
-    respaldo_fecha = request.POST.get('respaldo_fecha') 
     fecha_pago = request.POST.get('fecha_pago')
+    respaldo_fecha = request.POST.get('respaldo_fecha') 
 
     if fecha_pago:
         fechaPago = fecha_pago
@@ -448,22 +336,108 @@ def actualizar_propietario(request):
         date =  datetime.strptime(respaldo_fecha, "%B %d, %Y")
         fechaPago = date.strftime("%Y-%m-%d")
 
-    tipo_contrato= request.POST.get('tipo_contrato')
     habilitarPago = request.POST.get('habilitarPago')
     obs = request.POST.get('obs')
 
     guardar2 = propietario.objects.get(id=idPropietario)
     guardar2.direccion = direccion
-    guardar2.valor_pago = valor_pago
     guardar2.fecha_pago = fechaPago
-    guardar2.tipo_contrato = tipo_contrato
     guardar2.habilitarPago = habilitarPago
     guardar2.obs = obs
     guardar2.save()
 
     return redirect('personas_propietarios')
 
-def actualizar_inquilino(request):
+def individuo_propietario(request, id):
+    objetoPropietarios = propietario.objects.filter(usuarios_id_id = id).first()
+    pago = diccionarioPago[str(objetoPropietarios.habilitarPago)]
+    objetoUser = usuarios.objects.filter( id = objetoPropietarios.usuarios_id_id).first()
+    return render(request, 'personas/propietarios/individuo_propietario.html', {'usuario':objetoUser, 'propietario':objetoPropietarios, 'pago': pago})
+
+def analisis_propietarios(request):
+    #Logica para la tabla de propietarios
+    objetoUsuario = usuarios.objects.filter(propie_client=1) # Se filtra para saber si son propietarios o clientes
+    num_usuarios = objetoUsuario.count()
+    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
+    usuarios_con_estados = []
+    for usuario in objetoUsuario:
+        direccion = usuario.propietario_set.first().direccion if usuario.propietario_set.exists() else None
+        fechaPago = usuario.propietario_set.first().fecha_pago if usuario.propietario_set.exists() else None
+        valorPago = usuario.propietario_set.first().valor_pago if usuario.propietario_set.exists() else None
+        estadosDiccionario = usuario.propietario_set.first().habilitarPago if usuario.propietario_set.exists() else None
+        estados = diccionarioPago[str(estadosDiccionario)]
+        usuarios_con_estados.append((usuario, direccion, rango_ids, fechaPago, valorPago, estados))
+    return render(request, 'analisis/propietarios/analisis_propietarios.html',{'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
+
+
+#-------------------------------------------------------------------Logica para inquilinos/Arrendatarios----------------------------------------------------------------
+
+def personas_inquilinos(request): #Logica para la tabla de Inquilinos-Personas
+    objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
+    num_usuarios = objetoUsuario.count()
+    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
+    habilitar = usuarios.objects.filter(propie_client=2).values_list('habilitar', flat=True) # Se filtra solo el campo de 'habilitar'
+    estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diccionarioHabilitar
+    usuarios_con_estados = []
+    for usuario, estado in zip(objetoUsuario, estados): #Enpaquetando variables para que quede en una sola y poder iteraralas
+        direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
+        valorCobro = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
+        usuarios_con_estados.append((usuario, estado, direccion, rango_ids, valorCobro))
+    return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
+
+def add_inquilino(request): #Vista para añadir inquilinos
+    return render(request, 'personas/inquilinos/add_inquilino.html')
+
+def guardar_inquilino(request): #Función para guardar inquilinos
+    if request.method == "POST":
+        id_inmueble = request.POST.get('inmueble', None) #En este espacio debería de existir el id del inmueble al cual se le va a "asociar"
+        name = request.POST.get('nombre1', None)
+        name2 = request.POST.get('nombre2', None)
+        apellido = request.POST.get('apellido1', None)
+        apellido2 = request.POST.get('apellido2', None)
+        tipo = request.POST.get('tipo_documento', None)
+        documento = request.POST.get('documento1', None)
+        expedida = request.POST.get('expedida', None)
+        email = request.POST.get('email', None)
+        email2 = request.POST.get('email2', None)
+        email3 = request.POST.get('email3', None)
+        telefono = request.POST.get('phone', None)
+        telefono2 = request.POST.get('phone2', None)
+        telefono3 = request.POST.get('phone3', None)
+        propieta = request.POST.get('propie_client', None)
+        model = usuarios(nombre = name + " " + name2, apellido = apellido +" "+ apellido2, tipo_documento = tipo, documento = documento,expedida = expedida,email = email,email2 = email2,email3 = email3, telefono = telefono, telefono2 = telefono2,telefono3 = telefono3, propie_client = propieta)
+        model.save()
+
+    """ Hasta aquí son los datos de usuarios en general. """
+    
+    objeto = usuarios.objects.last() #Guarda todo el objeto del último registro
+    usuarios_id = objeto.id # id del último registro guardado en la dB
+    if request.method == "POST": 
+        direc = request.POST.get('direc', None)
+        valor_cobrar = request.POST.get('valor_cobrar', None)
+        fecha_cobrar = request.POST.get('inicio_cobro', None)
+
+        #Logica para agregarle los 5 días de plazo para el pago.
+        fechaObjeto = datetime.strptime(fecha_cobrar, "%Y-%m-%d")
+        newDate = fechaObjeto + timedelta(days=5)
+        fecha_limite = newDate.strftime('%Y-%m-%d')
+
+        inicioContrato = request.POST.get('inicioContrato', None)
+        finalContrato = request.POST.get('finContrato', None)
+        tipo_contrato = request.POST.get('tipo_contrato', None)
+        observ = request.POST.get('obs', None)
+        modelo = arrendatario(direccion = direc, valor_cobro = valor_cobrar, fecha_inicio_cobro= fecha_cobrar, fecha_fin_cobro = fecha_limite, inicio_contrato = inicioContrato, fin_contrato = finalContrato, tipo_contrato = tipo_contrato, obs = observ, usuarios_id_id = usuarios_id)
+        modelo.save()
+    print("modelo usuario y Arrendatario, se guardan con éxito!")
+    return redirect('personas_inquilinos')
+
+def individuo_inquilino(request, id):
+    objetoArrendatario= arrendatario.objects.filter(usuarios_id_id = id).first()
+    objetoUser = usuarios.objects.filter( id = objetoArrendatario.usuarios_id_id).first()
+    estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
+    return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'propietario':objetoArrendatario, 'estado':estados})
+
+def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     idUsuario = request.POST.get('id')
     nombre = request.POST.get('nombre')
     apellido = request.POST.get('apellido')
@@ -525,76 +499,117 @@ def actualizar_inquilino(request):
 
     return redirect('personas_inquilinos')
 
-def add_inquilino(request):
-    return render(request, 'personas/inquilinos/add_inquilino.html')
+def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
+    objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
+    num_usuarios = objetoUsuario.count()
+    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
+    usuarios_con_estados = []
+    for usuario in objetoUsuario:
+        direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
+        fechaPago = usuario.arrendatario_set.first().fecha_cobro if usuario.arrendatario_set.exists() else None
+        valorPago = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
+        estadosDiccionario = usuario.arrendatario_set.first().habilitarPago if usuario.arrendatario_set.exists() else None
+        estados = diccionarioPago[str(estadosDiccionario)]
+        usuarios_con_estados.append((usuario, direccion, rango_ids, fechaPago, valorPago, estados))
+    return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
 
+#----------------------------------------------------------------Logica para las tareas--------------------------------------------------------------------------------
 
-def guardar_inquilino(request): #Función para guardar inquilinos
-    if request.method == "POST":
-        id_inmueble = request.POST.get('inmueble', None) #En este espacio debería de existir el id del inmueble al cual se le va a "asociar"
-        name = request.POST.get('nombre1', None)
-        name2 = request.POST.get('nombre2', None)
-        apellido = request.POST.get('apellido1', None)
-        apellido2 = request.POST.get('apellido2', None)
+def tarea(request): #Visualizar las tareas
+    tareas_completas = tareas.objects.filter(estado='Completa').select_related('superuser_id')#Filtrar tareas Completas
+    tareas_incompletas = tareas.objects.filter(estado='Incompleta').select_related('superuser_id')#Filtrar tareas incompletas
+    tareas_pendientes = tareas.objects.filter(estado='Pendiente').select_related('superuser_id')#Filtrar tareas pendientes
 
-        tipo = request.POST.get('tipo_documento', None)
-        tipoDocumento = diccionarioTipo[tipo]
-        documento = request.POST.get('documento1', None)
-        email = request.POST.get('email', None)
-        telefono = request.POST.get('phone', None)
-        client = request.POST.get('propie_client', None) #Recordar que el valor de '1' es para propietarios y '2' para clientes.
-        model = usuarios(nombre = name + " " + name2, apellido = apellido +" "+ apellido2, tipo_documento = tipoDocumento, documento = documento,email = email, telefono = telefono, propie_client = client)
+    contexto = { #Con el contexto se pueden pasar QuerySet's independientes
+        'completas': tareas_completas,
+        'incompletas': tareas_incompletas,
+        'pendientes': tareas_pendientes,
+    }
+    return render(request, 'tareas/dash_tareas.html',{'context': contexto})    
+
+def add_tarea(request): #Poder añadir las tareas
+    id = superuser.objects.values_list('id', flat=True)
+    nombre = superuser.objects.values_list('nombre', flat=True)
+    apellido = superuser.objects.values_list('apellido', flat=True)
+    nombres_usuario = list(zip(nombre, apellido, id))
+    return render(request, 'tareas/add_tarea.html',{'nombres_usuario': nombres_usuario})
+
+def guardar_tarea(request): #Logica para guardar las tareas
+    if request.method == "POST":        
+        titulo = request.POST.get('titulo', None)
+        descrip = request.POST.get('descrip', None)
+        tipo_estado = request.POST.get('estado', None)
+        tipoEstado = diccionarioTareaEstado[tipo_estado]
+        fecha_fin = request.POST.get('fecha_fin', None)
+        tipo_etiqueta = request.POST.get('etiqueta', None)
+        tipoEtiqueta = diccionarioTareaEtiqueta[tipo_etiqueta]
+        hora_inicio = request.POST.get('hora_programada', None)
+        superUser=request.POST.get('usuario', None)
+        model = tareas(titulo = titulo, descrip =descrip, estado = tipoEstado, fecha_fin = fecha_fin, etiqueta = tipoEtiqueta, hora_inicio = hora_inicio, superuser_id_id = superUser)
         model.save()
 
-    """ Hasta aquí son los datos de usuarios en general. """
+    return redirect('tareas')
+
+def modal_ver_tarea(request, id): #Modal para ver más información de cada tarea
+    template_path = 'tareas/modal_ver_tarea.html'
+    objetoTarea = tareas.objects.filter(id = id).first()
+    nombre = superuser.objects.values_list('nombre', flat=True)
+    apellido = superuser.objects.values_list('apellido', flat=True)
+    idSuperuser = superuser.objects.values_list('id', flat=True)
+    nombres_usuario = list(zip(nombre, apellido, idSuperuser))
+    return render(request, template_path, {'nombres_usuario': nombres_usuario, 'objetoTarea': objetoTarea})
+
+def actualizar_modal(request): #Logica para actualizar cada modal o tarea
+    id = request.POST.get('idTarea')
+    titulo = request.POST.get('titulo')
+
+    fechaInicio = request.POST.get('fechaInicio')
+    inicioRes = request.POST.get('inicioRes')
+    if fechaInicio:
+        fecha_inicio = fechaInicio
+    else:
+        date = datetime.strptime(inicioRes, "%B %d, %Y")
+        fecha_inicio = date.strftime("%Y-%m-%d")
+
+    fechaFin = request.POST.get('fechaFin')
+    finRes = request.POST.get('finRes')
+    if fechaFin:
+        fecha_fin = fechaFin
+    else:
+        date2 = datetime.strptime(finRes, "%B %d, %Y")
+        fecha_fin = date2.strftime("%Y-%m-%d")    
+
+    hora_inicio = request.POST.get('hora_inicio')
+    horaRes = request.POST.get('horaRes')
+    if hora_inicio:
+        hora = hora_inicio
+    else: 
+        horaRes = horaRes.strip()
+        hour = datetime.strptime(horaRes, "%I:%M %p")
+        hora = hour.strftime("%H:%M")
     
-    objeto = usuarios.objects.last() #Guarda todo el objeto del último registro
-    usuarios_id = objeto.id # id del último registro guardado en la dB
-    if request.method == "POST": 
-        direc = request.POST.get('direc', None)
-        valor_cobrar = request.POST.get('valor_cobrar', None)
-        fecha_cobrar = request.POST.get('fecha_cobro', None)
-        inicioContrato = request.POST.get('inicioContrato', None)
-        finalContrato = request.POST.get('finContrato', None)
-        tipo_contrato = request.POST.get('tipo_contrato', None)
+    descrip = request.POST.get('descrip')
+    etiqueta = request.POST.get('etiqueta')
+    responsable = request.POST.get('usuario')
 
-        tipoContrato = diccionarioContrato[tipo_contrato]
-        observ = request.POST.get('obs', None)
-        modelo = arrendatario(direccion = direc, valor_cobro = valor_cobrar, fecha_cobro = fecha_cobrar, inicio_contrato = inicioContrato, fin_contrato = finalContrato, tipo_contrato = tipoContrato, obs = observ, usuarios_id_id = usuarios_id)
-        modelo.save()
-    print("modelo usuario y Arrendatario, se guardan con éxito!")
-    return redirect('personas_inquilinos')
+    guardarT = tareas.objects.get(id=id)
+    guardarT.titulo = titulo
+    guardarT.descrip = descrip
+    guardarT.fecha_inicio = fecha_inicio
+    guardarT.fecha_fin = fecha_fin
+    guardarT.hora_inicio = hora
+    guardarT.etiqueta = etiqueta
+    guardarT.superuser_id_id = responsable
+    guardarT.save()
+    return redirect('tareas')
 
-def individuo_propietario(request, id):
-    objetoPropietarios = propietario.objects.filter(usuarios_id_id = id).first()
-    pago = diccionarioPago[str(objetoPropietarios.habilitarPago)]
-    objetoUser = usuarios.objects.filter( id = objetoPropietarios.usuarios_id_id).first()
-    return render(request, 'personas/propietarios/individuo_propietario.html', {'usuario':objetoUser, 'propietario':objetoPropietarios, 'pago': pago})
 
-def individuo_inquilino(request, id):
-    objetoArrendatario= arrendatario.objects.filter(usuarios_id_id = id).first()
-    objetoUser = usuarios.objects.filter( id = objetoArrendatario.usuarios_id_id).first()
-    estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
-    return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'propietario':objetoArrendatario, 'estado':estados})
+#------------------------------------------------------------------------------Logica para las notificaciones-----------------------------------------------------------------------------------------  
 
-def individuo_inmueble(request, id):
-    objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(id = id)
-    objetoDoc = documentos.objects.filter(propiedad_id_id = id)
-    
-    objetoTipo = inmueble.objects.values_list('tipo', flat=True)
-    tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
+def noti(request):
+    return render(request, 'noti.html')
 
-    objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
-    habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
-    All = list(zip(objetoInmuebles, objetoDoc, tipoInmueble, habilitada))
-    objetoArrendatario = usuarios.objects.filter(propie_client=2)
-    return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario})
-
-def actualizar_inmueble(request):
-    #Recordar en el tipo de inmueble, invertir el valor que tenga por determinado, utilizando un diccionario inverso.
-    
-    return redirect('inmu')
-
+#-----------------------------------------------------------------Logica para visualizar todos los datos (en analisis)--------------------------------------------------
 
 def all_values(request, id):
     ObjetoUsuario = usuarios.objects.filter( id = id ).first()

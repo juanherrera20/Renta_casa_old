@@ -24,6 +24,7 @@
       <input type="hidden" name="idP" id="idP" value="{{ propietario.id }}">
       <label for="nombre">Nombre</label>
       <input type="text" name="nombre" value="{{ usuario.nombre }}" readonly><br>
+      
       <label for="apellido">Apellido</label>
       <input type="text" name="apellido" value="{{ usuario.apellido }}" readonly><br>
 
@@ -36,29 +37,38 @@
 
       <label for="documento">Documento</label>
       <input type="number" name="documento" value="{{ usuario.documento }}" readonly><br>
-      <label for="telefono">Telefono</label>
+
+      <label for="expedida">Expedida en</label>
+      <input type="text" name="expedida" value="{{ usuario.expedida }}" readonly><br>
+
+      <label for="telefono">Telefono principal</label>
       <input type="number" name="telefono" value="{{ usuario.telefono }}" readonly><br>
-      <label for="email">Email</label>
+      
+      <label for="telefono2">Telefono 2</label>
+      <input type="number" name="telefono2" value="{{ usuario.telefono2 }}" readonly><br>
+      
+      <label for="telefono3">Telefono 3</label>
+      <input type="number" name="telefono3" value="{{ usuario.telefono3 }}" readonly><br>
+
+      <label for="email">Correo electronico principal</label>
       <input type="email" name="email" value="{{ usuario.email }}" readonly><br>
+      
+      <label for="email2">Correo electronico 2</label>
+      <input type="email" name="email2" value="{{ usuario.email2 }}" readonly><br>
+      
+      <label for="email3">Correo electronico 3</label>
+      <input type="email" name="email3" value="{{ usuario.email3 }}" readonly><br>
 
       <label for="direccion">Dirección</label>
       <input type="text" name="direccion" value="{{ propietario.direccion }}" readonly><br>
-
-      <label for="valor_pago">Valor a Pagar</label>
-      <input type="number" name="valor_pago" value="{{ propietario.valor_pago }}" readonly><br>
+      
+      <p>Trabajar este campo según el comentario</p>
+      <label for="valor_pago">Valor a Pagar</label> <!-- Este dato debe relacionarse con el pago del inmueble restando el descuento -->
+      <input type="number" name="valor_pago" value="123456789" readonly><br>
 
       <label for="fecha_pago">Fecha de Pago</label>
       <input type="datetime" name="fecha_pago" value="{{ propietario.fecha_pago }}" readonly><br>
       <input type="hidden" name="respaldo_fecha" value="{{ propietario.fecha_pago }}">
-
-      <label for="tipo_contrato">Tipo de Contrato</label>
-      <select name="tipo_contrato" id="tipo_contrato" disabled>
-          <option value="{{ propietario.tipo_contrato }}">{{ propietario.tipo_contrato }}</option>
-          <option value="Trimestral">Trimestral</option>
-          <option value="Semestral">Semestral</option>
-          <option value="Anual">Anual</option>
-          <option value="Indefinido">Indefinido</option>
-      </select><br>
 
       <label for="habilitarPago">Estado del Pago</label>
       <select name="habilitarPago" id="habilitarPago" disabled>
