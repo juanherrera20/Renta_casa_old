@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var btnCancel = document.getElementById('btnCancel');
     var btnActualizar = document.getElementById('btnActualizar');
     var miFormulario = document.getElementById('miFormulario');
+    var Label = document.getElementById('LabelFechaFin');
 
     if (btnEdit) {
         btnEdit.addEventListener('click', function() {
@@ -11,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 input.removeAttribute('readonly');
                 input.removeAttribute('disabled');
             });
-            var fechaPagoInput = miFormulario.querySelector('input[name="fecha_cobro"]');
+            var fechaPagoInput = miFormulario.querySelector('input[name="fecha_inicio"]');
             if (fechaPagoInput) {
                 fechaPagoInput.dataset.originalValue = fechaPagoInput.value;
                 fechaPagoInput.type = 'date';
@@ -26,6 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 finContratoInput.dataset.originalValue = finContratoInput.value;
                 finContratoInput.type = 'date';
             }
+            var fechaLimiteInput = miFormulario.querySelector('input[name="fecha_fin"]');
+            if (fechaLimiteInput) {
+                fechaLimiteInput.dataset.originalValue = fechaLimiteInput.value;
+                fechaLimiteInput.type = 'hidden';
+            }
 
             this.style.display = 'none';
             if (btnActualizar) {
@@ -33,6 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if (btnCancel) {
                 btnCancel.style.display = 'block';
+            }
+            if (Label) {
+                Label.style.display = 'none';
             }
         });
     }
@@ -44,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 input.setAttribute('readonly', '');
                 input.setAttribute('disabled', '');
             });
-            var fechaPagoInput = miFormulario.querySelector('input[name="fecha_cobro"]');
+            var fechaPagoInput = miFormulario.querySelector('input[name="fecha_inicio"]');
             if (fechaPagoInput) {
                 fechaPagoInput.type = 'datetime';
                 fechaPagoInput.value = fechaPagoInput.dataset.originalValue; 
@@ -59,6 +68,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 finContratoInput.type = 'datetime';
                 finContratoInput.value = finContratoInput.dataset.originalValue; // Restaurar el valor original
             }
+            var fechaLimiteInput = miFormulario.querySelector('input[name="fecha_fin"]');
+            if (fechaLimiteInput) {
+                fechaLimiteInput.type = 'datetime';
+                fechaLimiteInput.value = finContratoInput.dataset.originalValue;
+            }
             this.style.display = 'none';
             if (btnEdit) {
                 btnEdit.style.display = 'block';
@@ -66,6 +80,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (btnActualizar) {
                 btnActualizar.style.display = 'none';
             }
+            if (Label) {
+                Label.style.display = 'block';
+            }  
         });
     }
 });

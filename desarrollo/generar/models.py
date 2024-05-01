@@ -77,8 +77,7 @@ class inmueble(models.Model): #Tabla usuarios
     direccion = models.CharField(max_length =300)
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no.
-    estrato = models.IntegerField() #opcional
-    uso_inmueble = models.CharField(max_length=100) #opcional, uso del inmueble (vivienda unifamiliar, multifamiliar, local comercial)
+    #estrato = models.IntegerField() #opcional, uso del inmueble (vivienda unifamiliar, multifamiliar, local comercial)
     #quizas falta el aumento de del canon de arrendamiento
     
     class Meta:

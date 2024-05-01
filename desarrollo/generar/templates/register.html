@@ -1,13 +1,16 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript"  src='{% static "js/register.js" %}'></script>
     <title>Registrar</title>
 </head>
 <body>
     <h3>Registar a un administrador</h3>
-    <form action="{% url 'register' %}" method="POST">
+    <form action="{% url 'register' %}"  id="registration" method="POST">
         {% csrf_token %}
 
         <label for="nombre">Nombre</label>
@@ -28,7 +31,7 @@
         <label for="pass">Password</label>
         <input type="password" name="pass" id="pass" required>
         <br><br>
-        <button type="submit" name="registro" value="3">Registrar</button>
+        <button type="submit" name="registro" id="registro" value="3">Registrar</button>
 <br><br><br>
     </form>
 </body>

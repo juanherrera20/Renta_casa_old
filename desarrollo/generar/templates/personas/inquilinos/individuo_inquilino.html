@@ -24,29 +24,52 @@
       <input type="hidden" name="idP" id="idP" value="{{ propietario.id }}">
       <label for="nombre">Nombre</label>
       <input type="text" name="nombre" value="{{ usuario.nombre }}" readonly><br>
+
       <label for="apellido">Apellido</label>
       <input type="text" name="apellido" value="{{ usuario.apellido }}" readonly><br>
 
       <label for="tipo_documento">Tipo de Documento</label>
-              <select name="tipo_documento" id="tipo_documento" disabled> <!-- Cambiar y desarrollar el select para luego editar -->
-                  <option value="{{ usuario.tipo_documento }}">{{ usuario.tipo_documento }}</option>
-                  <option value="Cedula">Cedula de Ciudadania</option>
-                  <option value="Pasaporte">Pasaporte</option>
-              </select><br>
+      <select name="tipo_documento" id="tipo_documento" disabled> <!-- Cambiar y desarrollar el select para luego editar -->
+          <option value="{{ usuario.tipo_documento }}">{{ usuario.tipo_documento }}</option>
+          <option value="Cedula">Cedula de Ciudadania</option>
+          <option value="Pasaporte">Pasaporte</option>
+      </select><br>
 
       <label for="documento">Documento</label>
       <input type="number" name="documento" value="{{ usuario.documento }}" readonly><br>
-      <label for="telefono">Telefono</label>
+      
+      <label for="expedida">Expedida en</label>
+      <input type="text" name="expedida" value="{{ usuario.expedida }}" readonly><br>
+
+      <label for="telefono">Telefono principal</label>
       <input type="number" name="telefono" value="{{ usuario.telefono }}" readonly><br>
-      <label for="email">Email</label>
+      
+      <label for="telefono2">Telefono 2</label>
+      <input type="number" name="telefono2" value="{{ usuario.telefono2 }}" readonly><br>
+      
+      <label for="telefono3">Telefono 3</label>
+      <input type="number" name="telefono3" value="{{ usuario.telefono3 }}" readonly><br>
+
+      <label for="email">Correo electronico principal</label>
       <input type="email" name="email" value="{{ usuario.email }}" readonly><br>
+      
+      <label for="email2">Correo electronico 2</label>
+      <input type="email" name="email2" value="{{ usuario.email2 }}" readonly><br>
+      
+      <label for="email3">Correo electronico 3</label>
+      <input type="email" name="email3" value="{{ usuario.email3 }}" readonly><br>
 
       <label for="direccion">Dirección</label>
       <input type="text" name="direccion" value="{{ propietario.direccion }}" readonly><br>
 
-      <label for="fecha_cobro">Fecha de Cobro</label>
-      <input type="datetime" name="fecha_cobro" value="{{ propietario.fecha_cobro }}" readonly><br>
-      <input type="hidden" name="fecha_cobroRes" value="{{ propietario.fecha_cobro }}">
+      <label for="fecha_inicio">Fecha de Pago</label>
+      <input type="datetime" name="fecha_inicio" value="{{ propietario.fecha_inicio_cobro }}" readonly><br>
+      <input type="hidden" name="fecha_inicioRes" value="{{ propietario.fecha_inicio_cobro }}">
+      
+      <label for="fecha_fin" id="LabelFechaFin">Límite de Pago</label>
+      <input type="datetime" name="fecha_fin" value="{{ propietario.fecha_fin_cobro }}" readonly><br>
+      <input type="hidden" name="fecha_finRes" value="{{ propietario.fecha_fin_cobro }}">
+
       <label for="valor">Valor a Cobrar</label>
       <input type="number" name="valor" value="{{ propietario.valor_cobro }}" readonly><br>
 
@@ -76,11 +99,8 @@
           <option value="Indefinido">Indefinido</option>
       </select><br>
 
-
       <label for="obs">Observaciones</label>
       <input type="text" name="obs" value="{{ propietario.obs }}" readonly><br>
       <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
-
   </form>
-
 {% endblock %}

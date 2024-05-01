@@ -29,29 +29,35 @@
             <th>Nombre</th>
             <th>Dirección</th>
             <th>Fecha de pago</th>
+            <th>Limite de pago</th>
             <th>Telefono</th>
-            <th>Valor de Pago</th>
-            <th>Estado</th>
             <th>Email</th>
+            <th>Inicio de contrato</th>
+            <th>Fin de contrato</th>
+            <th>Valor de Pago</th>
+            <th>Tipo de contrato</th>
+            <th>Estado</th>
         </tr>
     </thead>
     <tbody id="inquilinos">
-      {% for usuario, direccion, rango_ids, fechaPago, valorPago, estados in datosUsuario %}
+      {% for usuario, direccion, fechaPago, limitePago, valorPago, inicioContrato, finContrato, tipoContrato, estados in datosUsuario %}
       <tr>
-          <td>{{ forloop.counter}}</td>
-          <td>{{ usuario.nombre |add:" "|add:usuario.apellido}}</td>
-          <td>{{ direccion }}</td>
-          <td>{{ fechaPago }}</td>
-          <td>{{ usuario.telefono }}</td>
-          <td>{{ valorPago }}</td>
-          <td>{{ estados }}</td>
-          <td>{{ usuario.email }}</td>
-
+          <td><button>{{ forloop.counter}}</button></td>
+          <td><button>{{ usuario.nombre |add:" "|add:usuario.apellido}}</button></td>
+          <td><button>{{ direccion }}</button></td>
+          <td><button>{{ fechaPago }}</button></td>
+          <td><button>{{ limitePago }}</button></td>
+          <td><button>{{ usuario.telefono }}</button></td>
+          <td><button>{{ usuario.email }}</button></td>
+          <td><button>{{ inicioContrato }}</button></td>
+          <td><button>{{ finContrato }}</button></td>
+          <td><button>{{ valorPago }}</button></td>
+          <td><button>{{ tipoContrato }}</button></td>
+          <td><button>{{ estados }}</button></td>
       </tr>
       {% endfor %}
     </tbody>
   </table> <br><br><br>
-
 {% endblock %}
 
 

@@ -385,33 +385,33 @@ def individuo_propietario(request, id):
 def analisis_propietarios(request):
     #Logica para la tabla de propietarios
     objetoUsuario = usuarios.objects.filter(propie_client=1) # Se filtra para saber si son propietarios o clientes
-    num_usuarios = objetoUsuario.count()
-    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
     usuarios_con_estados = []
     for usuario in objetoUsuario:
         direccion = usuario.propietario_set.first().direccion if usuario.propietario_set.exists() else None
         fechaPago = usuario.propietario_set.first().fecha_pago if usuario.propietario_set.exists() else None
-        valorPago = usuario.propietario_set.first().valor_pago if usuario.propietario_set.exists() else None
+        bancos = usuario.propietario_set.first().bancos if usuario.propietario_set.exists() else None
         estadosDiccionario = usuario.propietario_set.first().habilitarPago if usuario.propietario_set.exists() else None
         estados = diccionarioPago[str(estadosDiccionario)]
-        usuarios_con_estados.append((usuario, direccion, rango_ids, fechaPago, valorPago, estados))
-    return render(request, 'analisis/propietarios/analisis_propietarios.html',{'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
+        usuarios_con_estados.append((usuario, direccion, fechaPago, bancos, estados))
+
+    #Se debe hacer la logica para tomar el valor/canon total a pagar a propietario
+    #Se debe hacer la logica para tomar el decuento/porcentaje total con respecto a inmuebles y propietarios
+    #Se debe hacer la logica para saber cuantos inmuebles tiene el propietario
+    return render(request, 'analisis/propietarios/analisis_propietarios.html',{'datosUsuario': usuarios_con_estados})
 
 
 #-------------------------------------------------------------------Logica para inquilinos/Arrendatarios----------------------------------------------------------------
 
 def personas_inquilinos(request): #Logica para la tabla de Inquilinos-Personas
     objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
-    num_usuarios = objetoUsuario.count()
-    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
     habilitar = usuarios.objects.filter(propie_client=2).values_list('habilitar', flat=True) # Se filtra solo el campo de 'habilitar'
     estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diccionarioHabilitar
     usuarios_con_estados = []
     for usuario, estado in zip(objetoUsuario, estados): #Enpaquetando variables para que quede en una sola y poder iteraralas
         direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
         valorCobro = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
-        usuarios_con_estados.append((usuario, estado, direccion, rango_ids, valorCobro))
-    return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
+        usuarios_con_estados.append((usuario, estado, direccion, valorCobro))
+    return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados})
 
 def add_inquilino(request): #Vista para añadir inquilinos
     return render(request, 'personas/inquilinos/add_inquilino.html')
@@ -471,29 +471,44 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     apellido = request.POST.get('apellido')
     tipo_documento = request.POST.get('tipo_documento')
     documento = request.POST.get('documento')
+    expedida = request.POST.get('expedida')
     telefono = request.POST.get('telefono')
+    telefono2 = request.POST.get('telefono2')
+    telefono3 = request.POST.get('telefono3')
     email = request.POST.get('email')
+    email2 = request.POST.get('email2')
+    email3 = request.POST.get('email3')
     
     guardar = usuarios.objects.get(id=idUsuario)
     guardar.nombre = nombre
     guardar.apellido = apellido
     guardar.tipo_documento = tipo_documento
     guardar.documento = documento
+    guardar.expedida = expedida
     guardar.telefono = telefono
+    guardar.telefono2 = telefono2
+    guardar.telefono3 = telefono3
     guardar.email = email
+    guardar.email2 = email2
+    guardar.email3 = email3
     guardar.save()
 
     idA = request.POST.get('idP')
     direccion = request.POST.get('direccion')
-    valor_cobro = request.POST.get('valor')
-    fecha_cobro = request.POST.get('fecha_cobro')
-    fecha_cobroRes = request.POST.get('fecha_cobroRes')
+    fecha_cobro = request.POST.get('fecha_inicio')
+    fecha_cobroRes = request.POST.get('fecha_inicioRes')
     
     if fecha_cobro:
         fechaCobro = fecha_cobro
     else:
         date =  datetime.strptime(fecha_cobroRes, "%B %d, %Y")
         fechaCobro = date.strftime("%Y-%m-%d")
+
+    fechaObjeto = datetime.strptime(fechaCobro, "%Y-%m-%d")
+    newDate = fechaObjeto + timedelta(days=5)
+    fecha_limite = newDate.strftime('%Y-%m-%d')
+
+    valor_cobro = request.POST.get('valor')
     
     inicio_contrato = request.POST.get('inicio_contrato')
     inicio_contratoRes = request.POST.get('inicio_contratoRes')
@@ -514,13 +529,15 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     habilitarPago = request.POST.get('estado')
     tipo_contrato = request.POST.get('tipo_contrato')
     obs = request.POST.get('obs')
-
+    
     guardar2 = arrendatario.objects.get(id=idA)
     guardar2.direccion = direccion
     guardar2.valor_cobro = valor_cobro
-    guardar2.fecha_cobro = fechaCobro
+    guardar2.fecha_inicio_cobro = fechaCobro
+    guardar2.fecha_fin_cobro = fecha_limite
     guardar2.inicio_contrato = inicioContrato
     guardar2.fin_contrato = finContrato
+    guardar2.tipo_contrato = tipo_contrato
     guardar2.habilitarPago = habilitarPago
     guardar2.obs = obs
     guardar2.save()
@@ -529,17 +546,19 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
 
 def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
     objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
-    num_usuarios = objetoUsuario.count()
-    rango_ids = list(range(1, num_usuarios + 1)) # Convierte el range en lista y pueda ser iterable
     usuarios_con_estados = []
     for usuario in objetoUsuario:
         direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
-        fechaPago = usuario.arrendatario_set.first().fecha_cobro if usuario.arrendatario_set.exists() else None
+        fechaPago = usuario.arrendatario_set.first().fecha_inicio_cobro if usuario.arrendatario_set.exists() else None
+        limitePago = usuario.arrendatario_set.first().fecha_fin_cobro if usuario.arrendatario_set.exists() else None
         valorPago = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
+        inicioContrato = usuario.arrendatario_set.first().inicio_contrato if usuario.arrendatario_set.exists() else None
+        finContrato = usuario.arrendatario_set.first().fin_contrato if usuario.arrendatario_set.exists() else None
+        tipoContrato = usuario.arrendatario_set.first().tipo_contrato if usuario.arrendatario_set.exists() else None
         estadosDiccionario = usuario.arrendatario_set.first().habilitarPago if usuario.arrendatario_set.exists() else None
         estados = diccionarioPago[str(estadosDiccionario)]
-        usuarios_con_estados.append((usuario, direccion, rango_ids, fechaPago, valorPago, estados))
-    return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': usuarios_con_estados, 'contador':num_usuarios})
+        usuarios_con_estados.append((usuario, direccion, fechaPago, limitePago, valorPago, inicioContrato, finContrato, tipoContrato, estados))
+    return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': usuarios_con_estados})
 
 #----------------------------------------------------------------Logica para las tareas--------------------------------------------------------------------------------
 
