@@ -79,17 +79,36 @@ def index(request):
         if user is not None:
             # Verifico si la contraseña coincide con la almacenada en la base de datos
             if check_password_hash(user.password, password_form): #Permite autenticar la contraseña del usuario encontrado
-                # login(request, user) 
-                # if request.method == 'POST':
+                #Estas son variables de sesión
+                request.session["estado_sesion"] = True
+                request.session["id_usuario"] = user.id
+                request.session["email"] = user.email
+                #----- poner mas variables de sesión en base a lo que necesitemos
+                
+                datos = { 'nombre' : user.nombre, 'apellido' : user.apellido} #Usar los datos a nivel de template
                 return redirect('dash')
             else:
                 return render(request, 'index.html', {"error": "Contraseña incorrecta"})
         else:
             return render(request, 'index.html', {"error": "Usuario no encontrado en la base de datos"})
 
+#------------Creo el decorador para restringir las vistas sin haber autenticado el usuario--------------------------------------------s
+def autenticado_required(view_func):
+    def verificacion(request, *args, **kwargs):
+        if not request.session.get("estado_sesion"):
+            return redirect('index')
+        return view_func(request, *args, **kwargs)
+    return verificacion
+#---------------------------------------------------------------------------------------------------------------------------------------s
+
 def close(request):
-    logout(request)  # Cierra la sesión del usuario actual
-    return redirect('index')  # Redirige a la página de inicio de sesión
+    try: #Elimino las variables de sesion
+        del request.session["estado_sesion"] 
+        del request.session["id_usuario"] 
+        del request.session["email"] 
+        return redirect('index') 
+    except: #En caso de que lo anterior no se pueda, redirige a index directamente
+        return redirect('index')
 
 def register(request):
     if request.method == 'POST':
@@ -116,6 +135,8 @@ def register(request):
         # Renderizar el formulario vacío cuando la solicitud es GET
         return render(request, 'register.html')
 #-------------------------------------------------------------------------Logica del Dashboard------------------------------------------------------------------------------------------------s
+
+@autenticado_required #Decorador personalizado 
 def dash(request):
     objetoPropietario = usuarios.objects.filter(propie_client=1) #Propietarios
     num_propietarios = objetoPropietario.count()
@@ -165,6 +186,7 @@ def dash(request):
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
 
 #------------------------------------------------------------------------------Funciones para inmuebles-----------------------------------------------------------------------------
+@autenticado_required
 def inmu(request): #Visualizar los inmuebles (Tabla)
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').all()
 
@@ -177,6 +199,7 @@ def inmu(request): #Visualizar los inmuebles (Tabla)
 
     return render(request, 'inmuebles/inmueble.html', {'inmuebles': All})
 
+@autenticado_required
 def add_inmueble(request): #ayuda a la Vista para añadir inmueble
     objetoPropietario = usuarios.objects.filter(propie_client=1)
     objetoArrendatario = usuarios.objects.filter(propie_client=2)
@@ -199,6 +222,8 @@ def add_inmueble(request): #ayuda a la Vista para añadir inmueble
                 'nombre_completo': f"{arrendatario.nombre} {arrendatario.apellido}"
             })
     return render(request, 'inmuebles/add_inmueble.html', {'propietarios': objetoPropietario, 'arrendatarios':objetoArrendatario, 'propietarios_info': propietarios_info, 'arrendatarios_info': arrendatarios_info})
+
+@autenticado_required
 def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
       if request.method == "POST":
         id_propietario = request.POST.get('propietario', None)
@@ -207,7 +232,8 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
         valor = request.POST.get('valor', None)
         estado = request.POST.get('tipo_estado', None)
         descrip = request.POST.get('descrip', None)
-
+        #administrar un post para porcentaje
+        
         ultimo_ref = inmueble.objects.all().aggregate(Max('ref'))['ref__max']
         if ultimo_ref is None:
             nuevo_ref = "1"
@@ -215,7 +241,7 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
             nuevo_ref = str(int(ultimo_ref) + 1)
 
         id_arrendatario = request.POST.get('arrendatario', None)
-        model=inmueble(propietario_id_id = id_propietario, arrendatario_id_id = id_arrendatario, ref= nuevo_ref, tipo = tipo_inmueble, valor_seguro= valor, descripcion= descrip, habilitada = estado, direccion= direc)
+        model=inmueble(propietario_id_id = id_propietario, arrendatario_id_id = id_arrendatario, ref= nuevo_ref, tipo = tipo_inmueble, valor= valor, descripcion= descrip, habilitada = estado, direccion= direc)
         model.save()
 
       if request.method == "POST":
@@ -228,6 +254,7 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
         model1.save()
       return redirect('inmu')
 
+@autenticado_required
 def individuo_inmueble(request, id):
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(id = id)
     objetoDoc = documentos.objects.filter(propiedad_id_id = id)
@@ -241,6 +268,7 @@ def individuo_inmueble(request, id):
     objetoArrendatario = usuarios.objects.filter(propie_client=2)
     return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario})
 
+@autenticado_required
 def actualizar_inmueble(request):
     #Recordar en el tipo de inmueble, invertir el valor que tenga por determinado, utilizando un diccionario inverso.
     
@@ -248,7 +276,7 @@ def actualizar_inmueble(request):
 
 
 #----------------------------------------------------------------Logica para Propietarios----------------------------------------------------------
-
+@autenticado_required
 def personas_propietarios(request): #Tabla en vista de personas propietarios
     objetoUsuario = usuarios.objects.filter(propie_client=1) #Se filtra para saber si son propietarios o clientes
     habilitar = usuarios.objects.filter(propie_client=1).values_list('habilitar', flat=True) #Se filtra solo el campo de 'habilitar'

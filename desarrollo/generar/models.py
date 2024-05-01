@@ -71,12 +71,15 @@ class inmueble(models.Model): #Tabla usuarios
     arrendatario_id = models.ForeignKey('arrendatario', on_delete=models.PROTECT)
     ref = models.CharField(max_length = 10) #referencia unica que se pueda mostrar al usuario
     tipo = models.IntegerField() #Si es casa, edificio, local...
-    valor = models.IntegerField()
+    canon = models.IntegerField()
     porcentaje = models.IntegerField()
     servicios = models.CharField(max_length =200)
     direccion = models.CharField(max_length =300)
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no.
+    estrato = models.IntegerField() #opcional
+    uso_inmueble = models.CharField(max_length=100) #opcional, uso del inmueble (vivienda unifamiliar, multifamiliar, local comercial)
+    #quizas falta el aumento de del canon de arrendamiento
     
     class Meta:
         db_table = 'inmueble'
