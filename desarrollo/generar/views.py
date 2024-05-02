@@ -66,10 +66,11 @@ diccionarioTipoInmueble={
 
 diccionarioPorcentajeDescuento = { # Relacionado al porcentaje de descuento por cada inmueble al valor a pagar de arrendatario
     '1' : 0.13,
-    '2' : 0.14,
-    '3' : 0.15,
-    '4' : 0.16,
-    '5' : 0.17, 
+    '2' : 0.12,
+    '3' : 0.125,
+    '4' : 0.10,
+    '5' : 0.09,
+    '6' : 0.08,
 }
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

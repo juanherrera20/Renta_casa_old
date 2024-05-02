@@ -19,26 +19,6 @@
     <h4>Lo marcado con "*" es un campo obligatorio</h4><br><br>
     <form action="{% url 'guardar_inquilino' %}" method="post" id="addInquilino">
         {% csrf_token %}
-        <h3>Detalles Iniciales</h3>
-
-        <p>Se debe tener en cuenta que se debe enlistar todos los inmuebles disponibles.</p>
-        <p>Se esta pendiente si se muestra el cod de referencia. La dirección. O una descripción que ayude a ubicar el inmueble</p>
-        <label for="existe_inmueble">¿El inmueble existe? *</label>
-        <select name="existe_inmueble" id="existe_inmueble" required>
-            <option value="">Seleccionar</option>
-            <option value="1">Si</option>
-            <option value="2">No</option>
-        </select><br>
-
-        <label for="inmueble">Relacionar un inmueble *</label>
-        <select name="inmueble" id="inmueble" required>
-            <option value="">Seleccionar</option>
-            <option value="1">Casa</option>
-            <option value="2">Apartamento</option>
-            <option value="3">Local</option>
-        </select><br>
-
-        <a href="{% url 'addInmu' %}">+ Crear Inmueble</a>
 
         <h3>Información general</h3>
         
