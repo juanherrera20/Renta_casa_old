@@ -14,10 +14,11 @@
 {% endblock title %}
 
 {% block contenido %}
-  {% for inmueble, doc, tipo, habilitada in inmueble %}
+  {% for inmueble, doc, tipo, habilitada, porcentaje, servicios in inmueble %}
     <h2>Propietario del inmueble: {{ inmueble.propietario_id.usuarios_id.nombre }} {{ inmueble.propietario_id.usuarios_id.apellido }}</h2>
     <button type="button" id="btnEdit"name="btnEdit">Edit</button>
     <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
+
     <form action="{% url 'actualizarInmueble' %}" id="miFormulario">
       <label for="propietario_name">Nombre del Propietario</label>
       <input type="text" name="propietario_name" value="{{ inmueble.propietario_id.usuarios_id.nombre }}" readonly><br>
@@ -69,10 +70,19 @@
       <label for="ref">Ref</label>
       <input type="text" name="ref" value="{{ inmueble.ref }}" readonly><br>
       <label for="valor">Valor del inmueble</label>
-      <input type="number" name="valor" value="{{ inmueble.valor_seguro }}" readonly><br>
-      <label for="descuento">Descuento del inmueble</label>
-      <input type="number" name="descuento" value="{{ doc.descuento }}" readonly><br>
-      <label for="decrip">Descripción</label>
+      <input type="number" name="valor" value="{{ inmueble.canon}}" readonly><br>
+      
+      <!-- Esto esta pendiente de organizar
+      <label for="porcentaje_descuento">Porcentaje de descuento:</label>
+      <input type="number" name="porcentaje_descuento" value="{{ porcentaje }}" readonly><br>
+
+      <label for="servicios">Servicios incluidos:</label>
+      {% for servicio in servicios %}
+        <input type="checkbox" name="servicios" value="{{ servicio }}" checked disabled>{{ servicio }}<br>
+      {% endfor %}
+      --->
+
+      <label for="descrip">Descripción</label>
       <input type="text" name="decrip" value="{{ inmueble.descripcion }}" readonly><br>
       <label for="documento">Documentos: </label>
       {% if doc.pdf %}

@@ -29,6 +29,16 @@
             {% endfor %}
         </select><br>
 
+         <label for="porcentaje_descuento">Porcentaje de comisión</label>
+        <select name="porcentaje_descuento" id="porcentaje_descuento" required>
+            <option value="">Seleccione un valor</option>
+            <option value="1">13%</option>
+            <option value="2">14%</option>
+            <option value="3">15%</option>
+            <option value="4">16%</option>
+            <option value="5">17%</option>
+        </select><br>
+
         <label for="direccion">Direccion</label>
         <input type="text" name="direccion" id="direccion" placeholder="Escribir" required><br>
 
@@ -41,8 +51,8 @@
             <option value="4">Aparta-estudio</option>
         </select><br>
 
-        <label for="valor">Canon - Valor</label>
-        <input type="number" name="valor" id="valor" placeholder="$$$$$$$$" required><br>
+        <label for="canon">Canon - Valor</label>
+        <input type="number" name="canon" id="canon" placeholder="$$$$$$$$" required><br>
 
         <label for="tipo_estado">Tipo de estado</label>
         <select name="tipo_estado" id="tipo_estado" required>
@@ -62,6 +72,16 @@
             <option value="{{ info.id }}">{{ info.nombre_completo }}</option>
             {% endfor %}
         </select><br>
+
+        <label for="servicios">Elige los servicios incluidos:</label>
+            <div> 
+            <label><input type="checkbox" name="opciones" value="Agua"> Agua</label><br>
+            <label><input type="checkbox" name="opciones" value="Electricidad"> Electricidad</label><br>
+            <label><input type="checkbox" name="opciones" value="Gas"> Gas</label><br>
+            <label><input type="checkbox" name="opciones" value="Internet"> Internet</label><br>
+            </div>
+            
+        
         <label for="descrip">Descripción</label>
         <input type="text" name="descrip" id="descrip" placeholder="Escribir"><br>
 

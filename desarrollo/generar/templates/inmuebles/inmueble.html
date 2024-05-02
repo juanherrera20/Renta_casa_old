@@ -31,7 +31,7 @@
               <th>Referencia</th>
               <th>Dirección</th>
               <th>Tipo</th>
-              <th>Valor</th>
+              <th>Canon</th>
               <th>Estado</th>
               <th>Inquilino</th>
           </tr>
@@ -45,7 +45,7 @@
             <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.ref }}</button></td>
             <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.direccion }}</button></td>
             <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ tipoInmueble }}</button></td>
-            <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.valor_seguro }}</button></td>
+            <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.canon }}</button></td>
             <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ habilitada }}</button></td>
             <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">
               {% if inmueble.arrendatario_id_id %}

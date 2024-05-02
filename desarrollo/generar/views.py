@@ -63,6 +63,14 @@ diccionarioTipoInmueble={
     '3':'Local',
     '4':'Aparta-estudio'
 }
+
+diccionarioPorcentajeDescuento = { # Relacionado al porcentaje de descuento por cada inmueble al valor a pagar de arrendatario
+    '1' : 0.13,
+    '2' : 0.14,
+    '3' : 0.15,
+    '4' : 0.16,
+    '5' : 0.17, 
+}
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 def index(request):
@@ -210,7 +218,7 @@ def add_inmueble(request): #ayuda a la Vista para añadir inmueble
             # Crea un diccionario con el ID y el nombre completo del propietario
             propietarios_info.append({
                 'id': primer_propietario.id,
-                'nombre_completo': f"{propietario.nombre} {propietario.apellido}"
+                'nombre_completo': f"{propietario.nombre} {propietario.apellido}" 
             })
     arrendatarios_info = []
     for arrendatario in objetoArrendatario:
@@ -229,10 +237,13 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
         id_propietario = request.POST.get('propietario', None)
         direc = request.POST.get('direccion', None)
         tipo_inmueble = request.POST.get('tipo_inmueble', None)
-        valor = request.POST.get('valor', None)
+        canon = request.POST.get('canon', None)
         estado = request.POST.get('tipo_estado', None)
+        porcentaje = request.POST.get('porcentaje_descuento', None)
         descrip = request.POST.get('descrip', None)
-        #administrar un post para porcentaje
+        
+        opciones_seleccionadas = request.POST.getlist('opciones') #Tomo y creo una lista por todas las opcines elegidas
+        servicios = ",".join(opciones_seleccionadas) #Las combino en una sola cadena de texto seguidas por ","
         
         ultimo_ref = inmueble.objects.all().aggregate(Max('ref'))['ref__max']
         if ultimo_ref is None:
@@ -241,7 +252,7 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
             nuevo_ref = str(int(ultimo_ref) + 1)
 
         id_arrendatario = request.POST.get('arrendatario', None)
-        model=inmueble(propietario_id_id = id_propietario, arrendatario_id_id = id_arrendatario, ref= nuevo_ref, tipo = tipo_inmueble, valor= valor, descripcion= descrip, habilitada = estado, direccion= direc)
+        model=inmueble(propietario_id_id = id_propietario, arrendatario_id_id = id_arrendatario, ref= nuevo_ref, tipo = tipo_inmueble, canon= canon, descripcion= descrip, habilitada = estado, servicios = servicios, porcentaje = porcentaje, direccion= direc)
         model.save()
 
       if request.method == "POST":
@@ -264,14 +275,23 @@ def individuo_inmueble(request, id):
 
     objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
     habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
-    All = list(zip(objetoInmuebles, objetoDoc, tipoInmueble, habilitada))
+    
+    objetoPorcentaje = inmueble.objects.values_list('porcentaje', flat=True)
+    porcentaje = [diccionarioPorcentajeDescuento[str(values)] for values in objetoPorcentaje] 
+    
+    servicios = [servicio.strip() for servicio in objetoInmuebles[0].servicios.split(',')] if objetoInmuebles else [] #Aun no esta muy bien
+    
+    All = list(zip(objetoInmuebles, objetoDoc, tipoInmueble, habilitada,porcentaje,servicios))
     objetoArrendatario = usuarios.objects.filter(propie_client=2)
     return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario})
 
 @autenticado_required
 def actualizar_inmueble(request):
     #Recordar en el tipo de inmueble, invertir el valor que tenga por determinado, utilizando un diccionario inverso.
-    
+    # porcentaje_descuento = request.POST.get('porcentaje_descuento')
+    # servicios_seleccionados = request.POST.getlist('servicios')
+    # servicios = ",".join(servicios_seleccionados)
+        
     return redirect('inmu')
 
 
