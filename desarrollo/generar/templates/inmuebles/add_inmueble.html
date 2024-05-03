@@ -2,7 +2,9 @@
 {% load static %}
 
 {% block static %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script type="text/javascript"  src='{% static "js/all.js" %}'></script>
+    <script type="text/javascript"  src='{% static "js/inmuebles/add_inmueble.js" %}'></script>
     <link rel="stylesheet" href='{% static "css/inmuebles/add_inmueble.css" %}' type="text/css">
 {% endblock static %}
 
@@ -29,7 +31,7 @@
             {% endfor %}
         </select><br>
 
-         <label for="porcentaje_descuento">Porcentaje de comisión</label>
+        <label for="porcentaje_descuento">Porcentaje de comisión</label>
         <select name="porcentaje_descuento" id="porcentaje_descuento" required>
             <option value="">Seleccione un valor</option>
             <option value="1">13%</option>
@@ -92,11 +94,8 @@
         <label for="documento">Documentos</label>
         <input type="file" name="documento" id="documento" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf"><br>
 
-        
-
         <button type="submit" name="add" id="add" value="1">Guardar</button>
     </form>
     <button  name="borrar" id="borrar" value="2" onclick="resetForm()">Eliminar</button> <label for="cancelar">Eliminar, limpiara todos los campos</label><br><br><br> <!-- Se debe aplicar JS para limpiar los campos del Form -->
-
 {% endblock %}
 

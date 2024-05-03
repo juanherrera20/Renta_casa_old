@@ -435,7 +435,8 @@ def personas_inquilinos(request): #Logica para la tabla de Inquilinos-Personas
     return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados})
 
 def add_inquilino(request): #Vista para añadir inquilinos
-    return render(request, 'personas/inquilinos/add_inquilino.html')
+    objetoInmueble = inmueble.objects.all()
+    return render(request, 'personas/inquilinos/add_inquilino.html',{'inmuebles': objetoInmueble})
 
 def guardar_inquilino(request): #Función para guardar inquilinos
     if request.method == "POST":
@@ -477,7 +478,14 @@ def guardar_inquilino(request): #Función para guardar inquilinos
         observ = request.POST.get('obs', None)
         modelo = arrendatario(direccion = direc, valor_cobro = valor_cobrar, fecha_inicio_cobro= fecha_cobrar, fecha_fin_cobro = fecha_limite, inicio_contrato = inicioContrato, fin_contrato = finalContrato, tipo_contrato = tipo_contrato, obs = observ, usuarios_id_id = usuarios_id)
         modelo.save()
-    print("modelo usuario y Arrendatario, se guardan con éxito!")
+
+        idInmu = request.POST.get('inmueble', None)
+        if idInmu:
+            objetoArrendatario = arrendatario.objects.last()
+            arrendatario_id = objetoArrendatario.id
+            guardar = inmueble.objects.get(id=idInmu)
+            guardar.arrendatario_id_id = arrendatario_id
+            guardar.save()
     return redirect('personas_inquilinos')
 
 def individuo_inquilino(request, id):
