@@ -19,7 +19,11 @@
     <button type="button" id="btnEdit"name="btnEdit">Edit</button>
     <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
 
-    <form action="{% url 'actualizarInmueble' %}" id="miFormulario">
+    <form action="{% url 'actualizarInmueble' %}"  method="post" id="miFormulario">
+      {% csrf_token %}
+      <input type="hidden" name="id" id="id" value="{{ inmueble.id }}">
+
+      <h3>Datos del propietario</h3>
       <label for="propietario_name">Nombre del Propietario</label>
       <input type="text" name="propietario_name" value="{{ inmueble.propietario_id.usuarios_id.nombre }}" readonly><br>
       <label for="propietario_apellido">Apellido del Propietario</label>
@@ -27,27 +31,19 @@
 
       <label for="addPropietario" id="pripietarioTitle" style="display:none;">Añadir o cambiar propietario:</label>
       <select name="addPropietario" id="addPropietario" style="display:none;">
-          <option value="">Seleccionar al propietario</option>
-          {% for info in arrendatario %}
+          <option value="{{inmueble.propietario_id.usuarios_id.id}}">{{ inmueble.propietario_id.usuarios_id.nombre }} {{ inmueble.propietario_id.usuarios_id.apellido }}</option>
+          {% for info in propietario %}
           <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
+          <h3>{{ info.id }}</h3>
           {% endfor %}
       </select>
-
+       
+       <h3>{{inmueble.propietario_id.usuarios_id.id}} este es inmueble</h3>
 
       <label for="propietario_telefono">Telefono del Propietario</label>
       <input type="number" name="propietario_telefono" value="{{ inmueble.propietario_id.usuarios_id.telefono }}" readonly><br>
-      <label for="direccion">Dirección</label>
-      <input type="text" name="direccion" value="{{ inmueble.direccion}}" readonly><br>
 
-      <label for="tipo_inmueble">Tipo de Inmueble</label>
-        <select name="tipo_inmueble" id="tipo_inmueble" disabled>
-            <option value="{{ tipo }}">{{ tipo }}</option>
-            <option value="1">Casa</option>
-            <option value="2">Apartamento</option>
-            <option value="3">Local</option>
-            <option value="4">Aparta-estudio</option>
-        </select><br>
-
+      <h3>Datos del Inquilino</h3>
       <label for="arrendatario">Arrendatario: </label>
       {% if inmueble.arrendatario_id_id %}
       <input type="text" name="arrendatario" value="{{ inmueble.arrendatario_id.usuarios_id.nombre |add:' '|add:inmueble.arrendatario_id.usuarios_id.apellido }}" readonly><br>
@@ -57,33 +53,64 @@
       
       <label for="addArrendatario" id="arrendatarioTitle" style="display:none;">Añadir o cambiar arrendatario:</label>
       <select name="addArrendatario" id="addArrendatario" style="display:none;">
-          <option value="">Seleccionar al arrendatario
-          </option>
+          <option value="{{ inmueble.arrendatario_id.usuarios_id.id}}">{{ inmueble.arrendatario_id.usuarios_id.nombre }} {{ inmueble.arrendatario_id.usuarios_id.apellido }}</option>
           <option value="">Aún no tiene arrendatario</option>
           {% for info in arrendatario %}
           <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
+          <h3>{{ info.id }}</h3>
           {% endfor %}
       </select>
-      
-      <label for="estado">Estado del inmueble:</label>
-      <input type="text" name="estado" value="{{ habilitada }}" readonly><br>
+
+      <h3>{{ inmueble.arrendatario_id.usuarios_id.id}} este es arrendatario</h3>
+
+      <h3>Datos del Inmueble</h3>
+      <label for="direccion">Dirección</label>
+      <input type="text" name="direccion" value="{{ inmueble.direccion}}" readonly><br>
+
+      <label for="tipo_inmueble">Tipo de Inmueble</label>
+        <select name="tipo_inmueble" id="tipo_inmueble" disabled>
+            <option value="{{ inmueble.tipo }}">{{ tipo }}</option>
+            <option value="1">Casa</option>
+            <option value="2">Apartamento</option>
+            <option value="3">Local</option>
+            <option value="4">Aparta-estudio</option>
+        </select><br>
+
+      <label for="tipo_estado">Tipo de Estado</label>
+        <select name="tipo_estado" id="tipo_estado" disabled>
+            <option value="{{ inmueble.habilitada }}">{{ habilitada }}</option>
+            <option value="1">Activo</option>
+            <option value="2">No utilizado</option>
+            <option value="3">En proceso</option>
+            <option value="4">Indefinido</option>
+        </select><br>
+
       <label for="ref">Ref</label>
       <input type="text" name="ref" value="{{ inmueble.ref }}" readonly><br>
-      <label for="valor">Valor del inmueble</label>
-      <input type="number" name="valor" value="{{ inmueble.canon}}" readonly><br>
+      <label for="canon">Valor del inmueble</label>
+      <input type="number" name="canon" value="{{inmueble.canon}}" readonly><br>
       
-      <!-- Esto esta pendiente de organizar
       <label for="porcentaje_descuento">Porcentaje de descuento:</label>
-      <input type="number" name="porcentaje_descuento" value="{{ porcentaje }}" readonly><br>
+        <select name="porcentaje_descuento" id="porcentaje_descuento" disabled>
+            <option value="{{ inmueble.porcentaje }}">{{ porcentaje }}%</option>
+            <option value="1">13%</option>
+            <option value="2">12%</option>
+            <option value="3">12.5%</option>
+            <option value="4">10%</option>
+            <option value="5">9%</option>
+            <option value="6">8%</option>
+        </select><br>
 
       <label for="servicios">Servicios incluidos:</label>
-      {% for servicio in servicios %}
-        <input type="checkbox" name="servicios" value="{{ servicio }}" checked disabled>{{ servicio }}<br>
-      {% endfor %}
-      --->
+      <div>
+        <label><input type="checkbox" name="opciones" value="Agua" {% if 'Agua' in servicios %} checked disabled {% endif %}> Agua</label><br>
+        <label><input type="checkbox" name="opciones" value="Electricidad" {% if 'Electricidad' in servicios %} checked disabled {% endif %}> Electricidad</label><br>
+        <label><input type="checkbox" name="opciones" value="Gas" {% if 'Gas' in servicios %} checked disabled {% endif %}> Gas</label><br>
+        <label><input type="checkbox" name="opciones" value="Internet" {% if 'Internet' in servicios %} checked disabled {% endif %}> Internet</label><br>
+      </div>
 
       <label for="descrip">Descripción</label>
-      <input type="text" name="decrip" value="{{ inmueble.descripcion }}" readonly><br>
+      <input type="text" name="descrip" value="{{ inmueble.descripcion }}" readonly><br>
       <label for="documento">Documentos: </label>
       {% if doc.pdf %}
       <a href="{{ doc.pdf.url }}" target="_blank">Ver Documento</a> <br>

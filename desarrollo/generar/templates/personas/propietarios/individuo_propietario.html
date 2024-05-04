@@ -17,6 +17,7 @@
   <h2>Propietario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h2>
   <button type="button" id="btnEdit"name="btnEdit">Edit</button>
   <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
+  
   <form action="{% url 'ActualizarPropietario' %}" id="miFormulario" method="post">
       {% csrf_token %}
       <br><br>

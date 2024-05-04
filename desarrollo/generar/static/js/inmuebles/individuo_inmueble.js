@@ -56,41 +56,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (btnCancel) {
         btnCancel.addEventListener('click', function() {
-            var inputs = miFormulario.querySelectorAll('input, select');
-            inputs.forEach(function(input) {
-                input.setAttribute('readonly', '');
-                input.setAttribute('disabled', '');
-            });
+            location.reload(); // Recargar la página para descartar los cambios
+            // var inputs = miFormulario.querySelectorAll('input, select');
+            // inputs.forEach(function(input) {
+            //     input.setAttribute('readonly', '');
+            //     input.setAttribute('disabled', '');
+            // });
 
-            // Cambiar el tipo de input de 'fecha_pago' de nuevo a 'datetime' y restaurar el valor original
-            var fechaPagoInput = miFormulario.querySelector('input[name="fecha_pago"]');
-            if (fechaPagoInput) {
-                fechaPagoInput.type = 'datetime';
-                fechaPagoInput.value = fechaPagoInput.dataset.originalValue; // Restaurar el valor original
-            }
+            // // Cambiar el tipo de input de 'fecha_pago' de nuevo a 'datetime' y restaurar el valor original
+            // var fechaPagoInput = miFormulario.querySelector('input[name="fecha_pago"]');
+            // if (fechaPagoInput) {
+            //     fechaPagoInput.type = 'datetime';
+            //     fechaPagoInput.value = fechaPagoInput.dataset.originalValue; // Restaurar el valor original
+            // }
 
-            this.style.display = 'none';
-            if (btnEdit) {
-                btnEdit.style.display = 'block';
-            }
-            if (imagenInput) {
-                imagenInput.style.display = 'none';
-            }
-            if (documentoInput) {
-                documentoInput.style.display = 'none';
-            }
-            if (addArrendatario) {
-                addArrendatario.style.display = 'none';
-            }
-            if (arrendatarioTitle) {
-                arrendatarioTitle.style.display = 'none';  
-            }
-            if (addPropietario) {
-                addPropietario.style.display = 'none';  
-            }
-            if (pripietarioTitle) {
-                pripietarioTitle.style.display = 'none';  
-            }
+            // this.style.display = 'none';
+            // if (btnEdit) {
+            //     btnEdit.style.display = 'block';
+            // }
+            // if (imagenInput) {
+            //     imagenInput.style.display = 'none';
+            // }
+            // if (documentoInput) {
+            //     documentoInput.style.display = 'none';
+            // }
+            // if (addArrendatario) {
+            //     addArrendatario.style.display = 'none';
+            // }
+            // if (arrendatarioTitle) {
+            //     arrendatarioTitle.style.display = 'none';  
+            // }
+            // if (addPropietario) {
+            //     addPropietario.style.display = 'none';  
+            // }
+            // if (pripietarioTitle) {
+            //     pripietarioTitle.style.display = 'none';  
+            // }
             
         });
     }

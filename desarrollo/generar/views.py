@@ -65,12 +65,12 @@ diccionarioTipoInmueble={
 }
 
 diccionarioPorcentajeDescuento = { # Relacionado al porcentaje de descuento por cada inmueble al valor a pagar de arrendatario
-    '1' : 0.13,
-    '2' : 0.12,
-    '3' : 0.125,
-    '4' : 0.10,
-    '5' : 0.09,
-    '6' : 0.08,
+    '1' : 13,
+    '2' : 12,
+    '3' : 12.5,
+    '4' : 10,
+    '5' : 9,
+    '6' : 8,
 }
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -234,66 +234,107 @@ def add_inmueble(request): #ayuda a la Vista para añadir inmueble
 
 @autenticado_required
 def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
-      if request.method == "POST":
-        id_propietario = request.POST.get('propietario', None)
-        direc = request.POST.get('direccion', None)
-        tipo_inmueble = request.POST.get('tipo_inmueble', None)
-        canon = request.POST.get('canon', None)
-        estado = request.POST.get('tipo_estado', None)
-        porcentaje = request.POST.get('porcentaje_descuento', None)
-        descrip = request.POST.get('descrip', None)
-        
-        opciones_seleccionadas = request.POST.getlist('opciones') #Tomo y creo una lista por todas las opcines elegidas
-        servicios = ",".join(opciones_seleccionadas) #Las combino en una sola cadena de texto seguidas por ","
-        
-        ultimo_ref = inmueble.objects.all().aggregate(Max('ref'))['ref__max']
-        if ultimo_ref is None:
-            nuevo_ref = "1"
-        else:
-            nuevo_ref = str(int(ultimo_ref) + 1)
+        if request.method == "POST":
+            id_propietario = request.POST.get('propietario', None)
+            direc = request.POST.get('direccion', None)
+            tipo_inmueble = request.POST.get('tipo_inmueble', None)
+            canon = request.POST.get('canon', None)
+            estado = request.POST.get('tipo_estado', None)
+            porcentaje = request.POST.get('porcentaje_descuento', None)
+            descrip = request.POST.get('descrip', None)
+            
+            opciones_seleccionadas = request.POST.getlist('opciones') #Tomo y creo una lista por todas las opcines elegidas
+            servicios = ",".join(opciones_seleccionadas) #Las combino en una sola cadena de texto seguidas por ","
+            
+            ultimo_ref = inmueble.objects.all().aggregate(Max('ref'))['ref__max']
+            if ultimo_ref is None:
+                nuevo_ref = "1"
+            else:
+                nuevo_ref = str(int(ultimo_ref) + 1)
 
-        id_arrendatario = request.POST.get('arrendatario', None)
-        model=inmueble(propietario_id_id = id_propietario, arrendatario_id_id = id_arrendatario, ref= nuevo_ref, tipo = tipo_inmueble, canon= canon, descripcion= descrip, habilitada = estado, servicios = servicios, porcentaje = porcentaje, direccion= direc)
-        model.save()
+            id_arrendatario = request.POST.get('arrendatario', None)
+            model=inmueble(propietario_id_id = id_propietario, arrendatario_id_id = id_arrendatario, ref= nuevo_ref, tipo = tipo_inmueble, canon= canon, descripcion= descrip, habilitada = estado, servicios = servicios, porcentaje = porcentaje, direccion= direc)
+            model.save()
 
-      if request.method == "POST":
-        objetoInmueble = inmueble.objects.last() #Guarda todo el objeto del último registro
-        inmueble_id = objetoInmueble.id
-        document = request.FILES.get('documento')
-        imagen = request.FILES.get('imagen')
-        descuento = 0
-        model1 = documentos(propiedad_id_id = inmueble_id, pdf = document, imagen = imagen, descuento = descuento)
-        model1.save()
-      return redirect('inmu')
+        if request.method == "POST":
+            objetoInmueble = inmueble.objects.last() #Guarda todo el objeto del último registro
+            inmueble_id = objetoInmueble.id
+            document = request.FILES.get('documento')
+            imagen = request.FILES.get('imagen')
+            descuento = 0
+            model1 = documentos(propiedad_id_id = inmueble_id, pdf = document, imagen = imagen, descuento = descuento)
+            model1.save()
+        return redirect('inmu')
 
 @autenticado_required
 def individuo_inmueble(request, id):
-    objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(id = id)
-    objetoDoc = documentos.objects.filter(propiedad_id_id = id)
+    objetoInmueble = inmueble.objects.select_related('propietario_id__usuarios_id').get(id = id) #Get arroja un solo objeto filter un conjutno con n elementos
+    objetoDoc = documentos.objects.get(propiedad_id_id = id)
     
-    objetoTipo = inmueble.objects.values_list('tipo', flat=True)
-    tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
+    clave_tipo = diccionarioTipoInmueble.get(str(objetoInmueble.tipo))
+    clave_estado = diccionarioInmueble.get(str(objetoInmueble.habilitada))
+    clave_porcentaje = diccionarioPorcentajeDescuento.get(str(objetoInmueble.porcentaje))
+    
+    servicios = [servicio.strip() for servicio in objetoInmueble.servicios.split(',')] if objetoInmueble.servicios else []
 
-    objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
-    habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
-    
-    objetoPorcentaje = inmueble.objects.values_list('porcentaje', flat=True)
-    porcentaje = [diccionarioPorcentajeDescuento[str(values)] for values in objetoPorcentaje] 
-    
-    servicios = [servicio.strip() for servicio in objetoInmuebles[0].servicios.split(',')] if objetoInmuebles else [] #Aun no esta muy bien
-    
-    All = list(zip(objetoInmuebles, objetoDoc, tipoInmueble, habilitada,porcentaje,servicios))
+    All = [(objetoInmueble, objetoDoc, clave_tipo,clave_estado,clave_porcentaje,servicios)]
     objetoArrendatario = usuarios.objects.filter(propie_client=2)
-    return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario})
+    objetoPropietario = usuarios.objects.filter(propie_client=1)
+    return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario, 'propietario':objetoPropietario})
 
 @autenticado_required
 def actualizar_inmueble(request):
+    id_inmueble = request.POST.get('id',None)
+    
+    id_propietario = int(request.POST.get('addPropietario', None))
+    propietario_obj = propietario.objects.get(usuarios_id = id_propietario)
+    
+    id_arrendatario = request.POST.get('addArrendatario', None)
+    if id_arrendatario:
+        arrendatario_obj = arrendatario.objects.get(usuarios_id = int(id_arrendatario))
+    else:
+        arrendatario_obj = None
+                       
+    direc = request.POST.get('direccion', None)
+    tipo_inmueble = request.POST.get('tipo_inmueble', None)
+    estado = request.POST.get('tipo_estado', None)
+    ref = request.POST.get('ref',None)
+    canon = request.POST.get('canon', None)
+    porcentaje = request.POST.get('porcentaje_descuento', None)
+    descrip = request.POST.get('descrip', None)
+    
+    print(f"ID del propietario: {id_propietario}")
+    
+    opciones_seleccionadas = request.POST.getlist('opciones') #Tomo y creo una lista por todas las opcines elegidas
+    servicios = ",".join(opciones_seleccionadas) #Las combino en una sola cadena de texto seguidas por ","
+    
+    guardar = inmueble.objects.get(id=id_inmueble)
+    guardar.propietario_id = propietario_obj
+    guardar.arrendatario_id = arrendatario_obj
+    guardar.tipo = tipo_inmueble
+    guardar.canon = canon
+    guardar.porcentaje = porcentaje
+    guardar.servicios = servicios
+    guardar.direccion = direc
+    guardar.descripcion = descrip
+    guardar.habilitada = estado
+    guardar.ref = ref
+    
+    guardar.save()
+
+    
+    document = request.FILES.get('documentoRes')
+    imagen = request.FILES.get('imagenRes')
+    descuento = 0
+    
+    guardar2 = documentos.objects.get(id=id_inmueble)
+    guardar2.pdf = document
+    guardar2.imagen = imagen
+    guardar2.descuento = descuento
+    guardar2.save()
+    
+    return render(request,'inmuebles/individuo_inmueble.html')
     #Recordar en el tipo de inmueble, invertir el valor que tenga por determinado, utilizando un diccionario inverso.
-    # porcentaje_descuento = request.POST.get('porcentaje_descuento')
-    # servicios_seleccionados = request.POST.getlist('servicios')
-    # servicios = ",".join(servicios_seleccionados)
-        
-    return redirect('inmu')
 
 
 #----------------------------------------------------------------Logica para Propietarios----------------------------------------------------------
