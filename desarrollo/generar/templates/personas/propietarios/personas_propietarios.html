@@ -40,9 +40,8 @@
         </tr>
     </thead>
     <tbody id="propietarios">
-      {% for usuario, estado, banco in datosUsuario %}
+      {% for usuario, estado, banco, bancolink in datosUsuario %}
       <tr>
-          
         <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ forloop.counter }}</button></td>
         <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.nombre }}</button></td>
         <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.apellido }}</button></td>
@@ -51,11 +50,10 @@
         <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.expedida }}</button></td>
         <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email }}</button></td>
         <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email2 }}</button></td>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.telefono }}</button></td>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.telefono2 }}</button></td>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ banco }}</button></td>
+        <td><a href=" https://wa.me/+57{{ usuario.telefono }}">{{ usuario.telefono }}</a></td>
+        <td><a href=" https://wa.me/+57{{ usuario.telefono2 }}">{{ usuario.telefono2 }}</a></td>
+        <td><a href="{{ bancolink.0 }}">{{ banco }}</a></td>
         <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ estado }}</button></td>
-      
       </tr>
       {% endfor %}
     </tbody>

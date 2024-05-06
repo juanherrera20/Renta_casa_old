@@ -3,8 +3,6 @@ from django.db.models import Max
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, documentos
 from werkzeug.security import generate_password_hash, check_password_hash
-from django.db.models import F 
-from django.contrib.auth import logout, login #Inicio y fin de sesión
 
 
 #Librerias y paquetes posbilemente utiles
@@ -71,6 +69,25 @@ diccionarioPorcentajeDescuento = { # Relacionado al porcentaje de descuento por 
     '4' : 10,
     '5' : 9,
     '6' : 8,
+}
+
+diccionarioBancos = {
+    'None': 'None',
+    'Bancolombia':'https://www.bancolombia.com/personas',
+    'Davivienda':'https://www.davivienda.com/wps/portal/personas/nuevo',
+    'Bogotá':'https://digital.bancodebogota.co/credito/index.html?&&gad_source=1&gclid=Cj0KCQjw_-GxBhC1ARIsADGgDjs2iaREWFvmN9HHQwW1XP2FedHJAy8UbC0GZaPn_b9V-Su31VwBI_caAn_AEALw_wcB',
+    'Popular': 'https://www.bancopopular.com.co/wps/portal/bancopopular/inicio/para-ti/productos-ahorro-inversion/cuentas-ahorro/cuenta-para-ahorrar?utm_source=google&utm_medium=CAH-PRS&utm_campaign=renovacionkvabril-performance-performancemx-CPA-2024-mayo&utm_content=cuentaahorrar&gad_source=1&gclid=Cj0KCQjw_-GxBhC1ARIsADGgDjvLTm4_cc8X9j7ChblFhEoHOwu1j0sc1JTJajH6hwOp1cDvbmODYpMaArT1EALw_wcB',
+    'Colpatria':'https://www.scotiabankcolpatria.com',
+    'Agrario':'https://www.bancoagrario.gov.co',
+    'Social':'https://www.bancocajasocial.com',
+    'Falabella':'https://www.bancofalabella.com.co/page/banco-de-los-gennials?utm_source=sem&utm_medium=cpc&utm_campaign=INI_search_branding&utm_content=text-ad-N1-kw-banco&gad_source=1&gclid=Cj0KCQjw_-GxBhC1ARIsADGgDjunqRYs2JELpJfa9_v_RrPH9frzUCvdf3yhn068F_0q63ztlYWOqUwaArTOEALw_wcB&gclsrc=aw.ds',
+    'BBVA':'https://www.bbva.com.co',
+    'Nequi':'https://www.nequi.com.co',
+    'Daviplata':'https://comunicaciones.davivienda.com/meter-plata?elqTrackId=9cdb82949cfe47d38761d16836421ae4',
+    'Movii':'https://www.movii.com.co',
+    'Tpaga':'https://tpaga.co',
+    'Nubank':'https://nu.com.co/cf/cuenta/',
+    'PayPal':'https://www.paypal.com/co/home',
 }
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -219,7 +236,7 @@ def add_inmueble(request): #ayuda a la Vista para añadir inmueble
             # Crea un diccionario con el ID y el nombre completo del propietario
             propietarios_info.append({
                 'id': primer_propietario.id,
-                'nombre_completo': f"{propietario.nombre} {propietario.apellido}" 
+                'nombre_completo': f"{propietario.apellido} {propietario.nombre}" 
             })
     arrendatarios_info = []
     for arrendatario in objetoArrendatario:
@@ -347,8 +364,9 @@ def personas_propietarios(request): #Tabla en vista de personas propietarios
     usuarios_con_estados = []
     for usuario, estado in zip(objetoUsuario, estados): #Enpaquetando variables para que quede en una sola y poder iteraralas
         banco = usuario.propietario_set.first().bancos if usuario.propietario_set.exists() else None
-        usuarios_con_estados.append((usuario, estado, banco))
-    
+        bancoLink = [diccionarioBancos[str(banco)]] 
+        usuarios_con_estados.append((usuario, estado, banco, bancoLink))
+
     return render(request, 'personas/propietarios/personas_propietarios.html',{'datosUsuario':usuarios_con_estados})
 
 def add_propietario(request): #Vista para añadir un propietario
@@ -461,7 +479,6 @@ def analisis_propietarios(request):
     #Se debe hacer la logica para saber cuantos inmuebles tiene el propietario
     return render(request, 'analisis/propietarios/analisis_propietarios.html',{'datosUsuario': usuarios_con_estados})
 
-
 #-------------------------------------------------------------------Logica para inquilinos/Arrendatarios----------------------------------------------------------------
 
 def personas_inquilinos(request): #Logica para la tabla de Inquilinos-Personas
@@ -476,7 +493,7 @@ def personas_inquilinos(request): #Logica para la tabla de Inquilinos-Personas
     return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados})
 
 def add_inquilino(request): #Vista para añadir inquilinos
-    objetoInmueble = inmueble.objects.all()
+    objetoInmueble = inmueble.objects.filter(arrendatario_id_id = None)
     return render(request, 'personas/inquilinos/add_inquilino.html',{'inmuebles': objetoInmueble})
 
 def guardar_inquilino(request): #Función para guardar inquilinos
@@ -698,13 +715,12 @@ def actualizar_modal(request): #Logica para actualizar cada modal o tarea
 
     hora_inicio = request.POST.get('hora_inicio')
     horaRes = request.POST.get('horaRes')
+    hora =None
     if hora_inicio:
         hora = hora_inicio
-    else: 
-        horaRes = horaRes.strip()
-        hour = datetime.strptime(horaRes, "%I:%M %p")
-        hora = hour.strftime("%H:%M")
-    
+    else:
+        hora = convert_time(horaRes)
+        
     descrip = request.POST.get('descrip')
     etiqueta = request.POST.get('etiqueta')
     responsable = request.POST.get('usuario')
@@ -720,6 +736,14 @@ def actualizar_modal(request): #Logica para actualizar cada modal o tarea
     guardarT.save()
     return redirect('tareas')
 
+def convert_time(horaRes):
+    horaRes = horaRes.strip().replace(".","")
+    try:
+        hour = datetime.strptime(horaRes, "%I:%M %p")
+    except ValueError:
+        hour = datetime.strptime(horaRes, "%I:%M %p.")
+    hora = hour.strftime("%H:%M")
+    return hora
 
 #------------------------------------------------------------------------------Logica para las notificaciones-----------------------------------------------------------------------------------------  
 
