@@ -34,25 +34,25 @@
             <th>Estado</th>
             <th>Bancos</th>
             <th>Descuento Total</th>
+            <th>Valor del descuento</th>
             <th>Valor a Pagar</th>
-            <th>Total Propiedades</th>
         </tr>
     </thead>
     <tbody id="propietarios">
-      {% for usuario, direccion, fechaPago, bancos, estados in datosUsuario %}
+      {% for inmueble, tipoInmueble, habilitada, estadoPropietario, descuento, totales in all %}
       <tr>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ forloop.counter}}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.nombre |add:" "|add:usuario.apellido}}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ direccion }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ fechaPago }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.telefono }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ estados }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">{{ bancos }}</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">12345</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">$$$$$</button></td>
-          <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'AllValues' id=usuario.id %}')" value="{{ usuario.id }}">ejemplo</button></td>
-      </tr>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ forloop.counter}}</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ inmueble.propietario_id.usuarios_id.nombre |add:" "|add:inmueble.propietario_id.usuarios_id.apellido }}</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ inmueble.propietario_id.direccion }}</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ inmueble.propietario_id.fecha_pago }}</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ inmueble.propietario_id.usuarios_id.telefono }}</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ inmueble.propietario_id.usuarios_id.email }}</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ estadoPropietario }}</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ inmueble.propietario_id.bancos }}</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ descuento }}%</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">${{ totales.totalDescuento }}</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">${{ totales.totalPago }}</button></td>
+        </tr>
       {% endfor %}
   </tbody>
 </table>

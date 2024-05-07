@@ -103,12 +103,11 @@
 
       <label for="servicios">Servicios incluidos:</label>
       <div>
-        <label><input type="checkbox" name="opciones" value="Agua" {% if 'Agua' in servicios %} checked disabled {% endif %}> Agua</label><br>
-        <label><input type="checkbox" name="opciones" value="Electricidad" {% if 'Electricidad' in servicios %} checked disabled {% endif %}> Electricidad</label><br>
-        <label><input type="checkbox" name="opciones" value="Gas" {% if 'Gas' in servicios %} checked disabled {% endif %}> Gas</label><br>
-        <label><input type="checkbox" name="opciones" value="Internet" {% if 'Internet' in servicios %} checked disabled {% endif %}> Internet</label><br>
+        <label><input type="checkbox" name="opciones" value="Agua" {% if 'Agua' in servicios %} checked disabled {% endif %}> Agua</label><input type="number" name="agua" placeholder="{{ matricula.0 }}"  value="{{ matricula.0 }}" readonly><br>
+        <label><input type="checkbox" name="opciones" value="Electricidad" {% if 'Electricidad' in servicios %} checked disabled {% endif %}> Electricidad</label><input type="number" name="electric" placeholder="{{ matricula.1 }}" value="{{ matricula.1 }}" readonly><br>
+        <label><input type="checkbox" name="opciones" value="Gas" {% if 'Gas' in servicios %} checked disabled {% endif %}> Gas</label><input type="number" name="gas" placeholder="{{ matricula.2 }}" value="{{ matricula.2 }}" readonly><br>
+        <label><input type="checkbox" name="opciones" value="Internet" {% if 'Internet' in servicios %} checked disabled {% endif %}> Internet</label><input type="number" name="internet" placeholder="{{ matricula.3 }}" value="{{ matricula.3 }}" readonly><br><br>
       </div>
-
       <label for="descrip">Descripción</label>
       <input type="text" name="descrip" value="{{ inmueble.descripcion }}" readonly><br>
       <label for="documento">Documentos: </label>

@@ -61,7 +61,7 @@
         </tr>
     </thead>
     <tbody id="propietarios">
-      {% for propietario, direccion, rango_propietarios, estados in propietarios %}
+      {% for propietario, direccion, estados in propietarios %}
       <tr>
           <td>{{ forloop.counter}}</td>
           <td>{{ propietario.nombre |add:" "|add:propietario.apellido}}</td>
@@ -90,7 +90,7 @@
         </tr>
     </thead>
     <tbody id="inquilinos">
-      {% for arrendatario, direccionArrendatario, rango_arrendatarios, estadosArrendatario in arrendatarios %}
+      {% for arrendatario, direccionArrendatario, estadosArrendatario in arrendatarios %}
       <tr>
           <td>{{ forloop.counter}}</td>
           <td>{{ arrendatario.nombre |add:" "|add:arrendatario.apellido}}</td>

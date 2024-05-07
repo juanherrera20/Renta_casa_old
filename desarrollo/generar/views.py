@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import re
 from django.db.models import Max
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, documentos
@@ -164,17 +165,16 @@ def register(request):
 
 @autenticado_required #Decorador personalizado 
 def dash(request):
-    objetoPropietario = usuarios.objects.filter(propie_client=1) #Propietarios
-    num_propietarios = objetoPropietario.count()
-    rango_propietarios = list(range(1, num_propietarios + 1))
+    objetoPropietario = usuarios.objects.filter(propie_client=1).order_by('-id')[:5] #Propietarios
+    contadorPropietario = usuarios.objects.filter(propie_client=1)
+    num_propietarios = contadorPropietario.count()
 
-    objetoArrendatario = usuarios.objects.filter(propie_client=2) #Clientes
-    num_arrendatario = objetoArrendatario.count()
-    rango_arrendatarios = list(range(1, num_arrendatario + 1))
+    objetoArrendatario = usuarios.objects.filter(propie_client=2).order_by('-id')[:5] #Clientes
+    contadorArrendatario = usuarios.objects.filter(propie_client=2)
+    num_arrendatario = contadorArrendatario.count()
 
     objetoInmueble = inmueble.objects.all()
     num_inmueble = objetoInmueble.count()
-    rango_inmuebles = list(range(1, num_inmueble + 1))
 
     tareas_pendientes = tareas.objects.filter(estado='Pendiente').select_related('superuser_id')
     num_tareas = tareas_pendientes.count()
@@ -191,16 +191,16 @@ def dash(request):
         direccion = propietario.propietario_set.first().direccion if propietario.propietario_set.exists() else None
         estadosDiccionario = propietario.propietario_set.first().habilitarPago if propietario.propietario_set.exists() else None
         estados = diccionarioPago[str(estadosDiccionario)]
-        usuarios_propietarios.append((propietario, direccion, rango_propietarios, estados))
+        usuarios_propietarios.append((propietario, direccion, estados))
 
     usuarios_arrendatarios = []
     for arrendatario in objetoArrendatario:
         direccionArrendatario = arrendatario.arrendatario_set.first().direccion if arrendatario.arrendatario_set.exists() else None
         estadosDiccionarioArrendatario = arrendatario.arrendatario_set.first().habilitarPago if arrendatario.arrendatario_set.exists() else None
         estadosArrendatario = diccionarioPago[str(estadosDiccionarioArrendatario)]
-        usuarios_arrendatarios.append((arrendatario, direccionArrendatario, rango_arrendatarios, estadosArrendatario))
+        usuarios_arrendatarios.append((arrendatario, direccionArrendatario, estadosArrendatario))
     
-    objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').all()
+    objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').order_by('-id')[:5]
 
     objetoTipo = inmueble.objects.values_list('tipo', flat=True)
     tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
@@ -256,11 +256,21 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
             direc = request.POST.get('direccion', None)
             tipo_inmueble = request.POST.get('tipo_inmueble', None)
             canon = request.POST.get('canon', None)
-            estado = request.POST.get('tipo_estado', None)
             porcentaje = request.POST.get('porcentaje_descuento', None)
             descrip = request.POST.get('descrip', None)
             
             opciones_seleccionadas = request.POST.getlist('opciones') #Tomo y creo una lista por todas las opcines elegidas
+
+            agua = request.POST.get('agua') if request.POST.get('agua') else "0000"
+            electric = request.POST.get('electric') if request.POST.get('electric') else "0000"
+            gas = request.POST.get('gas') if request.POST.get('gas') else "0000"
+            internet = request.POST.get('internet') if request.POST.get('internet') else "0000"
+                    
+            opciones_seleccionadas.extend([agua, electric, gas, internet])
+            """
+            Antes de combinar los datos en una sola cadena. Se crea una lista con los inputs de las matriculas
+            Donde se guardarán de la siguiente manera [agua, electric, gas, internet] y así mismo se pueden rescatar.
+            """
             servicios = ",".join(opciones_seleccionadas) #Las combino en una sola cadena de texto seguidas por ","
             
             ultimo_ref = inmueble.objects.all().aggregate(Max('ref'))['ref__max']
@@ -270,6 +280,11 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
                 nuevo_ref = str(int(ultimo_ref) + 1)
 
             id_arrendatario = request.POST.get('arrendatario', None)
+            if id_arrendatario:
+                estado = 1
+            else:
+                estado = 2
+
             model=inmueble(propietario_id_id = id_propietario, arrendatario_id_id = id_arrendatario, ref= nuevo_ref, tipo = tipo_inmueble, canon= canon, descripcion= descrip, habilitada = estado, servicios = servicios, porcentaje = porcentaje, direccion= direc)
             model.save()
 
@@ -293,11 +308,18 @@ def individuo_inmueble(request, id):
     clave_porcentaje = diccionarioPorcentajeDescuento.get(str(objetoInmueble.porcentaje))
     
     servicios = [servicio.strip() for servicio in objetoInmueble.servicios.split(',')] if objetoInmueble.servicios else []
+    newServicios = extract_numbers(servicios)
+    matriculas = [numero if numero!= 0 else 'No existe' for numero in newServicios]
 
     All = [(objetoInmueble, objetoDoc, clave_tipo,clave_estado,clave_porcentaje,servicios)]
     objetoArrendatario = usuarios.objects.filter(propie_client=2)
     objetoPropietario = usuarios.objects.filter(propie_client=1)
-    return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario, 'propietario':objetoPropietario})
+    return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario, 'propietario':objetoPropietario, 'matricula':matriculas})
+
+def extract_numbers(lst): #Función para sacar los números de una lista mixta.
+    pattern = re.compile(r'\d+')# Compila un patrón de expresión regular para coincidir con dígitos
+    extracted_numbers = [pattern.findall(s) for s in lst]# Usa el patrón para extraer todos los dígitos de cada cadena en la lista
+    return [int(x) for sublist in extracted_numbers for x in sublist]# Convierte los números extraídos de strings a enteros
 
 @autenticado_required
 def actualizar_inmueble(request):
@@ -323,6 +345,11 @@ def actualizar_inmueble(request):
     print(f"ID del propietario: {id_propietario}")
     
     opciones_seleccionadas = request.POST.getlist('opciones') #Tomo y creo una lista por todas las opcines elegidas
+    agua = request.POST.get('agua') if request.POST.get('agua') else "0000"
+    electric = request.POST.get('electric') if request.POST.get('electric') else "0000"
+    gas = request.POST.get('gas') if request.POST.get('gas') else "0000"
+    internet = request.POST.get('internet') if request.POST.get('internet') else "0000"            
+    opciones_seleccionadas.extend([agua, electric, gas, internet])
     servicios = ",".join(opciones_seleccionadas) #Las combino en una sola cadena de texto seguidas por ","
     
     guardar = inmueble.objects.get(id=id_inmueble)
@@ -339,7 +366,6 @@ def actualizar_inmueble(request):
     
     guardar.save()
 
-    
     document = request.FILES.get('documentoRes')
     imagen = request.FILES.get('imagenRes')
     descuento = 0
@@ -350,9 +376,8 @@ def actualizar_inmueble(request):
     guardar2.descuento = descuento
     guardar2.save()
     
-    return render(request,'inmuebles/individuo_inmueble.html')
+    return redirect('inmu')
     #Recordar en el tipo de inmueble, invertir el valor que tenga por determinado, utilizando un diccionario inverso.
-
 
 #----------------------------------------------------------------Logica para Propietarios----------------------------------------------------------
 @autenticado_required
@@ -464,20 +489,32 @@ def individuo_propietario(request, id):
 
 def analisis_propietarios(request):
     #Logica para la tabla de propietarios
-    objetoUsuario = usuarios.objects.filter(propie_client=1) # Se filtra para saber si son propietarios o clientes
-    usuarios_con_estados = []
-    for usuario in objetoUsuario:
-        direccion = usuario.propietario_set.first().direccion if usuario.propietario_set.exists() else None
-        fechaPago = usuario.propietario_set.first().fecha_pago if usuario.propietario_set.exists() else None
-        bancos = usuario.propietario_set.first().bancos if usuario.propietario_set.exists() else None
-        estadosDiccionario = usuario.propietario_set.first().habilitarPago if usuario.propietario_set.exists() else None
-        estados = diccionarioPago[str(estadosDiccionario)]
-        usuarios_con_estados.append((usuario, direccion, fechaPago, bancos, estados))
+    objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').all()
 
-    #Se debe hacer la logica para tomar el valor/canon total a pagar a propietario
-    #Se debe hacer la logica para tomar el decuento/porcentaje total con respecto a inmuebles y propietarios
-    #Se debe hacer la logica para saber cuantos inmuebles tiene el propietario
-    return render(request, 'analisis/propietarios/analisis_propietarios.html',{'datosUsuario': usuarios_con_estados})
+    objetoTipo = inmueble.objects.values_list('tipo', flat=True)
+    tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
+
+    objetoPorcentaje = inmueble.objects.values_list('porcentaje', flat=True)
+    descuento = [diccionarioPorcentajeDescuento[str(values)]for values in objetoPorcentaje ]
+
+    objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
+    habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado]
+
+    objetoEstadoPropietario = inmueble.objects.values_list('propietario_id__habilitarPago', flat=True)
+    estadoPropietario = [diccionarioPago[str(values)]for values in objetoEstadoPropietario]
+
+    objetoCanon = inmueble.objects.values_list('canon', flat=True)
+    totales = []
+
+    for canon, des in zip(objetoCanon,descuento):
+        totalDescuento = ((canon * des)/ 100)
+        totalPago = (canon - totalDescuento)
+        totales.append({ 'totalDescuento': totalDescuento, 'totalPago': totalPago})
+
+    All = list(zip(objetoInmuebles, tipoInmueble, habilitada, estadoPropietario, descuento, totales))
+
+    #Es necesario hacer la logica para saber cuantos inmuebles tiene el propietario?
+    return render(request, 'analisis/propietarios/analisis_propietarios.html',{ 'all': All})
 
 #-------------------------------------------------------------------Logica para inquilinos/Arrendatarios----------------------------------------------------------------
 
