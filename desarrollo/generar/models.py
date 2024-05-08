@@ -1,5 +1,19 @@
 from django.db import models
 from django.db.models.fields import CharField, IntegerField
+import os
+
+#------------------Función para guardar los archivos e imagenes en carpetas separadas y personalizadas----------------------------s
+def carpetas_inmuebles(instance, filename):
+    # Obtener el nombre de la carpeta basado en el ID del inmueble
+    folder_name = str(instance.inmueble.id) + "_" + str(instance.inmueble.direccion)
+    # Crear la ruta completa hacia la carpeta
+    folder_direct = os.path.join('media', folder_name)
+    
+    if not os.path.exists(folder_direct):# Verificar si la carpeta existe, si no, crearla
+        os.makedirs(folder_direct)
+    return os.path.join(folder_name, filename)# Concatenar la ruta de la carpeta con el nombre de archivo original
+#---------------------------------------------------------------------------------------------------------------------------------s
+#Si molesta esta función aquí puede ser pertinente crear un archivo donde metamos todas las funciones
 
 
 # Creations the models.
@@ -77,8 +91,9 @@ class inmueble(models.Model): #Tabla usuarios
     direccion = models.CharField(max_length =300) 
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no. 
+    descuento = models.IntegerField() #Descuento que se descuenta al propietario
     #estrato = models.IntegerField() #opcional, uso del inmueble (vivienda unifamiliar, multifamiliar, local comercial)
-    #quizas falta el aumento de del canon de arrendamiento
+    
     
     class Meta:
         db_table = 'inmueble'
@@ -97,14 +112,19 @@ class tareas(models.Model):
 
     class Meta:
         db_table = 'tareas'
-        
-class documentos(models.Model): #Tabla usuarios
+
+class Imagenes(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
-    propiedad_id = models.ForeignKey('inmueble', on_delete=models.PROTECT)
-    pdf = models.FileField(upload_to="pdf/") #Crea una carpeta para guardar los pdf's y tener mejor accebilidad
-    imagen = models.ImageField(upload_to="images/")
-    descuento = models.IntegerField() #Descuento que se descuenta al propietario
+    inmueble = models.ForeignKey(inmueble, related_name='imagenes', on_delete=models.CASCADE)
+    imagen = models.ImageField(upload_to=carpetas_inmuebles)
     class Meta:
-        db_table = 'documentos'
+        db_table = 'Imagenes'
+    
+class Documentos(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    inmueble = models.ForeignKey(inmueble, related_name='documentos', on_delete=models.CASCADE)
+    documento = models.FileField(upload_to=carpetas_inmuebles)
+    class Meta:
+        db_table = 'Documentos'
 
 #Revisar el tema de documentos e imagenes - con columnas independientes o relacionado.

@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
-import re
+import re, uuid, os
 from django.db.models import Max
 from django.shortcuts import render, redirect
-from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, documentos
+from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -288,20 +288,30 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
             model=inmueble(propietario_id_id = id_propietario, arrendatario_id_id = id_arrendatario, ref= nuevo_ref, tipo = tipo_inmueble, canon= canon, descripcion= descrip, habilitada = estado, servicios = servicios, porcentaje = porcentaje, direccion= direc)
             model.save()
 
-        if request.method == "POST":
-            objetoInmueble = inmueble.objects.last() #Guarda todo el objeto del último registro
-            inmueble_id = objetoInmueble.id
-            document = request.FILES.get('documento')
-            imagen = request.FILES.get('imagen')
-            descuento = 0
-            model1 = documentos(propiedad_id_id = inmueble_id, pdf = document, imagen = imagen, descuento = descuento)
-            model1.save()
+            objetoInmueble = model.id 
+            #Una vez guardado el modelo, obtengo una lista del formulario para guardar las imagenes y documentos en su respectiva tabla
+            imagenes = request.FILES.getlist('imagen')
+            for imagen in imagenes :
+                #El siguiente codigo es para darle un nombre aleatorio a cada imagen (Es opcional, revisar si lo implementamos o no)
+                original_filename = imagen.name
+                filename_unico = str(uuid.uuid4()) + "_" + original_filename
+                imagen.name = filename_unico
+                Imagenes.objects.create(imagen = imagen, inmueble_id = objetoInmueble)
+            
+            documentos = request.FILES.getlist('documento')
+            for documento in documentos :
+                Documentos.objects.create(documento = documento,inmueble_id = objetoInmueble )
+                
         return redirect('inmu')
 
 @autenticado_required
 def individuo_inmueble(request, id):
     objetoInmueble = inmueble.objects.select_related('propietario_id__usuarios_id').get(id = id) #Get arroja un solo objeto filter un conjutno con n elementos
-    objetoDoc = documentos.objects.get(propiedad_id_id = id)
+    documentos = objetoInmueble.documentos.all()
+    imagenes = objetoInmueble.imagenes.all()
+    
+    print(documentos)
+    print(imagenes)
     
     clave_tipo = diccionarioTipoInmueble.get(str(objetoInmueble.tipo))
     clave_estado = diccionarioInmueble.get(str(objetoInmueble.habilitada))
@@ -311,10 +321,11 @@ def individuo_inmueble(request, id):
     newServicios = extract_numbers(servicios)
     matriculas = [numero if numero!= 0 else 'No existe' for numero in newServicios]
 
-    All = [(objetoInmueble, objetoDoc, clave_tipo,clave_estado,clave_porcentaje,servicios)]
+    All = [(objetoInmueble, clave_tipo,clave_estado,clave_porcentaje,servicios)]
     objetoArrendatario = usuarios.objects.filter(propie_client=2)
     objetoPropietario = usuarios.objects.filter(propie_client=1)
-    return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario, 'propietario':objetoPropietario, 'matricula':matriculas})
+    return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario, 'propietario':objetoPropietario, 'matricula':matriculas, 
+                                                                 'documentos':documentos, 'imagenes':imagenes})
 
 def extract_numbers(lst): #Función para sacar los números de una lista mixta.
     pattern = re.compile(r'\d+')# Compila un patrón de expresión regular para coincidir con dígitos

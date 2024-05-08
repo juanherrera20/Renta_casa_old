@@ -14,7 +14,7 @@
 {% endblock title %}
 
 {% block contenido %}
-  {% for inmueble, doc, tipo, habilitada, porcentaje, servicios in inmueble %}
+  {% for inmueble, tipo, habilitada, porcentaje, servicios in inmueble %}
     <h2>Propietario del inmueble: {{ inmueble.propietario_id.usuarios_id.nombre }} {{ inmueble.propietario_id.usuarios_id.apellido }}</h2>
     <button type="button" id="btnEdit"name="btnEdit">Edit</button>
     <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
@@ -38,8 +38,6 @@
           {% endfor %}
       </select>
        
-       <h3>{{inmueble.propietario_id.usuarios_id.id}} este es inmueble</h3>
-
       <label for="propietario_telefono">Telefono del Propietario</label>
       <input type="number" name="propietario_telefono" value="{{ inmueble.propietario_id.usuarios_id.telefono }}" readonly><br>
 
@@ -60,8 +58,6 @@
           <h3>{{ info.id }}</h3>
           {% endfor %}
       </select>
-
-      <h3>{{ inmueble.arrendatario_id.usuarios_id.id}} este es arrendatario</h3>
 
       <h3>Datos del Inmueble</h3>
       <label for="direccion">Dirección</label>
@@ -111,18 +107,28 @@
       <label for="descrip">Descripción</label>
       <input type="text" name="descrip" value="{{ inmueble.descripcion }}" readonly><br>
       <label for="documento">Documentos: </label>
-      {% if doc.pdf %}
-      <a href="{{ doc.pdf.url }}" target="_blank">Ver Documento</a> <br>
+      <h3>{{ documentos.documento }}</h3>
+
+      {% if documentos %}
+        {% for doc in documentos %}
+        <div>
+        <h5>{{ doc.documento.name }}</h5> <a href="{{ doc.documento.url }}" target="_blank">Ver Documento</a> <br>
+        </div>
+        {% endfor %}
       {% else %}
       <p>No hay documentos relacionados</p>
       {% endif %}
       <input type="file" name="documentoRes" id="documentoInput" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" style="display:none;"><!-- CSS -->
+      
       <label for="imagen">Imagen: </label>
-      {% if doc.imagen %}
-      <br><img src="{{ doc.imagen.url }}" name="imagen" width="200" height="200"><br>
+      {% if imagenes %}
+        {% for img in imagenes %}
+          <br><img src="{{ img.imagen.url }}" name="imagen" width="200" height="200"><br>
+        {% endfor %}
       {% else %}
       <p>Este inmueble no tiene imagenes asociadas</p>
       {% endif %}
+
       <input type="file" name="imagenRes" id="imagenInput" accept="image/*" style="display:none;"> <!-- CSS -->
       <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
     </form>

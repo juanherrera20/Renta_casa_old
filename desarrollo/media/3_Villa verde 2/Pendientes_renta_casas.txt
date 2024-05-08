@@ -1,0 +1,3 @@
+Proyecto Renta casas:
+
+Importante, manejar bien el tema de los estados de inmueble y demás objetos, porque en actualizar inmueble el estado no cambia automáticamente, además si se va a automatizar, que sea en todo lado, se puede dejar automático los estados no utilizado y activo, y ya si se desea los demás estados como en proceso e indefinido se puedan cambiar manual (Este ultimo considerar si implementarlo)
