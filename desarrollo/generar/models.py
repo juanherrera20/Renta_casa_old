@@ -52,9 +52,7 @@ class usuarios(models.Model): #Tabla usuarios
 class arrendatario(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
     usuarios_id = models.ForeignKey('usuarios', on_delete=models.PROTECT) #Declaracion de FK
-    propiedad_id = models.ForeignKey('inmueble', on_delete=models.PROTECT)
     direccion = models.CharField(max_length = 200)
-    valor_cobro = models.IntegerField()
     fecha_inicio_cobro = models.DateField(max_length = 20)
     fecha_fin_cobro = models.DateField(max_length = 20)
     inicio_contrato = models.DateField(max_length = 20)
@@ -69,7 +67,6 @@ class arrendatario(models.Model): #Tabla usuarios
 class propietario(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
     usuarios_id = models.ForeignKey('usuarios', on_delete=models.PROTECT) #Declaracion de FK
-    propiedad_id = models.ForeignKey('inmueble', on_delete=models.PROTECT)
     direccion = models.CharField(max_length = 200)
     fecha_pago = models.DateField(max_length = 20)
     habilitarPago = models.IntegerField(default=2)
@@ -92,7 +89,6 @@ class inmueble(models.Model): #Tabla usuarios
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no. 
     descuento = models.IntegerField() #Descuento que se descuenta al propietario
-    #estrato = models.IntegerField() #opcional, uso del inmueble (vivienda unifamiliar, multifamiliar, local comercial)
     
     
     class Meta:

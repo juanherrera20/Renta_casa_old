@@ -72,14 +72,8 @@
             <option value="4">Aparta-estudio</option>
         </select><br>
 
-      <label for="tipo_estado">Tipo de Estado</label>
-        <select name="tipo_estado" id="tipo_estado" disabled>
-            <option value="{{ inmueble.habilitada }}">{{ habilitada }}</option>
-            <option value="1">Activo</option>
-            <option value="2">No utilizado</option>
-            <option value="3">En proceso</option>
-            <option value="4">Indefinido</option>
-        </select><br>
+      <label for="tipo_estado">Tipo de Estado:</label><br>
+      <label ><input type="checkbox" name="tipo_estado" value="3" disabled>En proceso</label><br><br>
 
       <label for="ref">Ref</label>
       <input type="text" name="ref" value="{{ inmueble.ref }}" readonly><br>

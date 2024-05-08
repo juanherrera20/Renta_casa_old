@@ -42,7 +42,7 @@ diccionarioHabilitar ={
     '3': 'Vacaciones',
     '4': 'Indefinido', 
 }
-diccionarioPago ={ #Va realcionado a tabla Propietarios - Campo habilitarPago
+diccionarioPago ={ #Va realcionado a tabla Propietarios y Arrendatarios- Campo habilitarPago
     '1': 'Pagado',
     '2': 'Debe',
     '3': 'No pago',
@@ -340,14 +340,20 @@ def actualizar_inmueble(request):
     propietario_obj = propietario.objects.get(usuarios_id = id_propietario)
     
     id_arrendatario = request.POST.get('addArrendatario', None)
+    estado = request.POST.get('tipo_estado', None)
+
     if id_arrendatario:
         arrendatario_obj = arrendatario.objects.get(usuarios_id = int(id_arrendatario))
+        estado = 1
     else:
         arrendatario_obj = None
-                       
+        if estado:
+            estado = 3
+        else:
+            estado = 2
+    
     direc = request.POST.get('direccion', None)
     tipo_inmueble = request.POST.get('tipo_inmueble', None)
-    estado = request.POST.get('tipo_estado', None)
     ref = request.POST.get('ref',None)
     canon = request.POST.get('canon', None)
     porcentaje = request.POST.get('porcentaje_descuento', None)
@@ -374,14 +380,13 @@ def actualizar_inmueble(request):
     guardar.descripcion = descrip
     guardar.habilitada = estado
     guardar.ref = ref
-    
     guardar.save()
 
     document = request.FILES.get('documentoRes')
     imagen = request.FILES.get('imagenRes')
     descuento = 0
     
-    guardar2 = documentos.objects.get(id=id_inmueble)
+    guardar2 = Documentos.objects.get(id=id_inmueble)
     guardar2.pdf = document
     guardar2.imagen = imagen
     guardar2.descuento = descuento
@@ -536,8 +541,7 @@ def personas_inquilinos(request): #Logica para la tabla de Inquilinos-Personas
     usuarios_con_estados = []
     for usuario, estado in zip(objetoUsuario, estados): #Enpaquetando variables para que quede en una sola y poder iteraralas
         direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
-        valorCobro = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
-        usuarios_con_estados.append((usuario, estado, direccion, valorCobro))
+        usuarios_con_estados.append((usuario, estado, direccion))
     return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados})
 
 def add_inquilino(request): #Vista para añadir inquilinos
@@ -546,7 +550,6 @@ def add_inquilino(request): #Vista para añadir inquilinos
 
 def guardar_inquilino(request): #Función para guardar inquilinos
     if request.method == "POST":
-        id_inmueble = request.POST.get('inmueble', None) #En este espacio debería de existir el id del inmueble al cual se le va a "asociar"
         name = request.POST.get('nombre1', None)
         name2 = request.POST.get('nombre2', None)
         apellido = request.POST.get('apellido1', None)
@@ -570,7 +573,6 @@ def guardar_inquilino(request): #Función para guardar inquilinos
     usuarios_id = objeto.id # id del último registro guardado en la dB
     if request.method == "POST": 
         direc = request.POST.get('direc', None)
-        valor_cobrar = request.POST.get('valor_cobrar', None)
         fecha_cobrar = request.POST.get('inicio_cobro', None)
 
         #Logica para agregarle los 5 días de plazo para el pago.
@@ -582,7 +584,7 @@ def guardar_inquilino(request): #Función para guardar inquilinos
         finalContrato = request.POST.get('finContrato', None)
         tipo_contrato = request.POST.get('tipo_contrato', None)
         observ = request.POST.get('obs', None)
-        modelo = arrendatario(direccion = direc, valor_cobro = valor_cobrar, fecha_inicio_cobro= fecha_cobrar, fecha_fin_cobro = fecha_limite, inicio_contrato = inicioContrato, fin_contrato = finalContrato, tipo_contrato = tipo_contrato, obs = observ, usuarios_id_id = usuarios_id)
+        modelo = arrendatario(direccion = direc, fecha_inicio_cobro= fecha_cobrar, fecha_fin_cobro = fecha_limite, inicio_contrato = inicioContrato, fin_contrato = finalContrato, tipo_contrato = tipo_contrato, obs = observ, usuarios_id_id = usuarios_id)
         modelo.save()
 
         idInmu = request.POST.get('inmueble', None)
@@ -643,7 +645,6 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     newDate = fechaObjeto + timedelta(days=5)
     fecha_limite = newDate.strftime('%Y-%m-%d')
 
-    valor_cobro = request.POST.get('valor')
     
     inicio_contrato = request.POST.get('inicio_contrato')
     inicio_contratoRes = request.POST.get('inicio_contratoRes')
@@ -667,7 +668,6 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     
     guardar2 = arrendatario.objects.get(id=idA)
     guardar2.direccion = direccion
-    guardar2.valor_cobro = valor_cobro
     guardar2.fecha_inicio_cobro = fechaCobro
     guardar2.fecha_fin_cobro = fecha_limite
     guardar2.inicio_contrato = inicioContrato
@@ -680,20 +680,18 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     return redirect('personas_inquilinos')
 
 def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
-    objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
-    usuarios_con_estados = []
-    for usuario in objetoUsuario:
-        direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
-        fechaPago = usuario.arrendatario_set.first().fecha_inicio_cobro if usuario.arrendatario_set.exists() else None
-        limitePago = usuario.arrendatario_set.first().fecha_fin_cobro if usuario.arrendatario_set.exists() else None
-        valorPago = usuario.arrendatario_set.first().valor_cobro if usuario.arrendatario_set.exists() else None
-        inicioContrato = usuario.arrendatario_set.first().inicio_contrato if usuario.arrendatario_set.exists() else None
-        finContrato = usuario.arrendatario_set.first().fin_contrato if usuario.arrendatario_set.exists() else None
-        tipoContrato = usuario.arrendatario_set.first().tipo_contrato if usuario.arrendatario_set.exists() else None
-        estadosDiccionario = usuario.arrendatario_set.first().habilitarPago if usuario.arrendatario_set.exists() else None
-        estados = diccionarioPago[str(estadosDiccionario)]
-        usuarios_con_estados.append((usuario, direccion, fechaPago, limitePago, valorPago, inicioContrato, finContrato, tipoContrato, estados))
-    return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': usuarios_con_estados})
+
+    objetoInmuebles = inmueble.objects.select_related('arrendatario_id__usuarios_id').all()
+
+    objetoTipo = inmueble.objects.values_list('tipo', flat=True)
+    tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
+
+    objetoEstadoArrendatario = inmueble.objects.values_list('arrendatario_id__habilitarPago', flat=True)
+    estadoArrendatario = [diccionarioPago[str(values)]for values in objetoEstadoArrendatario]
+
+    All = list(zip(objetoInmuebles, tipoInmueble, estadoArrendatario))
+
+    return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': All})
 
 #----------------------------------------------------------------Logica para las tareas--------------------------------------------------------------------------------
 

@@ -32,6 +32,7 @@
             <th>Telefono</th>
             <th>Email</th>
             <th>Estado</th>
+            <th>Inmueble</th>
             <th>Bancos</th>
             <th>Descuento Total</th>
             <th>Valor del descuento</th>
@@ -48,6 +49,7 @@
           <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ inmueble.propietario_id.usuarios_id.telefono }}</button></td>
           <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ inmueble.propietario_id.usuarios_id.email }}</button></td>
           <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ estadoPropietario }}</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ tipoInmueble }}</button></td>
           <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ inmueble.propietario_id.bancos }}</button></td>
           <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">{{ descuento }}%</button></td>
           <td><button onclick="enviarValor('{{ inmueble.propietario_id.usuarios_id.id }}', '{% url 'AllValues' id=inmueble.propietario_id.usuarios_id.id %}')" value="{{ inmueble.propietario_id.usuarios_id.id }}">${{ totales.totalDescuento }}</button></td>

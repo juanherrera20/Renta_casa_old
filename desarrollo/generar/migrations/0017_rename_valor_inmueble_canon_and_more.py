@@ -15,10 +15,4 @@ class Migration(migrations.Migration):
             model_name='superuser',
             name='last_login',
         ),
-        migrations.AddField(
-            model_name='inmueble',
-            name='estrato',
-            field=models.IntegerField(default=0),
-            preserve_default=False,
-        ),
     ]

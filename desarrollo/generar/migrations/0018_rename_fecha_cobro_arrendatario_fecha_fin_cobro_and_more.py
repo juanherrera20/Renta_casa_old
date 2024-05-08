@@ -10,18 +10,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name='arrendatario',
-            old_name='fecha_cobro',
-            new_name='fecha_fin_cobro',
-        ),
-        migrations.RenameField(
-            model_name='inmueble',
-            old_name='estrato',
-            new_name='canon',
-        ),
-        migrations.RemoveField(
-            model_name='inmueble',
-            name='valor',
-        ),
+
     ]
