@@ -19,7 +19,7 @@
     <button type="button" id="btnEdit"name="btnEdit">Edit</button>
     <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
 
-    <form action="{% url 'actualizarInmueble' %}"  method="post" id="miFormulario">
+    <form action="{% url 'actualizarInmueble' %}"  method="post" id="miFormulario" enctype="multipart/form-data">
       {% csrf_token %}
       <input type="hidden" name="id" id="id" value="{{ inmueble.id }}">
 
@@ -34,7 +34,6 @@
           <option value="{{inmueble.propietario_id.usuarios_id.id}}">{{ inmueble.propietario_id.usuarios_id.nombre }} {{ inmueble.propietario_id.usuarios_id.apellido }}</option>
           {% for info in propietario %}
           <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
-          <h3>{{ info.id }}</h3>
           {% endfor %}
       </select>
        
@@ -55,7 +54,6 @@
           <option value="">Aún no tiene arrendatario</option>
           {% for info in arrendatario %}
           <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
-          <h3>{{ info.id }}</h3>
           {% endfor %}
       </select>
 
@@ -101,19 +99,54 @@
       <label for="descrip">Descripción</label>
       <input type="text" name="descrip" value="{{ inmueble.descripcion }}" readonly><br>
       <label for="documento">Documentos: </label>
+
+      {% if documentos %}
+        <h3>Documentos existentes:</h3>
+        <ul>
+          {% for doc in documentos %}
+            <li>
+              <a href="{{ doc.documento.url }}" target="_blank">{{ doc.documento.name }}</a>
+              <input type="checkbox" name="eliminar_documentos" value="{{ doc.id }}" disabled> Eliminar
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <label for="documentos_nuevos">Cargar nuevos documentos:</label>
+      <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled>
+
+      {% if imagenes %}
+        <h3>Imágenes existentes:</h3>
+        <ul id="lista-imagenes">
+        {% for img in imagenes %}
+            <li>
+                <label>
+                    <input type="checkbox" name="eliminar_imagenes" value="{{ img.id }}" class="checkbox-imagen" disabled>
+                    <img src="{{ img.imagen.url }}" width="200" height="200">
+                </label>
+            </li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+
+      <label for="imagenes_nuevas">Cargar nuevas imágenes:</label>
+      <input type="file" name="imagenes_nuevas" accept="image/*" multiple disabled>
+
+      <!--
       <h3>{{ documentos.documento }}</h3>
 
       {% if documentos %}
         {% for doc in documentos %}
         <div>
-        <h5>{{ doc.documento.name }}</h5> <a href="{{ doc.documento.url }}" target="_blank">Ver Documento</a> <br>
+        <a href="{{ doc.documento.url }}" target="_blank">{{ doc.documento.name }}</a> <br>
         </div>
         {% endfor %}
       {% else %}
       <p>No hay documentos relacionados</p>
       {% endif %}
-      <input type="file" name="documentoRes" id="documentoInput" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" style="display:none;"><!-- CSS -->
+      <input type="file" name="documentoRes" id="documentoInput" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" style="display:none;"> 
       
+
       <label for="imagen">Imagen: </label>
       {% if imagenes %}
         {% for img in imagenes %}
@@ -122,11 +155,12 @@
       {% else %}
       <p>Este inmueble no tiene imagenes asociadas</p>
       {% endif %}
-
-      <input type="file" name="imagenRes" id="imagenInput" accept="image/*" style="display:none;"> <!-- CSS -->
-      <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
+      -->
+      <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button>
+      
     </form>
   {% endfor %}
+  
 
 {% endblock %}
 

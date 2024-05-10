@@ -1,3 +1,13 @@
 ul {
     list-style: none;
+   
+}
+
+.checkbox-imagen {
+    display: none; /* Ocultar los checkboxes */
+}
+
+/* Estilo para resaltar la imagen cuando se selecciona */
+.checkbox-imagen:checked + img {
+    border: 2px solid red;
 }

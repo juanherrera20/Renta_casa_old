@@ -2,19 +2,40 @@ from django.db import models
 from django.db.models.fields import CharField, IntegerField
 import os
 
-#------------------Función para guardar los archivos e imagenes en carpetas separadas y personalizadas----------------------------s
-def carpetas_inmuebles(instance, filename):
-    # Obtener el nombre de la carpeta basado en el ID del inmueble
-    folder_name = str(instance.inmueble.id) + "_" + str(instance.inmueble.direccion)
-    # Crear la ruta completa hacia la carpeta
-    folder_direct = os.path.join('media', folder_name)
-    
-    if not os.path.exists(folder_direct):# Verificar si la carpeta existe, si no, crearla
-        os.makedirs(folder_direct)
-    return os.path.join(folder_name, filename)# Concatenar la ruta de la carpeta con el nombre de archivo original
-#---------------------------------------------------------------------------------------------------------------------------------s
-#Si molesta esta función aquí puede ser pertinente crear un archivo donde metamos todas las funciones
+#------------------Funciónes para guardar los documentos e imagenes en carpetas separadas y personalizadas----------------------------s
+def Crear_carpetas(instance, filename): #Inmuebles
+    if hasattr(instance, 'inmueble'):
+        folder_name = str(instance.inmueble.direccion)
+        subfolder = "Inmuebles"
+        if hasattr(instance, 'imagen'):
+            tipo = "Imagenes"
+        else:
+            tipo = "Documentos"
+    elif hasattr(instance, 'propietario'):
+        folder_name = str(instance.propietario.usuarios_id.documento)
+        subfolder = "Propietarios"
+        tipo = ""
+    elif hasattr(instance, 'arrendatario'):
+        folder_name = str(instance.arrendatario.usuarios_id.documento)
+        subfolder = "Arrendatarios"
+        tipo = ""
 
+    folder_direct = os.path.join('media', subfolder, folder_name, tipo)
+    if not os.path.exists(folder_direct):
+        os.makedirs(folder_direct)
+    return os.path.join(subfolder, folder_name, tipo, filename)
+ 
+    
+# def Crear_carpetas_propi(instance, filename): #Inmueble
+#         folder_name = str(instance.propietario.usuarios_id.documento) # Obtener el nombre de la carpeta basado en el documento del propietario
+       
+#         folder_direct = os.path.join('media', "Propietarios", folder_name)
+        
+#         if not os.path.exists(folder_direct): 
+#             os.makedirs(folder_direct)
+#         return os.path.join("Propietarios",folder_name, filename)
+#---------------------------------------------------------------------------------------------------------------------------------s
+#Si molesta tenerla aquí, se puede contemplar el crear un archivo solo para funciones
 
 # Creations the models.
 class superuser(models.Model): #Tabla usuarios
@@ -88,7 +109,7 @@ class inmueble(models.Model): #Tabla usuarios
     direccion = models.CharField(max_length =300) 
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no. 
-    descuento = models.IntegerField() #Descuento que se descuenta al propietario
+    descuento = models.IntegerField() #Descuento que se descuenta al propietario por comisión
     
     
     class Meta:
@@ -112,15 +133,25 @@ class tareas(models.Model):
 class Imagenes(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     inmueble = models.ForeignKey(inmueble, related_name='imagenes', on_delete=models.CASCADE)
-    imagen = models.ImageField(upload_to=carpetas_inmuebles)
+    imagen = models.ImageField(upload_to=Crear_carpetas)
     class Meta:
         db_table = 'Imagenes'
     
 class Documentos(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     inmueble = models.ForeignKey(inmueble, related_name='documentos', on_delete=models.CASCADE)
-    documento = models.FileField(upload_to=carpetas_inmuebles)
+    documento = models.FileField(upload_to=Crear_carpetas)
     class Meta:
         db_table = 'Documentos'
+        
+class DocsPersonas(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    propietario = models.ForeignKey(propietario, related_name='DocsPersona', on_delete=models.CASCADE) #Al hacer las migraciones cambiar este valor en la base de dato a Nulo
+    arrendatario = models.ForeignKey(arrendatario, related_name='DocsPersona', on_delete=models.CASCADE)  #Al hacer las migraciones cambiar este valor en la base de dato a Nulo
+    documento = models.FileField(upload_to=Crear_carpetas) 
+    class Meta:
+        db_table = 'DocsPersonas'
+    
 
 #Revisar el tema de documentos e imagenes - con columnas independientes o relacionado.
+

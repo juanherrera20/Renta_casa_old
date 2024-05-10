@@ -2,9 +2,8 @@ from datetime import datetime, timedelta
 import re, uuid, os
 from django.db.models import Max
 from django.shortcuts import render, redirect
-from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes
+from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas
 from werkzeug.security import generate_password_hash, check_password_hash
-
 
 #Librerias y paquetes posbilemente utiles
 # from cryptography.fernet import Fernet
@@ -290,7 +289,7 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
 
             objetoInmueble = model.id 
             #Una vez guardado el modelo, obtengo una lista del formulario para guardar las imagenes y documentos en su respectiva tabla
-            imagenes = request.FILES.getlist('imagen')
+            imagenes = request.FILES.getlist('imagen',None)
             for imagen in imagenes :
                 #El siguiente codigo es para darle un nombre aleatorio a cada imagen (Es opcional, revisar si lo implementamos o no)
                 original_filename = imagen.name
@@ -298,7 +297,7 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
                 imagen.name = filename_unico
                 Imagenes.objects.create(imagen = imagen, inmueble_id = objetoInmueble)
             
-            documentos = request.FILES.getlist('documento')
+            documentos = request.FILES.getlist('documento',None)
             for documento in documentos :
                 Documentos.objects.create(documento = documento,inmueble_id = objetoInmueble )
                 
@@ -309,9 +308,6 @@ def individuo_inmueble(request, id):
     objetoInmueble = inmueble.objects.select_related('propietario_id__usuarios_id').get(id = id) #Get arroja un solo objeto filter un conjutno con n elementos
     documentos = objetoInmueble.documentos.all()
     imagenes = objetoInmueble.imagenes.all()
-    
-    print(documentos)
-    print(imagenes)
     
     clave_tipo = diccionarioTipoInmueble.get(str(objetoInmueble.tipo))
     clave_estado = diccionarioInmueble.get(str(objetoInmueble.habilitada))
@@ -359,8 +355,6 @@ def actualizar_inmueble(request):
     porcentaje = request.POST.get('porcentaje_descuento', None)
     descrip = request.POST.get('descrip', None)
     
-    print(f"ID del propietario: {id_propietario}")
-    
     opciones_seleccionadas = request.POST.getlist('opciones') #Tomo y creo una lista por todas las opcines elegidas
     agua = request.POST.get('agua') if request.POST.get('agua') else "0000"
     electric = request.POST.get('electric') if request.POST.get('electric') else "0000"
@@ -382,16 +376,26 @@ def actualizar_inmueble(request):
     guardar.ref = ref
     guardar.save()
 
-    document = request.FILES.get('documentoRes')
-    imagen = request.FILES.get('imagenRes')
-    descuento = 0
+    #Logica para guardar y/o eliminar imagenes y documentos
+    documentos_delet = request.POST.getlist("eliminar_documentos", None)
+    for doc_id in documentos_delet :
+        document = Documentos.objects.get(id = doc_id)
+        document.delete()
     
-    guardar2 = Documentos.objects.get(id=id_inmueble)
-    guardar2.pdf = document
-    guardar2.imagen = imagen
-    guardar2.descuento = descuento
-    guardar2.save()
+    documentos_nuevos = request.FILES.getlist("documentos_nuevos", None)
+    for doc in documentos_nuevos :
+        Documentos.objects.create( documento = doc, inmueble_id = id_inmueble)
+        
+    imagenes_delet = request.POST.getlist("eliminar_imagenes", None)
+    for imag_id in imagenes_delet:
+        imagen = Imagenes.objects.get(id = imag_id)
+        imagen.delete()
     
+    imagenes_nuevas = request.FILES.getlist("imagenes_nuevas",None) 
+    for imag in imagenes_nuevas:
+        Imagenes.objects.create( imagen = imag, inmueble_id = id_inmueble)
+        
+        
     return redirect('inmu')
     #Recordar en el tipo de inmueble, invertir el valor que tenga por determinado, utilizando un diccionario inverso.
 
@@ -431,19 +435,27 @@ def guardar(request): #Logica para guardar propietarios en dB
         propieta = request.POST.get('propie_client', None)
         model = usuarios(nombre = name + " " + name2, apellido = apellido +" "+ apellido2, tipo_documento = tipo, documento = documento,expedida = expedida,email = email,email2 = email2,email3 = email3, telefono = telefono, telefono2 = telefono2,telefono3 = telefono3, propie_client = propieta)
         model.save()
-
-    """ Hasta aquí son los datos de usuarios en general. """
-
-    objeto = usuarios.objects.last() #Guarda todo el objeto del último registro
-    usuarios_id = objeto.id # id del último registro guardado en la dB
-    if request.method == "POST": 
+        """ Hasta aquí son los datos de usuarios en general. """
+        
+        objeto = usuarios.objects.last() #Guarda todo el objeto del último registro
+        
+        usuarios_id = objeto.id # id del último registro guardado en la dB
+        
         direc = request.POST.get('direc', None)
         fecha_pagar = request.POST.get('fecha_pagar', None)
         tipo_banco = request.POST.get('tipo_banco', None)
-        #Aca se supone que se debe guardar el documento...
         observ = request.POST.get('obs', None)
+        
         modelo = propietario(direccion = direc, fecha_pago = fecha_pagar, bancos = tipo_banco, obs = observ, usuarios_id_id = usuarios_id)
         modelo.save()
+        
+        IdObjetoPropietario = modelo.id
+        print(IdObjetoPropietario)
+        #Una vez guardado el modelo, obtengo una lista del formulario para guardar los documentos en su respectiva tabla
+        documentos = request.FILES.getlist('documento',None)
+        for documento in documentos :
+            DocsPersonas.objects.create(documento = documento, propietario_id = IdObjetoPropietario)
+        
     return redirect('personas_propietarios')
 
 def actualizar_propietario(request): #Actualizar propietario.
@@ -494,14 +506,25 @@ def actualizar_propietario(request): #Actualizar propietario.
     guardar2.habilitarPago = habilitarPago
     guardar2.obs = obs
     guardar2.save()
+    
+    #Logica para guardar y/o eliminar documentos
+    documentos_delet = request.POST.getlist("eliminar_documentos", None)
+    for doc_id in documentos_delet :
+        document = DocsPersonas.objects.get(id = doc_id)
+        document.delete()
+    
+    documentos_nuevos = request.FILES.getlist("documentos_nuevos", None)
+    for doc in documentos_nuevos :
+        DocsPersonas.objects.create( documento = doc, propietario_id = idPropietario)
 
     return redirect('personas_propietarios')
 
 def individuo_propietario(request, id):
-    objetoPropietarios = propietario.objects.filter(usuarios_id_id = id).first()
+    objetoPropietarios = propietario.objects.get(usuarios_id_id = id)
     pago = diccionarioPago[str(objetoPropietarios.habilitarPago)]
-    objetoUser = usuarios.objects.filter( id = objetoPropietarios.usuarios_id_id).first()
-    return render(request, 'personas/propietarios/individuo_propietario.html', {'usuario':objetoUser, 'propietario':objetoPropietarios, 'pago': pago})
+    objetoUser = usuarios.objects.get( id = objetoPropietarios.usuarios_id_id)
+    documentos = objetoPropietarios.DocsPersona.all()
+    return render(request, 'personas/propietarios/individuo_propietario.html', {'usuario':objetoUser, 'propietario':objetoPropietarios, 'pago': pago, 'documentos':documentos})
 
 def analisis_propietarios(request):
     #Logica para la tabla de propietarios

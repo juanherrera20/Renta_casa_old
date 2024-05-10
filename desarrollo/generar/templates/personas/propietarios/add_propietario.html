@@ -18,7 +18,7 @@
 
 {% block contenido %}
     <h4>Lo marcado con "*" es un campo obligatorio</h4><br><br>
-    <form action="{% url 'guardar' %}" method="post" id="addPropietario">
+    <form action="{% url 'guardar' %}" method="post" id="addPropietario" enctype="multipart/form-data">
         {% csrf_token %}
         <h3>Información general</h3>
         <label for="nombre1">Primer Nombre *</label>
@@ -96,7 +96,7 @@
         </select><br>
 
         <label for="documento">Documentación</label> <!-- Se debe definir se se agrega la columna de documentación o se vincula con la que esta actual -->
-        <input type="file" name="documento" id="documento"><br>
+        <input type="file" name="documento" id="documento" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple><br>
 
         <label for="obs">Espacio para Observaciones</label>
         <input type="text" name="obs" id="obs" placeholder="Detalles a tener en cuenta"><br><br><br>

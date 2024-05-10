@@ -18,7 +18,7 @@
   <button type="button" id="btnEdit"name="btnEdit">Edit</button>
   <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
   
-  <form action="{% url 'ActualizarPropietario' %}" id="miFormulario" method="post">
+  <form action="{% url 'ActualizarPropietario' %}" id="miFormulario" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <br><br>
       <input type="hidden" name="id" id="id" value="{{ usuario.id }}">
@@ -83,6 +83,21 @@
       <label for="obs">Observaciones</label>
       <input type="text" name="obs" value="{{ propietario.obs }}" readonly><br>
       <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
+
+      {% if documentos %}
+        <h3>Documentos existentes:</h3>
+        <ul>
+          {% for doc in documentos %}
+            <li>
+              <a href="{{ doc.documento.url }}" target="_blank">{{ doc.documento.name }}</a>
+              <input type="checkbox" name="eliminar_documentos" value="{{ doc.id }}" disabled> Eliminar
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      <label for="documentos_nuevos">Cargar nuevos documentos:</label>
+      <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled>
   </form>
 
 {% endblock %}
