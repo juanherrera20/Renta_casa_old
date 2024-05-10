@@ -543,6 +543,9 @@ def analisis_propietarios(request):
     estadoPropietario = [diccionarioPago[str(values)]for values in objetoEstadoPropietario]
 
     objetoCanon = inmueble.objects.values_list('canon', flat=True)
+
+    ObjetoBancos = inmueble.objects.values_list('propietario_id__bancos', flat=True)
+    bancoLink = [diccionarioBancos[str(values)]for values in ObjetoBancos]
     totales = []
 
     for canon, des in zip(objetoCanon,descuento):
@@ -550,7 +553,7 @@ def analisis_propietarios(request):
         totalPago = (canon - totalDescuento)
         totales.append({ 'totalDescuento': totalDescuento, 'totalPago': totalPago})
 
-    All = list(zip(objetoInmuebles, tipoInmueble, habilitada, estadoPropietario, descuento, totales))
+    All = list(zip(objetoInmuebles, tipoInmueble, habilitada, estadoPropietario, descuento, totales, bancoLink))
 
     #Es necesario hacer la logica para saber cuantos inmuebles tiene el propietario?
     return render(request, 'analisis/propietarios/analisis_propietarios.html',{ 'all': All})
@@ -822,7 +825,38 @@ def noti(request):
 #-----------------------------------------------------------------Logica para visualizar todos los datos (en analisis)--------------------------------------------------
 
 def all_values(request, id):
-    ObjetoUsuario = usuarios.objects.filter( id = id ).first()
-    objetoPropietario =  propietario.objects.filter(usuarios_id_id = id).first()
-    objetoArrendatario =  arrendatario.objects.filter(usuarios_id_id = id).first()
-    return render(request, 'analisis/all_values.html', )
+    #------------------------------------------------------Individuo_inmueble----------------------------------------------------
+    objetoInmueble = inmueble.objects.filter(id=id).first()
+
+    documentos = objetoInmueble.documentos.all()
+    imagenes = objetoInmueble.imagenes.all()
+    
+    clave_tipo = diccionarioTipoInmueble.get(str(objetoInmueble.tipo))
+    clave_estado = diccionarioInmueble.get(str(objetoInmueble.habilitada))
+    clave_porcentaje = diccionarioPorcentajeDescuento.get(str(objetoInmueble.porcentaje))
+    
+    servicios = [servicio.strip() for servicio in objetoInmueble.servicios.split(',')] if objetoInmueble.servicios else []
+    newServicios = extract_numbers(servicios)
+    matriculas = [numero if numero!= 0 else 'No existe' for numero in newServicios]
+
+    All = [(objetoInmueble, clave_tipo,clave_estado,clave_porcentaje,servicios)]
+    #------------------------------------------------------Individuo_Propietario----------------------------------------------------
+
+    objetoPropietario = propietario.objects.filter(id=objetoInmueble.propietario_id_id).first()
+
+    pago = diccionarioPago[str(objetoPropietario.habilitarPago)]
+    objetoUser = usuarios.objects.get( id = objetoPropietario.usuarios_id_id)
+    documentos = objetoPropietario.DocsPersona.all()
+
+    #------------------------------------------------------Individuo_Arrendatario----------------------------------------------------
+    if objetoInmueble.arrendatario_id_id:
+        respaldo = 1
+        objetoArrendatario = arrendatario.objects.filter(id=objetoInmueble.arrendatario_id_id).first()
+        objetoUser2 = usuarios.objects.filter( id = objetoArrendatario.usuarios_id_id).first()
+        estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
+    else: 
+        respaldo = 2
+
+    return render(request, 'analisis/all_values.html', {'inmueble': All, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
+                                                        'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos,
+                                                        'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})

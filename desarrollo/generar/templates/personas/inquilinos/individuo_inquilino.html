@@ -15,7 +15,7 @@
 {% endblock title %}
 
 {% block contenido %}
-  <h2>Propietario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h2>
+  <h2>Arrendatario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h2>
   <button type="button" id="btnEdit"name="btnEdit">Edit</button>
   <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
   <form action="{% url 'ActualizarInquilino' %}" id="miFormulario" method="post">

@@ -110,8 +110,6 @@ class inmueble(models.Model): #Tabla usuarios
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no. 
     descuento = models.IntegerField() #Descuento que se descuenta al propietario por comisión
-    
-    
     class Meta:
         db_table = 'inmueble'
 
