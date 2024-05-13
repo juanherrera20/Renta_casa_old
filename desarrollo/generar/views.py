@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
-import re, uuid, os
+from django.http import HttpResponse
+import re, uuid
 from django.db.models import Max
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas
@@ -860,3 +861,19 @@ def all_values(request, id):
     return render(request, 'analisis/all_values.html', {'inmueble': All, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
                                                         'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos,
                                                         'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})
+
+def redireccion(request):
+    btn = request.POST.get('btn')
+    if btn == '1':
+        idUsuario = request.POST.get('idUser')
+        resultado = individuo_propietario(request, idUsuario)
+        return HttpResponse(resultado)
+    elif btn == '2':
+        idInmueble = request.POST.get('idInmueble')
+        resultado = individuo_inmueble(request, idInmueble)
+        return HttpResponse(resultado)
+    elif btn == '3':
+        idArrendatario = request.POST.get('idArrendatario')
+        resultado = individuo_inquilino(request, idArrendatario)
+        return HttpResponse(resultado)
+    return redirect('analisis_propietarios') #Este return se puede cambiar para el control de errores.

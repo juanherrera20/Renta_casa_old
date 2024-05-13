@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
 from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino,  add_tarea, guardar_tarea, modal_ver_tarea
 from generar.views import individuo_propietario, individuo_inquilino,all_values, add_inmueble, guardar_inmueble, individuo_inmueble, actualizar_propietario, actualizar_inquilino
-from generar.views import actualizar_modal, actualizar_inmueble
+from generar.views import actualizar_modal, actualizar_inmueble, redireccion
 
 urlpatterns = [
 
@@ -64,6 +64,7 @@ urlpatterns = [
     path('Personas/inquilinos/Code/<int:id>', individuo_inquilino, name="IndividuoInquilino"),
     #Visualizar todos los datos
     path('Analisis/All/Values/<int:id>', all_values, name="AllValues"),
+    path('Analisis/Redireccion/',redireccion, name="redirec")
 ]
 
 if settings.DEBUG:
