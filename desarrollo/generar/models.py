@@ -109,7 +109,7 @@ class inmueble(models.Model): #Tabla usuarios
     direccion = models.CharField(max_length =300) 
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no. 
-    descuento = models.IntegerField() #Descuento que se descuenta al propietario por comisión
+    """ descuento = models.IntegerField() #Descuento que se descuenta al propietario por comisión """
     class Meta:
         db_table = 'inmueble'
 
@@ -150,6 +150,14 @@ class DocsPersonas(models.Model):
     class Meta:
         db_table = 'DocsPersonas'
     
+class Docdescuentos(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    inmueble = models.ForeignKey(inmueble, related_name='Docdescuento', on_delete=models.CASCADE)
+    valor = models.IntegerField()
+    descrip = models.CharField(max_length = 400) 
+    documento = models.CharField(max_length = 600)  
+    class Meta:
+        db_table = 'Docdescuentos'
 
 #Revisar el tema de documentos e imagenes - con columnas independientes o relacionado.
 

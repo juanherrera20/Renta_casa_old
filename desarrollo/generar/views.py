@@ -1,9 +1,10 @@
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
+from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 import re, uuid
 from django.db.models import Max
 from django.shortcuts import render, redirect
-from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas
+from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
 
 #Librerias y paquetes posbilemente utiles
@@ -849,6 +850,14 @@ def all_values(request, id):
     objetoUser = usuarios.objects.get( id = objetoPropietario.usuarios_id_id)
     documentos = objetoPropietario.DocsPersona.all()
 
+    canon = objetoInmueble.canon
+    objetoPorcentaje = objetoInmueble.porcentaje
+
+    descuento_porcentaje = diccionarioPorcentajeDescuento[str(objetoPorcentaje)]
+    descuento = float(descuento_porcentaje)
+    totalDescuento = ((canon * descuento)/ 100)
+    totalPago = (canon - totalDescuento)
+
     #------------------------------------------------------Individuo_Arrendatario----------------------------------------------------
     if objetoInmueble.arrendatario_id_id:
         respaldo = 1
@@ -859,21 +868,38 @@ def all_values(request, id):
         respaldo = 2
 
     return render(request, 'analisis/all_values.html', {'inmueble': All, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
-                                                        'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos,
+                                                        'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos, 'total':totalPago,
                                                         'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})
 
 def redireccion(request):
     btn = request.POST.get('btn')
+    btnConfirmar = request.POST.get('btnConfirmar')
+    idInmueble = request.POST.get('idInmueble')
     if btn == '1':
         idUsuario = request.POST.get('idUser')
         resultado = individuo_propietario(request, idUsuario)
         return HttpResponse(resultado)
     elif btn == '2':
-        idInmueble = request.POST.get('idInmueble')
         resultado = individuo_inmueble(request, idInmueble)
         return HttpResponse(resultado)
     elif btn == '3':
         idArrendatario = request.POST.get('idArrendatario')
         resultado = individuo_inquilino(request, idArrendatario)
         return HttpResponse(resultado)
+    elif btnConfirmar == '4':
+        documento = request.FILES.getlist('docRespaldo')
+        valor = request.POST.get('descuento')
+        descrip = request.POST.get('descripcionDescuento')
+        today = str(date.today())
+        fs = FileSystemStorage(location='media/documents/'+ today)
+
+        urls=[]
+        for doc in documento:
+            filename = fs.save(doc.name, doc)
+            url = fs.url(filename)
+            urls.append(url)
+
+        guardar = Docdescuentos(inmueble_id =idInmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
+        guardar.save()
+        return redirect('analisis_propietarios')
     return redirect('analisis_propietarios') #Este return se puede cambiar para el control de errores.
