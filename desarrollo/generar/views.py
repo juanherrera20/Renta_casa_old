@@ -209,8 +209,45 @@ def dash(request):
     objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
     habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
     All = list(zip(objetoInmuebles, tipoInmueble, habilitada))
+    actualizar_estados()
 
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
+
+fecha = datetime.now()
+def  actualizar_estados():
+    global fecha
+    fechaFormateada = fecha.strftime("%Y-%m-%d")
+    ObjetoPago = inmueble.objects.filter(arrendatario_id__isnull=False)
+    for objeto in ObjetoPago:
+        #-----------------------Propietario-----------------------
+        idPropietario = objeto.propietario_id.id
+        EstadoPropietario = objeto.propietario_id.habilitarPago
+        estadoP = diccionarioPago[str(EstadoPropietario)]
+        fechaPago = objeto.propietario_id.fecha_pago
+        fechaPagoFormateada = fechaPago.strftime("%Y-%m-%d")
+
+        fechaObjeto1 = datetime.strptime(fechaFormateada, "%Y-%m-%d")
+        fechaObjeto2 = datetime.strptime(fechaPagoFormateada, "%Y-%m-%d")
+
+        fechaResta = (fechaObjeto2 - fechaObjeto1).days
+        guardar = propietario.objects.get(id=idPropietario)
+
+        if fechaObjeto2 > fechaObjeto1: 
+            if EstadoPropietario == 1:
+                if fechaResta <=7:
+                    guardar.habilitarPago = 2
+                    guardar.save()
+                        
+        elif fechaObjeto1 >= fechaObjeto2:
+            guardar.habilitarPago = 3
+            guardar.save()
+        #-----------------------Arrendatario-----------------------
+        EstadoArrendatario = objeto.arrendatario_id.habilitarPago
+        estadoA = diccionarioPago[str(EstadoArrendatario)]
+
+    return print(fechaFormateada)
+
+actualizar_estados()
 
 #------------------------------------------------------------------------------Funciones para inmuebles-----------------------------------------------------------------------------
 @autenticado_required
@@ -499,6 +536,11 @@ def actualizar_propietario(request): #Actualizar propietario.
         fechaPago = date.strftime("%Y-%m-%d")
 
     habilitarPago = request.POST.get('habilitarPago')
+    if habilitarPago == '1':
+        date = datetime.strptime(fechaPago, "%Y-%m-%d")
+        nuevaFecha = date + timedelta(days=30)
+        fechaPago = nuevaFecha.strftime("%Y-%m-%d")
+
     obs = request.POST.get('obs')
 
     guardar2 = propietario.objects.get(id=idPropietario)
@@ -905,7 +947,7 @@ def redireccion(request):
         idArrendatario = request.POST.get('idArrendatario')
         resultado = individuo_inquilino(request, idArrendatario)
         return HttpResponse(resultado)
-    elif btnConfirmar == '4':
+    elif btnConfirmar == None:
         documento = request.FILES.getlist('docRespaldo')
         valor = request.POST.get('descuento')
         descrip = request.POST.get('descripcionDescuento')

@@ -3,6 +3,7 @@
 
 {% block static %}
   <script type="text/javascript"  src='{% static "js/analisis/all_values.js" %}'></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock static %}
 
 {% block encabezado %}
@@ -28,7 +29,7 @@
     <label for="docRespaldo">Documento de respaldo:</label>
     <input type="file" name="docRespaldo" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled><br><br>
 
-    <button type="button" id="btnConfirmar" name="btnConfirmar" style="display:none;">Confirmar</button><br><br>
+    <button type="submit" id="btnConfirmar" name="btnConfirmar" style="display:none;">Confirmar</button><br><br>
 
     <h3>Propietario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h3><button type="submit" id="btn"name="btn" value="1">Editar Propietario</button><br><br><br>
 
@@ -75,7 +76,7 @@
     <input type="text" name="direccion" value="{{ propietario.direccion }}" readonly><br>
     
     <label for="valor_pago">Valor a Pagar</label>
-    <input type="number" name="valor_pago" value="123456789" readonly><br>
+    <input type="number" name="valor_pago" value="{{ total }}" readonly><br>
 
     <label for="fecha_pago">Fecha de Pago</label>
     <input type="datetime" name="fecha_pago" value="{{ propietario.fecha_pago }}" readonly><br>
