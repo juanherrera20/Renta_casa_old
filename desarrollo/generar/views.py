@@ -452,7 +452,6 @@ def guardar(request): #Logica para guardar propietarios en dB
         modelo.save()
         
         IdObjetoPropietario = modelo.id
-        print(IdObjetoPropietario)
         #Una vez guardado el modelo, obtengo una lista del formulario para guardar los documentos en su respectiva tabla
         documentos = request.FILES.getlist('documento',None)
         for documento in documentos :
@@ -530,7 +529,8 @@ def individuo_propietario(request, id):
 
 def analisis_propietarios(request):
     #Logica para la tabla de propietarios
-    objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').all()
+    objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Aquí filtro para que solo aparezcan los inmuebles con arrendatario
+    print(objetoInmuebles)
 
     objetoTipo = inmueble.objects.values_list('tipo', flat=True)
     tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
@@ -595,11 +595,11 @@ def guardar_inquilino(request): #Función para guardar inquilinos
         model = usuarios(nombre = name + " " + name2, apellido = apellido +" "+ apellido2, tipo_documento = tipo, documento = documento,expedida = expedida,email = email,email2 = email2,email3 = email3, telefono = telefono, telefono2 = telefono2,telefono3 = telefono3, propie_client = propieta)
         model.save()
 
-    """ Hasta aquí son los datos de usuarios en general. """
+        """ Hasta aquí son los datos de usuarios en general. """
     
-    objeto = usuarios.objects.last() #Guarda todo el objeto del último registro
-    usuarios_id = objeto.id # id del último registro guardado en la dB
-    if request.method == "POST": 
+        objeto = usuarios.objects.last() #Guarda todo el objeto del último registro
+        usuarios_id = objeto.id # id del último registro guardado en la dB
+        
         direc = request.POST.get('direc', None)
         fecha_cobrar = request.POST.get('inicio_cobro', None)
 
@@ -614,7 +614,13 @@ def guardar_inquilino(request): #Función para guardar inquilinos
         observ = request.POST.get('obs', None)
         modelo = arrendatario(direccion = direc, fecha_inicio_cobro= fecha_cobrar, fecha_fin_cobro = fecha_limite, inicio_contrato = inicioContrato, fin_contrato = finalContrato, tipo_contrato = tipo_contrato, obs = observ, usuarios_id_id = usuarios_id)
         modelo.save()
-
+        
+        #Guardar documentos
+        IdObjetoArrendatario = modelo.id
+        documentos = request.FILES.getlist('documento',None) #Obtengo una lista del formulario para guardar documentos
+        for documento in documentos :
+            DocsPersonas.objects.create(documento = documento, arrendatario_id = IdObjetoArrendatario)
+        
         idInmu = request.POST.get('inmueble', None)
         if idInmu:
             objetoArrendatario = arrendatario.objects.last()
@@ -622,13 +628,17 @@ def guardar_inquilino(request): #Función para guardar inquilinos
             guardar = inmueble.objects.get(id=idInmu)
             guardar.arrendatario_id_id = arrendatario_id
             guardar.save()
+            
     return redirect('personas_inquilinos')
 
 def individuo_inquilino(request, id):
-    objetoArrendatario= arrendatario.objects.filter(usuarios_id_id = id).first()
-    objetoUser = usuarios.objects.filter( id = objetoArrendatario.usuarios_id_id).first()
+    objetoArrendatario= arrendatario.objects.get(usuarios_id_id = id)
+    objetoUser = usuarios.objects.get( id = objetoArrendatario.usuarios_id_id)
+    documentos = objetoArrendatario.DocsPersona.all()
+    print(documentos)
+    
     estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
-    return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'propietario':objetoArrendatario, 'estado':estados})
+    return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'propietario':objetoArrendatario, 'estado':estados, 'documentos':documentos})
 
 def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     idUsuario = request.POST.get('id')
@@ -704,7 +714,17 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     guardar2.habilitarPago = habilitarPago
     guardar2.obs = obs
     guardar2.save()
-
+    
+    #Logica para guardar y/o eliminar documentos
+    documentos_delet = request.POST.getlist("eliminar_documentos", None)
+    for doc_id in documentos_delet :
+        document = DocsPersonas.objects.get(id = doc_id)
+        document.delete()
+    
+    documentos_nuevos = request.FILES.getlist("documentos_nuevos", None)
+    for doc in documentos_nuevos :
+        DocsPersonas.objects.create( documento = doc, arrendatario_id = idA)
+        
     return redirect('personas_inquilinos')
 
 def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
@@ -845,7 +865,6 @@ def all_values(request, id):
     #------------------------------------------------------Individuo_Propietario----------------------------------------------------
 
     objetoPropietario = propietario.objects.filter(id=objetoInmueble.propietario_id_id).first()
-
     pago = diccionarioPago[str(objetoPropietario.habilitarPago)]
     objetoUser = usuarios.objects.get( id = objetoPropietario.usuarios_id_id)
     documentos = objetoPropietario.DocsPersona.all()

@@ -18,86 +18,103 @@
   <h2>Arrendatario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h2>
   <button type="button" id="btnEdit"name="btnEdit">Edit</button>
   <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
-  <form action="{% url 'ActualizarInquilino' %}" id="miFormulario" method="post">
-      {% csrf_token %}
-      <input type="hidden" name="id" id="id" value="{{ usuario.id }}">
-      <input type="hidden" name="idP" id="idP" value="{{ propietario.id }}">
-      <label for="nombre">Nombre</label>
-      <input type="text" name="nombre" value="{{ usuario.nombre }}" readonly><br>
 
-      <label for="apellido">Apellido</label>
-      <input type="text" name="apellido" value="{{ usuario.apellido }}" readonly><br>
+  <form action="{% url 'ActualizarInquilino' %}" id="miFormulario" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="hidden" name="id" id="id" value="{{ usuario.id }}">
+    <input type="hidden" name="idP" id="idP" value="{{ propietario.id }}">
+    <label for="nombre">Nombre</label>
+    <input type="text" name="nombre" value="{{ usuario.nombre }}" readonly><br>
 
-      <label for="tipo_documento">Tipo de Documento</label>
-      <select name="tipo_documento" id="tipo_documento" disabled> <!-- Cambiar y desarrollar el select para luego editar -->
-          <option value="{{ usuario.tipo_documento }}">{{ usuario.tipo_documento }}</option>
-          <option value="Cedula">Cedula de Ciudadania</option>
-          <option value="Pasaporte">Pasaporte</option>
-      </select><br>
+    <label for="apellido">Apellido</label>
+    <input type="text" name="apellido" value="{{ usuario.apellido }}" readonly><br>
 
-      <label for="documento">Documento</label>
-      <input type="number" name="documento" value="{{ usuario.documento }}" readonly><br>
-      
-      <label for="expedida">Expedida en</label>
-      <input type="text" name="expedida" value="{{ usuario.expedida }}" readonly><br>
+    <label for="tipo_documento">Tipo de Documento</label>
+    <select name="tipo_documento" id="tipo_documento" disabled> <!-- Cambiar y desarrollar el select para luego editar -->
+        <option value="{{ usuario.tipo_documento }}">{{ usuario.tipo_documento }}</option>
+        <option value="Cedula">Cedula de Ciudadania</option>
+        <option value="Pasaporte">Pasaporte</option>
+    </select><br>
 
-      <label for="telefono">Telefono principal</label>
-      <input type="number" name="telefono" value="{{ usuario.telefono }}" readonly><br>
-      
-      <label for="telefono2">Telefono 2</label>
-      <input type="number" name="telefono2" value="{{ usuario.telefono2 }}" readonly><br>
-      
-      <label for="telefono3">Telefono 3</label>
-      <input type="number" name="telefono3" value="{{ usuario.telefono3 }}" readonly><br>
+    <label for="documento">Documento</label>
+    <input type="number" name="documento" value="{{ usuario.documento }}" readonly><br>
+    
+    <label for="expedida">Expedida en</label>
+    <input type="text" name="expedida" value="{{ usuario.expedida }}" readonly><br>
 
-      <label for="email">Correo electronico principal</label>
-      <input type="email" name="email" value="{{ usuario.email }}" readonly><br>
-      
-      <label for="email2">Correo electronico 2</label>
-      <input type="email" name="email2" value="{{ usuario.email2 }}" readonly><br>
-      
-      <label for="email3">Correo electronico 3</label>
-      <input type="email" name="email3" value="{{ usuario.email3 }}" readonly><br>
+    <label for="telefono">Telefono principal</label>
+    <input type="number" name="telefono" value="{{ usuario.telefono }}" readonly><br>
+    
+    <label for="telefono2">Telefono 2</label>
+    <input type="number" name="telefono2" value="{{ usuario.telefono2 }}" readonly><br>
+    
+    <label for="telefono3">Telefono 3</label>
+    <input type="number" name="telefono3" value="{{ usuario.telefono3 }}" readonly><br>
 
-      <label for="direccion">Dirección</label>
-      <input type="text" name="direccion" value="{{ propietario.direccion }}" readonly><br>
+    <label for="email">Correo electronico principal</label>
+    <input type="email" name="email" value="{{ usuario.email }}" readonly><br>
+    
+    <label for="email2">Correo electronico 2</label>
+    <input type="email" name="email2" value="{{ usuario.email2 }}" readonly><br>
+    
+    <label for="email3">Correo electronico 3</label>
+    <input type="email" name="email3" value="{{ usuario.email3 }}" readonly><br>
 
-      <label for="fecha_inicio">Fecha de Pago</label>
-      <input type="datetime" name="fecha_inicio" value="{{ propietario.fecha_inicio_cobro }}" readonly><br>
-      <input type="hidden" name="fecha_inicioRes" value="{{ propietario.fecha_inicio_cobro }}">
-      
-      <label for="fecha_fin" id="LabelFechaFin">Límite de Pago</label>
-      <input type="datetime" name="fecha_fin" value="{{ propietario.fecha_fin_cobro }}" readonly><br>
-      <input type="hidden" name="fecha_finRes" value="{{ propietario.fecha_fin_cobro }}">
+    <label for="direccion">Dirección</label>
+    <input type="text" name="direccion" value="{{ propietario.direccion }}" readonly><br>
 
-      <label for="inicio_contrato">Inicio del contrato</label>
-      <input type="datetime" name="inicio_contrato" value="{{ propietario.inicio_contrato }}" readonly><br>
-      <input type="hidden" name="inicio_contratoRes" value="{{ propietario.inicio_contrato }}">
+    <label for="fecha_inicio">Fecha de Pago</label>
+    <input type="datetime" name="fecha_inicio" value="{{ propietario.fecha_inicio_cobro }}" readonly><br>
+    <input type="hidden" name="fecha_inicioRes" value="{{ propietario.fecha_inicio_cobro }}">
+    
+    <label for="fecha_fin" id="LabelFechaFin">Límite de Pago</label>
+    <input type="datetime" name="fecha_fin" value="{{ propietario.fecha_fin_cobro }}" readonly><br>
+    <input type="hidden" name="fecha_finRes" value="{{ propietario.fecha_fin_cobro }}">
 
-      <label for="fin_contrato">Fin del contrato</label>
-      <input type="datetime" name="fin_contrato" value="{{ propietario.fin_contrato }}" readonly><br>
-      <input type="hidden" name="fin_contratoRes" value="{{ propietario.fin_contrato }}">
+    <label for="inicio_contrato">Inicio del contrato</label>
+    <input type="datetime" name="inicio_contrato" value="{{ propietario.inicio_contrato }}" readonly><br>
+    <input type="hidden" name="inicio_contratoRes" value="{{ propietario.inicio_contrato }}">
 
-      <label for="estado">Estado</label>
-      <select name="estado" id="estado" disabled>
-          <option value="{{ propietario.habilitarPago }}">{{ estado }}</option>
-          <option value="1">Pagado</option>
-          <option value="2">Debe</option>
-          <option value="3">No pago</option>
-          <option value="4">Indefinido</option>
-      </select><br>
+    <label for="fin_contrato">Fin del contrato</label>
+    <input type="datetime" name="fin_contrato" value="{{ propietario.fin_contrato }}" readonly><br>
+    <input type="hidden" name="fin_contratoRes" value="{{ propietario.fin_contrato }}">
 
-      <label for="tipo_contrato">Tipo de Contrato</label>
-      <select name="tipo_contrato" id="tipo_contrato" disabled>
-          <option value="{{ propietario.tipo_contrato }}">{{ propietario.tipo_contrato }}</option>
-          <option value="Trimestral">Trimestral</option>
-          <option value="Semestral">Semestral</option>
-          <option value="Anual">Anual</option>
-          <option value="Indefinido">Indefinido</option>
-      </select><br>
+    <label for="estado">Estado</label>
+    <select name="estado" id="estado" disabled>
+        <option value="{{ propietario.habilitarPago }}">{{ estado }}</option>
+        <option value="1">Pagado</option>
+        <option value="2">Debe</option>
+        <option value="3">No pago</option>
+        <option value="4">Indefinido</option>
+    </select><br>
 
-      <label for="obs">Observaciones</label>
-      <input type="text" name="obs" value="{{ propietario.obs }}" readonly><br>
-      <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
+    <label for="tipo_contrato">Tipo de Contrato</label>
+    <select name="tipo_contrato" id="tipo_contrato" disabled>
+        <option value="{{ propietario.tipo_contrato }}">{{ propietario.tipo_contrato }}</option>
+        <option value="Trimestral">Trimestral</option>
+        <option value="Semestral">Semestral</option>
+        <option value="Anual">Anual</option>
+        <option value="Indefinido">Indefinido</option>
+    </select><br>
+
+    <label for="obs">Observaciones</label>
+    <input type="text" name="obs" value="{{ propietario.obs }}" readonly><br>
+
+    {% if documentos %}
+      <h3>Documentos existentes:</h3>
+      <ul>
+        {% for doc in documentos %}
+          <li>
+            <a href="{{ doc.documento.url }}" target="_blank">{{ doc.documento.name }}</a>
+            <input type="checkbox" name="eliminar_documentos" value="{{ doc.id }}" disabled> Eliminar
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <label for="documentos_nuevos">Cargar nuevos documentos:</label>
+    <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled>
+
+    <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
   </form>
 {% endblock %}

@@ -11,7 +11,7 @@ def Crear_carpetas(instance, filename): #Inmuebles
             tipo = "Imagenes"
         else:
             tipo = "Documentos"
-    elif hasattr(instance, 'propietario'):
+    elif hasattr(instance, 'propietario'): #hasattr sirve para verificar si un objeto tiene cierto atributo
         folder_name = str(instance.propietario.usuarios_id.documento)
         subfolder = "Propietarios"
         tipo = ""

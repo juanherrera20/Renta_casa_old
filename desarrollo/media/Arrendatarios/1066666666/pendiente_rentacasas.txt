@@ -1,0 +1,1 @@
+linea 98 add_propietario : <label for="documento">Documentación</label> <!-- Se debe definir si se agrega la columna de documentación o se vincula con la que esta actual -->. A que se refiere este mensaje?

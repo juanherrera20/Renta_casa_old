@@ -19,7 +19,8 @@
 {% block contenido %}
     <h2>Añadir Inquilino</h2>
     <h4>Lo marcado con "*" es un campo obligatorio</h4><br><br>
-    <form action="{% url 'guardar_inquilino' %}" method="post" id="addInquilino">
+
+    <form action="{% url 'guardar_inquilino' %}" method="post" id="addInquilino" enctype="multipart/form-data">
         {% csrf_token %}
         <label for="inmueble" id="label" style="display:none;">Inmueble:</label>
         <select name="inmueble" id="selectInmu" style="display: none;">
@@ -101,8 +102,8 @@
         <label for="obs">Espacio para Observaciones</label>
         <input type="text" name="obs" id="obs" placeholder="Detalles a tener en cuenta"><br><br><br>
 
-        <label for="documento">Documentación</label>
-        <input type="file" name="documento" id="documento"><br>
+        <label for="documento">Documentación</label> 
+        <input type="file" name="documento" id="documento" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple><br>
 
         <button type="submit" name="add" id="add" value="1">Guardar</button>
     </form>
