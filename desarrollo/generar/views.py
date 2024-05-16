@@ -127,7 +127,7 @@ def dash(request):
 
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
 
-actualizar_estados() #Llamamos a la función
+#actualizar_estados() #Llamamos a la función
 
 #------------------------------------------------------------------------------Vistas para inmuebles-----------------------------------------------------------------------------
 @autenticado_required

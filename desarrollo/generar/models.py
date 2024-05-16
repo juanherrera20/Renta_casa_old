@@ -82,11 +82,11 @@ class arrendatario(models.Model): #Tabla usuarios
     habilitarPago = models.IntegerField(default=2) 
     obs = models.CharField(max_length = 400) 
     
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     # Actualizar el contador de arrendatarios del inmueble
-    #     if self.inmueble:
-    #         self.inmueble.asignar_arrendatario(self)
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Actualizar el contador de arrendatarios del inmueble
+        if self.inmueble:
+            self.inmueble.asignar_arrendatario(self)
             
     class Meta:
         db_table = 'arrendatario'
@@ -116,13 +116,14 @@ class inmueble(models.Model): #Tabla usuarios
     direccion = models.CharField(max_length =300) 
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no. 
+    historial = models.IntegerField(default=0)
    
-    """ descuento = models.IntegerField() #Descuento que se descuenta al propietario por comisión """
+    # descuento = models.IntegerField() #Descuento que se descuenta al propietario por comisión 
     
-    # def asignar_arrendatario(self, arrendatario):
-    #     # Incrementar el contador de arrendatarios
-    #     self.historial += 1
-    #     self.save()  # Guardar el cambio en la base de datos
+    def asignar_arrendatario(self, arrendatario):
+        # Incrementar el contador de arrendatarios
+        self.historial += 1
+        self.save()  # Guardar el cambio en la base de datos
         
     class Meta:
         db_table = 'inmueble'
