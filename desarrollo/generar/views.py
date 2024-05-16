@@ -127,7 +127,7 @@ def dash(request):
 
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
 
-#actualizar_estados() #Llamamos a la función
+actualizar_estados() #Llamamos a la función
 
 #------------------------------------------------------------------------------Vistas para inmuebles-----------------------------------------------------------------------------
 @autenticado_required
@@ -415,6 +415,7 @@ def actualizar_propietario(request): #Actualizar propietario.
         date = datetime.strptime(fechaPago, "%Y-%m-%d")
         nuevaFecha = date + timedelta(days=30)
         fechaPago = nuevaFecha.strftime("%Y-%m-%d")
+        habilitarPago = 4
 
     obs = request.POST.get('obs')
 

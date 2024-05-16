@@ -82,11 +82,11 @@ class arrendatario(models.Model): #Tabla usuarios
     habilitarPago = models.IntegerField(default=2) 
     obs = models.CharField(max_length = 400) 
     
-    def save(self, *args, **kwargs):
+    """     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         # Actualizar el contador de arrendatarios del inmueble
         if self.inmueble:
-            self.inmueble.asignar_arrendatario(self)
+            self.inmueble.asignar_arrendatario(self) """
             
     class Meta:
         db_table = 'arrendatario'

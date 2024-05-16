@@ -2,12 +2,9 @@
 #En este archivo se registran todas las funciones y diccionarios que usamos para manejar la logica del backend.
 #--------------------------------------------------------------------------------------------------------------------------------s
 
-from datetime import date, datetime, timedelta
-from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponse
-import re, uuid
-from django.db.models import Max
-from django.shortcuts import render, redirect
+from datetime import datetime
+import re
+from django.shortcuts import redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -44,7 +41,7 @@ diccionarioPago ={ #Va realcionado a tabla Propietarios y Arrendatarios- Campo h
     '1': 'Pagado',
     '2': 'Debe',
     '3': 'No pago',
-    '4': 'Indefinido', 
+    '4': 'Pagado', 
 }
 
 diccionarioInmueble={
@@ -125,11 +122,9 @@ def  actualizar_estados():
         guardar = propietario.objects.get(id=idPropietario)
 
         if fechaObjeto2 > fechaObjeto1: 
-            if EstadoPropietario == 1:
-                if fechaResta <=7:
-                    guardar.habilitarPago = 2
-                    guardar.save()
-                        
+            if EstadoPropietario == 4 and fechaResta <=7:
+                guardar.habilitarPago = 2
+                guardar.save()
         elif fechaObjeto1 >= fechaObjeto2:
             guardar.habilitarPago = 3
             guardar.save()
