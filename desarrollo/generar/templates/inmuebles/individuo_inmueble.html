@@ -16,6 +16,7 @@
 {% block contenido %}
   {% for inmueble, tipo, habilitada, porcentaje, servicios in inmueble %}
     <h2>Propietario del inmueble: {{ inmueble.propietario_id.usuarios_id.nombre }} {{ inmueble.propietario_id.usuarios_id.apellido }}</h2>
+    <h5>Historial de arrendatarios: {{inmueble.historial}}</h5>
     <button type="button" id="btnEdit"name="btnEdit">Edit</button>
     <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
 
