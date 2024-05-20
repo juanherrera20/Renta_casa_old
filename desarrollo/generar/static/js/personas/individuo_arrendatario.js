@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var btnActualizar = document.getElementById('btnActualizar');
     var miFormulario = document.getElementById('miFormulario');
     var Label = document.getElementById('LabelFechaFin');
+    var label2 = document.getElementById('LabelFinContrato');
 
     if (btnEdit) {
         btnEdit.addEventListener('click', function() {
@@ -25,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var finContratoInput = miFormulario.querySelector('input[name="fin_contrato"]');
             if (finContratoInput) {
                 finContratoInput.dataset.originalValue = finContratoInput.value;
-                finContratoInput.type = 'date';
+                finContratoInput.type = 'hidden';
             }
             var fechaLimiteInput = miFormulario.querySelector('input[name="fecha_fin"]');
             if (fechaLimiteInput) {
@@ -42,6 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if (Label) {
                 Label.style.display = 'none';
+            }
+            if (label2) {
+                label2.style.display = 'none';
             }
         });
     }
@@ -71,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var fechaLimiteInput = miFormulario.querySelector('input[name="fecha_fin"]');
             if (fechaLimiteInput) {
                 fechaLimiteInput.type = 'datetime';
-                fechaLimiteInput.value = finContratoInput.dataset.originalValue;
+                fechaLimiteInput.value = fechaLimiteInput.dataset.originalValue;
             }
             this.style.display = 'none';
             if (btnEdit) {
@@ -83,6 +87,17 @@ document.addEventListener('DOMContentLoaded', function() {
             if (Label) {
                 Label.style.display = 'block';
             }  
+            if (label2) {
+                label2.style.display = 'block';
+            }  
         });
     }
+    miFormulario.addEventListener('submit', function(event) {
+        event.preventDefault();
+        Swal.fire("Dato actualizado con exito!", "", "success").then((result) => {
+            if (result.isConfirmed) {
+                this.submit(); // Envía el formulario si el usuario confirma la acción
+            }
+        });
+    });
 });

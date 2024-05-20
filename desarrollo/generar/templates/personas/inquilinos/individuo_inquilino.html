@@ -4,6 +4,7 @@
 {% block static %}
   <link rel="stylesheet" href='{% static "css/personas/Inquilinos/individuo_inquilino.css" %}' type="text/css">
   <script type="text/javascript"  src='{% static "js/personas/individuo_arrendatario.js" %}'></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock static %}
 
 {% block encabezado %}
@@ -23,6 +24,10 @@
     {% csrf_token %}
     <input type="hidden" name="id" id="id" value="{{ usuario.id }}">
     <input type="hidden" name="idP" id="idP" value="{{ propietario.id }}">
+
+    <h4>Este Inquilino esta desde: {{ propietario.inicio }}</h4>
+
+
     <label for="nombre">Nombre</label>
     <input type="text" name="nombre" value="{{ usuario.nombre }}" readonly><br>
 
@@ -69,15 +74,13 @@
     
     <label for="fecha_fin" id="LabelFechaFin">Límite de Pago</label>
     <input type="datetime" name="fecha_fin" value="{{ propietario.fecha_fin_cobro }}" readonly><br>
-    <input type="hidden" name="fecha_finRes" value="{{ propietario.fecha_fin_cobro }}">
 
     <label for="inicio_contrato">Inicio del contrato</label>
     <input type="datetime" name="inicio_contrato" value="{{ propietario.inicio_contrato }}" readonly><br>
     <input type="hidden" name="inicio_contratoRes" value="{{ propietario.inicio_contrato }}">
 
-    <label for="fin_contrato">Fin del contrato</label>
+    <label for="fin_contrato" id="LabelFinContrato">Fin del contrato</label>
     <input type="datetime" name="fin_contrato" value="{{ propietario.fin_contrato }}" readonly><br>
-    <input type="hidden" name="fin_contratoRes" value="{{ propietario.fin_contrato }}">
 
     <label for="estado">Estado</label>
     <select name="estado" id="estado" disabled>
@@ -94,7 +97,7 @@
         <option value="Trimestral">Trimestral</option>
         <option value="Semestral">Semestral</option>
         <option value="Anual">Anual</option>
-        <option value="Indefinido">Indefinido</option>
+
     </select><br>
 
     <label for="obs">Observaciones</label>

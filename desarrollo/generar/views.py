@@ -127,7 +127,7 @@ def dash(request):
 
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
 
-#actualizar_estados() #Llamamos a la función
+actualizar_estados() #Llamamos a la función
 
 #------------------------------------------------------------------------------Vistas para inmuebles-----------------------------------------------------------------------------
 @autenticado_required
@@ -528,8 +528,24 @@ def guardar_inquilino(request): #Función para guardar inquilinos
         fecha_limite = newDate.strftime('%Y-%m-%d')
 
         inicioContrato = request.POST.get('inicioContrato', None)
-        finalContrato = request.POST.get('finContrato', None)
         tipo_contrato = request.POST.get('tipo_contrato', None)
+        finalContrato =""
+        if tipo_contrato == "Trimestral":
+            days = 3 * 30.67
+            fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
+            nuevaFecha = fechaSuma + timedelta(days=days)
+            finalContrato = nuevaFecha.strftime('%Y-%m-%d')
+        elif tipo_contrato == "Semestral":
+            days = 3 * 61.34
+            fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
+            nuevaFecha = fechaSuma + timedelta(days=days)
+            finalContrato = nuevaFecha.strftime('%Y-%m-%d')
+        elif tipo_contrato == "Anual":
+            days = 365
+            fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
+            nuevaFecha = fechaSuma + timedelta(days=days)
+            finalContrato = nuevaFecha.strftime('%Y-%m-%d')
+
         observ = request.POST.get('obs', None)
         modelo = arrendatario(direccion = direc, fecha_inicio_cobro= fecha_cobrar, fecha_fin_cobro = fecha_limite, inicio_contrato = inicioContrato, fin_contrato = finalContrato, tipo_contrato = tipo_contrato, obs = observ, usuarios_id_id = usuarios_id)
         modelo.save()
@@ -611,16 +627,26 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
         date =  datetime.strptime(inicio_contratoRes, "%B %d, %Y")
         inicioContrato = date.strftime("%Y-%m-%d")
 
-    fin_contrato = request.POST.get('fin_contrato')
-    fin_contratoRes = request.POST.get('fin_contratoRes')
-    if fin_contrato:
-        finContrato = fin_contrato
-    else:
-        date =  datetime.strptime(fin_contratoRes, "%B %d, %Y")
-        finContrato = date.strftime("%Y-%m-%d")
+    tipo_contrato = request.POST.get('tipo_contrato')
+
+    finalContrato =""
+    if tipo_contrato == "Trimestral":
+        days = 3 * 30.67
+        fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
+        nuevaFecha = fechaSuma + timedelta(days=days)
+        finalContrato = nuevaFecha.strftime('%Y-%m-%d')
+    elif tipo_contrato == "Semestral":
+        days = 3 * 61.34
+        fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
+        nuevaFecha = fechaSuma + timedelta(days=days)
+        finalContrato = nuevaFecha.strftime('%Y-%m-%d')
+    elif tipo_contrato == "Anual":
+        days = 365
+        fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
+        nuevaFecha = fechaSuma + timedelta(days=days)
+        finalContrato = nuevaFecha.strftime('%Y-%m-%d')
 
     habilitarPago = request.POST.get('estado')
-    tipo_contrato = request.POST.get('tipo_contrato')
     obs = request.POST.get('obs')
     
     guardar2 = arrendatario.objects.get(id=idA)
@@ -628,7 +654,7 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     guardar2.fecha_inicio_cobro = fechaCobro
     guardar2.fecha_fin_cobro = fecha_limite
     guardar2.inicio_contrato = inicioContrato
-    guardar2.fin_contrato = finContrato
+    guardar2.fin_contrato = finalContrato
     guardar2.tipo_contrato = tipo_contrato
     guardar2.habilitarPago = habilitarPago
     guardar2.obs = obs

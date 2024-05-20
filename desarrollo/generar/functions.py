@@ -2,7 +2,7 @@
 #En este archivo se registran todas las funciones y diccionarios que usamos para manejar la logica del backend.
 #--------------------------------------------------------------------------------------------------------------------------------s
 
-from datetime import datetime
+from datetime import datetime,timedelta
 import re
 from django.shortcuts import redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
@@ -41,7 +41,8 @@ diccionarioPago ={ #Va realcionado a tabla Propietarios y Arrendatarios- Campo h
     '1': 'Pagado',
     '2': 'Debe',
     '3': 'No pago',
-    '4': 'Pagado', 
+    '4': 'Pagado',
+    'None': 'Revisar'
 }
 
 diccionarioInmueble={
@@ -98,20 +99,20 @@ def autenticado_required(view_func):
             return redirect('index')
         return view_func(request, *args, **kwargs)
     return verificacion
-#---------------------------------------------------------------------------------------------------------------------------------------s
+#---------------------------------------------------------------------------------------------------------------------------------------
 
 
-#------------Función para actualizar los estados de pago de propietarios e inquilinos automaticamente-----------------------------------s
+#------------Función para actualizar los estados de pago de propietarios e inquilinos automaticamente-----------------------------------
 fecha = datetime.now()
 def  actualizar_estados():
     global fecha
     fechaFormateada = fecha.strftime("%Y-%m-%d")
     ObjetoPago = inmueble.objects.filter(arrendatario_id__isnull=False)
+    days = 365
     for objeto in ObjetoPago:
         #-----------------------Propietario-----------------------
         idPropietario = objeto.propietario_id.id
         EstadoPropietario = objeto.propietario_id.habilitarPago
-        estadoP = diccionarioPago[str(EstadoPropietario)]
         fechaPago = objeto.propietario_id.fecha_pago
         fechaPagoFormateada = fechaPago.strftime("%Y-%m-%d")
 
@@ -129,11 +130,31 @@ def  actualizar_estados():
             guardar.habilitarPago = 3
             guardar.save()
         #-----------------------Arrendatario-----------------------
+        idArrendatario = objeto.arrendatario_id.id
         EstadoArrendatario = objeto.arrendatario_id.habilitarPago
-        estadoA = diccionarioPago[str(EstadoArrendatario)]
+        inicio = objeto.arrendatario_id.inicio
 
+        nuevaFecha = inicio + timedelta(days=days)
+        fechaInicio = nuevaFecha.strftime('%Y-%m-%d') #mirar como se puede manejar una alerta o una vista, donde se visualice los arrendatarios que estan proximos a cumplir el año (Esta variable ya calcula cuando cumple el año.)
+
+        fechaInicioCobro = objeto.arrendatario_id.fecha_inicio_cobro
+        fechaFinCobro = objeto.arrendatario_id.fecha_fin_cobro
+
+        fechaObjeto3 = datetime.strptime(fechaInicioCobro, "%Y-%m-%d")
+        fechaObjeto4 = datetime.strptime(fechaFinCobro, "%Y-%m-%d")
+
+        save = arrendatario.objects.get(id=idArrendatario)
+        if fechaObjeto3 >= fechaObjeto1:
+            save.habilitarPAgo = 2
+            print("fechaaaa")
+        elif fechaObjeto1 >= fechaObjeto3:
+            save.habilitarPAgo = 3
+            print("fechaaaa222")
+
+    inicioContrato = objeto.arrendatario_id.inicio_contrato
+    finContrato = objeto.arrendatario_id.fin_contrato
     return print(fechaFormateada)
-#---------------------------------------------------------------------------------------------------------------------------------------s
+#---------------------------------------------------------------------------------------------------------------------------------------
 
 
 #-------------------------------------------Función para sacar los números de una lista mixta.------------------------------------------s
