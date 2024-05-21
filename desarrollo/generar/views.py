@@ -415,7 +415,6 @@ def actualizar_propietario(request): #Actualizar propietario.
         date = datetime.strptime(fechaPago, "%Y-%m-%d")
         nuevaFecha = date + timedelta(days=30)
         fechaPago = nuevaFecha.strftime("%Y-%m-%d")
-        habilitarPago = 4
 
     obs = request.POST.get('obs')
 
@@ -449,7 +448,6 @@ def individuo_propietario(request, id):
 def analisis_propietarios(request):
     #Logica para la tabla de propietarios
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Aquí filtro para que solo aparezcan los inmuebles con arrendatario
-    print(objetoInmuebles)
 
     objetoTipo = inmueble.objects.values_list('tipo', flat=True)
     tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
@@ -459,8 +457,8 @@ def analisis_propietarios(request):
 
     objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
     habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado]
-
-    objetoEstadoPropietario = inmueble.objects.values_list('propietario_id__habilitarPago', flat=True)
+                                                                                                    #REvisar Revisar
+    objetoEstadoPropietario = inmueble.objects.values_list('propietario_id__habilitarPago', flat=True) #Aquí puede estar el error de porque se mezclan los estados en analisis
     estadoPropietario = [diccionarioPago[str(values)]for values in objetoEstadoPropietario]
 
     objetoCanon = inmueble.objects.values_list('canon', flat=True)
@@ -607,18 +605,23 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     direccion = request.POST.get('direccion')
     fecha_cobro = request.POST.get('fecha_inicio')
     fecha_cobroRes = request.POST.get('fecha_inicioRes')
+    habilitarPago = request.POST.get('estado')
     
-    if fecha_cobro:
+    if fecha_cobro: #Compruebo si se modifico la fecha
         fechaCobro = fecha_cobro
     else:
         date =  datetime.strptime(fecha_cobroRes, "%B %d, %Y")
         fechaCobro = date.strftime("%Y-%m-%d")
+        
+    if habilitarPago == '1':
+        date = datetime.strptime(fechaCobro, "%Y-%m-%d")
+        nuevaFecha = date + timedelta(days=30)
+        fechaCobro = nuevaFecha.strftime("%Y-%m-%d")
 
     fechaObjeto = datetime.strptime(fechaCobro, "%Y-%m-%d")
     newDate = fechaObjeto + timedelta(days=5)
     fecha_limite = newDate.strftime('%Y-%m-%d')
 
-    
     inicio_contrato = request.POST.get('inicio_contrato')
     inicio_contratoRes = request.POST.get('inicio_contratoRes')
     if inicio_contrato:
@@ -646,7 +649,6 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
         nuevaFecha = fechaSuma + timedelta(days=days)
         finalContrato = nuevaFecha.strftime('%Y-%m-%d')
 
-    habilitarPago = request.POST.get('estado')
     obs = request.POST.get('obs')
     
     guardar2 = arrendatario.objects.get(id=idA)

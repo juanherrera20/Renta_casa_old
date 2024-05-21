@@ -2,7 +2,7 @@
 #En este archivo se registran todas las funciones y diccionarios que usamos para manejar la logica del backend.
 #--------------------------------------------------------------------------------------------------------------------------------s
 
-from datetime import datetime,timedelta
+from datetime import datetime,timedelta, date
 import re
 from django.shortcuts import redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
@@ -41,7 +41,7 @@ diccionarioPago ={ #Va realcionado a tabla Propietarios y Arrendatarios- Campo h
     '1': 'Pagado',
     '2': 'Debe',
     '3': 'No pago',
-    '4': 'Pagado',
+    #'4': 'Pagado',
     'None': 'Revisar'
 }
 
@@ -120,10 +120,14 @@ def  actualizar_estados():
         fechaObjeto2 = datetime.strptime(fechaPagoFormateada, "%Y-%m-%d")
 
         fechaResta = (fechaObjeto2 - fechaObjeto1).days
+        # print(objeto.propietario_id.usuarios_id.nombre)
+        # print("fecha 1: " + str(fechaObjeto1))
+        # print("fecha 2: " + str(fechaObjeto2))
+        # print("resta: " + str(fechaResta))
         guardar = propietario.objects.get(id=idPropietario)
 
         if fechaObjeto2 > fechaObjeto1: 
-            if EstadoPropietario == 4 and fechaResta <=7:
+            if EstadoPropietario == 1 and fechaResta <=7:
                 guardar.habilitarPago = 2
                 guardar.save()
         elif fechaObjeto1 >= fechaObjeto2:
@@ -138,18 +142,24 @@ def  actualizar_estados():
         fechaInicio = nuevaFecha.strftime('%Y-%m-%d') #mirar como se puede manejar una alerta o una vista, donde se visualice los arrendatarios que estan proximos a cumplir el año (Esta variable ya calcula cuando cumple el año.)
 
         fechaInicioCobro = objeto.arrendatario_id.fecha_inicio_cobro
+        fechaInicioCobroFormateada = fechaInicioCobro.strftime("%Y-%m-%d")
         fechaFinCobro = objeto.arrendatario_id.fecha_fin_cobro
+        fechaFinCobroFormateada = fechaFinCobro.strftime("%Y-%m-%d")
 
-        fechaObjeto3 = datetime.strptime(fechaInicioCobro, "%Y-%m-%d")
-        fechaObjeto4 = datetime.strptime(fechaFinCobro, "%Y-%m-%d")
+        fechaObjeto3 = datetime.strptime(fechaInicioCobroFormateada, "%Y-%m-%d")
+        fechaObjeto4 = datetime.strptime(fechaFinCobroFormateada, "%Y-%m-%d")
 
-        save = arrendatario.objects.get(id=idArrendatario)
-        if fechaObjeto3 >= fechaObjeto1:
-            save.habilitarPAgo = 2
-            print("fechaaaa")
-        elif fechaObjeto1 >= fechaObjeto3:
-            save.habilitarPAgo = 3
-            print("fechaaaa222")
+        objetoArrendatario = arrendatario.objects.get(id=idArrendatario)
+        if fechaObjeto1 >= fechaObjeto3 and fechaObjeto1 <= fechaObjeto4:
+            objetoArrendatario.habilitarPago = 2
+            print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido)
+            print("fechaa en debe")
+            objetoArrendatario.save()
+        elif fechaObjeto1 > fechaObjeto4:
+            objetoArrendatario.habilitarPago = 3
+            print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido )
+            print("fechaa no pago")
+            objetoArrendatario.save()
 
     inicioContrato = objeto.arrendatario_id.inicio_contrato
     finContrato = objeto.arrendatario_id.fin_contrato
