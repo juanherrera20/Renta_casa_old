@@ -41,7 +41,7 @@ diccionarioPago ={ #Va realcionado a tabla Propietarios y Arrendatarios- Campo h
     '1': 'Pagado',
     '2': 'Debe',
     '3': 'No pago',
-    #'4': 'Pagado',
+    '4': 'Pagado',
     'None': 'Revisar'
 }
 
@@ -127,7 +127,7 @@ def  actualizar_estados():
         guardar = propietario.objects.get(id=idPropietario)
 
         if fechaObjeto2 > fechaObjeto1: 
-            if EstadoPropietario == 1 and fechaResta <=7:
+            if EstadoPropietario == 4 and fechaResta <=7:
                 guardar.habilitarPago = 2
                 guardar.save()
         elif fechaObjeto1 >= fechaObjeto2:

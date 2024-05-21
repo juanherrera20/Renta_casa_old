@@ -415,7 +415,7 @@ def actualizar_propietario(request): #Actualizar propietario.
         date = datetime.strptime(fechaPago, "%Y-%m-%d")
         nuevaFecha = date + timedelta(days=30)
         fechaPago = nuevaFecha.strftime("%Y-%m-%d")
-
+        habilitarPago = 4
     obs = request.POST.get('obs')
 
     guardar2 = propietario.objects.get(id=idPropietario)
@@ -449,21 +449,21 @@ def analisis_propietarios(request):
     #Logica para la tabla de propietarios
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Aquí filtro para que solo aparezcan los inmuebles con arrendatario
 
-    objetoTipo = inmueble.objects.values_list('tipo', flat=True)
+    objetoTipo = inmueble.objects.values_list('tipo', flat=True).filter(arrendatario_id__isnull=False)
     tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
 
-    objetoPorcentaje = inmueble.objects.values_list('porcentaje', flat=True)
+    objetoPorcentaje = inmueble.objects.values_list('porcentaje', flat=True).filter(arrendatario_id__isnull=False)
     descuento = [diccionarioPorcentajeDescuento[str(values)]for values in objetoPorcentaje ]
 
-    objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
+    objetoEstado = inmueble.objects.values_list('habilitada', flat=True).filter(arrendatario_id__isnull=False)
     habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado]
                                                                                                     #REvisar Revisar
-    objetoEstadoPropietario = inmueble.objects.values_list('propietario_id__habilitarPago', flat=True) #Aquí puede estar el error de porque se mezclan los estados en analisis
+    objetoEstadoPropietario = inmueble.objects.values_list('propietario_id__habilitarPago', flat=True).filter(arrendatario_id__isnull=False) #Aquí puede estar el error de porque se mezclan los estados en analisis
     estadoPropietario = [diccionarioPago[str(values)]for values in objetoEstadoPropietario]
 
-    objetoCanon = inmueble.objects.values_list('canon', flat=True)
+    objetoCanon = inmueble.objects.values_list('canon', flat=True).filter(arrendatario_id__isnull=False)
 
-    ObjetoBancos = inmueble.objects.values_list('propietario_id__bancos', flat=True)
+    ObjetoBancos = inmueble.objects.values_list('propietario_id__bancos', flat=True).filter(arrendatario_id__isnull=False)
     bancoLink = [diccionarioBancos[str(values)]for values in ObjetoBancos]
     totales = []
 
