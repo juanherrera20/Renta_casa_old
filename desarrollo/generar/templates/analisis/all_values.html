@@ -29,7 +29,8 @@
     <label for="docRespaldo">Documento de respaldo:</label>
     <input type="file" name="docRespaldo" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled><br><br>
 
-    <button type="submit" id="btnConfirmar" name="btnConfirmar" style="display:none;">Confirmar</button><br><br>
+    <button type="submit" id="btnConfirmar" name="btnConfirmar" style="display:none;" value="5">Confirmar</button><br><br>
+    <button type="submit" id="btnPagar" name="btnPagar" value="4">Pagar</button><br><br>
 
     <h3>Propietario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h3><button type="submit" id="btn"name="btn" value="1">Editar Propietario</button><br><br><br>
 
@@ -83,13 +84,8 @@
     <input type="hidden" name="respaldo_fecha" value="{{ propietario.fecha_pago }}">
 
     <label for="habilitarPago">Estado del Pago</label>
-    <select name="habilitarPago" id="habilitarPago" disabled>
-        <option value="{{ propietario.habilitarPago }}">{{ pago }}</option>
-        <option value="1">Pagado</option>
-        <option value="2">Debe</option>
-        <option value="3">No pago</option>
-        <option value="4">Indefinido</option>
-    </select><br>
+    <input type="text" name="habilitarPago" id="habilitarPago" value="{{ propietario.habilitarPago }}" readonly><br>
+
 
     <label for="obs">Observaciones</label>
     <input type="text" name="obs" value="{{ propietario.obs }}" readonly><br>

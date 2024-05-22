@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var btnConfirmar = document.getElementById('btnConfirmar');
     var btnCancelar = document.getElementById('btnCancelar');
     var miFormulario = document.getElementById('miFormulario');
+    var btnPagar = document.getElementById('btnPagar')
     
 
     if(btnDescuento){
@@ -52,6 +53,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 descuento = parseFloat(descuento);
                 valorPago = parseFloat(valorPago);
                 var nuevoTotal = valorPago - descuento;
+
+                var prueba = document.createElement('input');
+                prueba.type = 'hidden';
+                prueba.name = 'btnRespaldoConfirmar';
+                prueba.value = 5;
+                document.getElementById('miFormulario').appendChild(prueba);
                 Swal.fire({
                     title: "Cambio de pago!",
                     text: "El valor de pago no es $"+valorPago+" sino $"+nuevoTotal,
@@ -65,4 +72,34 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     };
-});
+    if (btnPagar) {
+        btnPagar.addEventListener('click', function() {
+            document.getElementById('miFormulario').addEventListener('submit', function(event) {
+                event.preventDefault();
+
+                var prueba = document.createElement('input');
+                prueba.type = 'hidden';
+                prueba.name = 'btnRespaldoPagar';
+                prueba.value = 4;
+                document.getElementById('miFormulario').appendChild(prueba);
+
+                Swal.fire({
+                    title: "¿Seguro que quiere pagar?",
+                    showDenyButton: true,
+                    confirmButtonText: "Si",
+                    denyButtonText: `No`
+                  }).then((result) => {
+                    /* Read more about isConfirmed, isDenied below */
+                    if (result.isConfirmed) {
+                      Swal.fire("Propietario pagado!", "", "success").then((result) => {
+                        if (result.isConfirmed) {
+                            this.submit(); // Envía el formulario si el usuario confirma la acción
+                        }});
+                    } else if (result.isDenied) {
+                      Swal.fire("Propietario no actualizado", "", "info");
+                    }
+                  });
+                })
+            });
+        };
+    });

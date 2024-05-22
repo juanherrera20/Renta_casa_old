@@ -409,19 +409,11 @@ def actualizar_propietario(request): #Actualizar propietario.
     else:
         date =  datetime.strptime(respaldo_fecha, "%B %d, %Y")
         fechaPago = date.strftime("%Y-%m-%d")
-
-    habilitarPago = request.POST.get('habilitarPago')
-    if habilitarPago == '1':
-        date = datetime.strptime(fechaPago, "%Y-%m-%d")
-        nuevaFecha = date + timedelta(days=30)
-        fechaPago = nuevaFecha.strftime("%Y-%m-%d")
-        habilitarPago = 4
     obs = request.POST.get('obs')
 
     guardar2 = propietario.objects.get(id=idPropietario)
     guardar2.direccion = direccion
     guardar2.fecha_pago = fechaPago
-    guardar2.habilitarPago = habilitarPago
     guardar2.obs = obs
     guardar2.save()
     
@@ -830,20 +822,34 @@ def all_values(request, id):
 
 def redireccion(request):
     btn = request.POST.get('btn')
-    btnConfirmar = request.POST.get('btnConfirmar')
+    btnPagar = request.POST.get('btnRespaldoPagar')
     idInmueble = request.POST.get('idInmueble')
+    idp = request.POST.get('idP')
+    idUsuario = request.POST.get('idUser')
+    idArrendatario = request.POST.get('idArrendatario')
+    btnConfirmar = request.POST.get('btnRespaldoConfirmar')
     if btn == '1':
-        idUsuario = request.POST.get('idUser')
         resultado = individuo_propietario(request, idUsuario)
         return HttpResponse(resultado)
     elif btn == '2':
         resultado = individuo_inmueble(request, idInmueble)
         return HttpResponse(resultado)
     elif btn == '3':
-        idArrendatario = request.POST.get('idArrendatario')
         resultado = individuo_inquilino(request, idArrendatario)
         return HttpResponse(resultado)
-    elif btnConfirmar == None:
+    elif btnPagar == '4':
+        fechaPago = request.POST.get('fecha_pago')
+        dat = datetime.strptime(fechaPago, "%B %d, %Y")
+        nuevaFecha = dat + timedelta(days=30)
+        fechaPago = nuevaFecha.strftime("%Y-%m-%d")
+        habilitarPago = 4
+        resultado = analisis_propietarios(request)
+        save = propietario.objects.get(id=idp)
+        save.habilitarPago = habilitarPago
+        save.fecha_pago = fechaPago
+        save.save()
+        return HttpResponse(resultado)
+    elif btnConfirmar == '5':
         documento = request.FILES.getlist('docRespaldo')
         valor = request.POST.get('descuento')
         descrip = request.POST.get('descripcionDescuento')
@@ -855,7 +861,6 @@ def redireccion(request):
             filename = fs.save(doc.name, doc)
             url = fs.url(filename)
             urls.append(url)
-
         guardar = Docdescuentos(inmueble_id =idInmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
         guardar.save()
         return redirect('analisis_propietarios')
