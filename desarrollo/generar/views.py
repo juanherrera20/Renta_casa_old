@@ -198,10 +198,14 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
                 nuevo_ref = str(int(ultimo_ref) + 1)
 
             id_arrendatario = request.POST.get('arrendatario', None)
+            
+            if id_arrendatario == '':
+                id_arrendatario = None
             if id_arrendatario:
                 estado = 1
             else:
                 estado = 2
+            
 
             model=inmueble(propietario_id_id = id_propietario, arrendatario_id_id = id_arrendatario, ref= nuevo_ref, tipo = tipo_inmueble, canon= canon, descripcion= descrip, habilitada = estado, servicios = servicios, porcentaje = porcentaje, direccion= direc)
             model.save()
@@ -563,7 +567,7 @@ def individuo_inquilino(request, id):
     print(documentos)
     
     estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
-    return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'propietario':objetoArrendatario, 'estado':estados, 'documentos':documentos})
+    return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'arrendatario':objetoArrendatario, 'estado':estados, 'documentos':documentos})
 
 def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     idUsuario = request.POST.get('id')
@@ -597,7 +601,7 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     direccion = request.POST.get('direccion')
     fecha_cobro = request.POST.get('fecha_inicio')
     fecha_cobroRes = request.POST.get('fecha_inicioRes')
-    habilitarPago = request.POST.get('estado')
+    
     
     if fecha_cobro: #Compruebo si se modifico la fecha
         fechaCobro = fecha_cobro
@@ -605,10 +609,10 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
         date =  datetime.strptime(fecha_cobroRes, "%B %d, %Y")
         fechaCobro = date.strftime("%Y-%m-%d")
         
-    if habilitarPago == '1':
-        date = datetime.strptime(fechaCobro, "%Y-%m-%d")
-        nuevaFecha = date + timedelta(days=30)
-        fechaCobro = nuevaFecha.strftime("%Y-%m-%d")
+    # if habilitarPago == '1':
+    #     date = datetime.strptime(fechaCobro, "%Y-%m-%d")
+    #     nuevaFecha = date + timedelta(days=30)                    Reutilizar este codigo
+    #     fechaCobro = nuevaFecha.strftime("%Y-%m-%d")
 
     fechaObjeto = datetime.strptime(fechaCobro, "%Y-%m-%d")
     newDate = fechaObjeto + timedelta(days=5)
@@ -650,7 +654,6 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     guardar2.inicio_contrato = inicioContrato
     guardar2.fin_contrato = finalContrato
     guardar2.tipo_contrato = tipo_contrato
-    guardar2.habilitarPago = habilitarPago
     guardar2.obs = obs
     guardar2.save()
     
@@ -668,12 +671,15 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
 
 def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
 
-    objetoInmuebles = inmueble.objects.select_related('arrendatario_id__usuarios_id').all()
-
-    objetoTipo = inmueble.objects.values_list('tipo', flat=True)
+    objetoInmuebles = inmueble.objects.select_related('arrendatario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Solo para arrendatarios que estan vinculados a un inmueble
+    print(f"Inmueble: {objetoInmuebles}")
+    objetoTipo = objetoInmuebles.values_list('tipo', flat=True)
+    print(f"Este es el tipo {objetoTipo}")
     tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
 
-    objetoEstadoArrendatario = inmueble.objects.values_list('arrendatario_id__habilitarPago', flat=True)
+    objetoEstadoArrendatario = objetoInmuebles.values_list('arrendatario_id__habilitarPago', flat=True)
+    
+    print(f"este es: {objetoEstadoArrendatario}")
     estadoArrendatario = [diccionarioPago[str(values)]for values in objetoEstadoArrendatario]
 
     All = list(zip(objetoInmuebles, tipoInmueble, estadoArrendatario))
@@ -842,12 +848,13 @@ def redireccion(request):
         dat = datetime.strptime(fechaPago, "%B %d, %Y")
         nuevaFecha = dat + timedelta(days=30)
         fechaPago = nuevaFecha.strftime("%Y-%m-%d")
-        habilitarPago = 4
-        resultado = analisis_propietarios(request)
+        habilitarPago = 1
         save = propietario.objects.get(id=idp)
         save.habilitarPago = habilitarPago
         save.fecha_pago = fechaPago
         save.save()
+        
+        resultado = analisis_propietarios(request)
         return HttpResponse(resultado)
     elif btnConfirmar == '5':
         documento = request.FILES.getlist('docRespaldo')

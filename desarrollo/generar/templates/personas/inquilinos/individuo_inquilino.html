@@ -23,9 +23,9 @@
   <form action="{% url 'ActualizarInquilino' %}" id="miFormulario" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="hidden" name="id" id="id" value="{{ usuario.id }}">
-    <input type="hidden" name="idP" id="idP" value="{{ propietario.id }}">
+    <input type="hidden" name="idP" id="idP" value="{{ arrendatario.id }}">
 
-    <h4>Este Inquilino esta desde: {{ propietario.inicio }}</h4>
+    <h4>Este Inquilino esta desde: {{ arrendatario.inicio }}</h4>
 
 
     <label for="nombre">Nombre</label>
@@ -66,34 +66,29 @@
     <input type="email" name="email3" value="{{ usuario.email3 }}" readonly><br>
 
     <label for="direccion">Dirección</label>
-    <input type="text" name="direccion" value="{{ propietario.direccion }}" readonly><br>
+    <input type="text" name="direccion" value="{{ arrendatario.direccion }}" readonly><br>
 
     <label for="fecha_inicio">Fecha de Pago</label>
-    <input type="datetime" name="fecha_inicio" value="{{ propietario.fecha_inicio_cobro }}" readonly><br>
-    <input type="hidden" name="fecha_inicioRes" value="{{ propietario.fecha_inicio_cobro }}">
+    <input type="datetime" name="fecha_inicio" value="{{ arrendatario.fecha_inicio_cobro }}" readonly><br>
+    <input type="hidden" name="fecha_inicioRes" value="{{ arrendatario.fecha_inicio_cobro }}">
     
     <label for="fecha_fin" id="LabelFechaFin">Límite de Pago</label>
-    <input type="datetime" name="fecha_fin" value="{{ propietario.fecha_fin_cobro }}" readonly><br>
+    <input type="datetime" name="fecha_fin" value="{{ arrendatario.fecha_fin_cobro }}" readonly><br>
 
     <label for="inicio_contrato">Inicio del contrato</label>
-    <input type="datetime" name="inicio_contrato" value="{{ propietario.inicio_contrato }}" readonly><br>
-    <input type="hidden" name="inicio_contratoRes" value="{{ propietario.inicio_contrato }}">
+    <input type="datetime" name="inicio_contrato" value="{{ arrendatario.inicio_contrato }}" readonly><br>
+    <input type="hidden" name="inicio_contratoRes" value="{{ arrendatario.inicio_contrato }}">
 
     <label for="fin_contrato" id="LabelFinContrato">Fin del contrato</label>
-    <input type="datetime" name="fin_contrato" value="{{ propietario.fin_contrato }}" readonly><br>
+    <input type="datetime" name="fin_contrato" value="{{ arrendatario.fin_contrato }}" readonly><br>
 
     <label for="estado">Estado</label>
-    <select name="estado" id="estado" disabled>
-        <option value="{{ propietario.habilitarPago }}">{{ estado }}</option>
-        <option value="1">Pagado</option>
-        <option value="2">Debe</option>
-        <option value="3">No pago</option>
-        <option value="4">Indefinido</option>
-    </select><br>
+    <input type="text" name="estado" value="{{ estado }}" readonly><br>
+  
 
     <label for="tipo_contrato">Tipo de Contrato</label>
     <select name="tipo_contrato" id="tipo_contrato" disabled>
-        <option value="{{ propietario.tipo_contrato }}">{{ propietario.tipo_contrato }}</option>
+        <option value="{{ arrendatario.tipo_contrato }}">{{ arrendatario.tipo_contrato }}</option>
         <option value="Trimestral">Trimestral</option>
         <option value="Semestral">Semestral</option>
         <option value="Anual">Anual</option>
@@ -101,7 +96,7 @@
     </select><br>
 
     <label for="obs">Observaciones</label>
-    <input type="text" name="obs" value="{{ propietario.obs }}" readonly><br>
+    <input type="text" name="obs" value="{{ arrendatario.obs }}" readonly><br>
 
     {% if documentos %}
       <h3>Documentos existentes:</h3>

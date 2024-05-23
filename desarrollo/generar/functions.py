@@ -41,7 +41,7 @@ diccionarioPago ={ #Va realcionado a tabla Propietarios y Arrendatarios- Campo h
     '1': 'Pagado',
     '2': 'Debe',
     '3': 'No pago',
-    '4': 'Pagado',
+    '4': 'Indefinido',
     'None': 'Revisar'
 }
 
@@ -127,17 +127,17 @@ def  actualizar_estados():
         guardar = propietario.objects.get(id=idPropietario)
 
         if fechaObjeto2 > fechaObjeto1: 
-            if EstadoPropietario == 4 and fechaResta <=7:
+            if (EstadoPropietario == 1 or EstadoPropietario == 4) and fechaResta <=7: #La fecha de pago es el ultimo día habil para pagar
                 guardar.habilitarPago = 2
                 guardar.save()
-        elif fechaObjeto1 >= fechaObjeto2:
+        elif fechaObjeto1 >= fechaObjeto2 and EstadoPropietario != 1: #Si el estado es pagado no debería cambiarse a no pago
             guardar.habilitarPago = 3
             guardar.save()
         #-----------------------Arrendatario-----------------------
         idArrendatario = objeto.arrendatario_id.id
         EstadoArrendatario = objeto.arrendatario_id.habilitarPago
         inicio = objeto.arrendatario_id.inicio
-
+        
         nuevaFecha = inicio + timedelta(days=days)
         fechaInicio = nuevaFecha.strftime('%Y-%m-%d') #mirar como se puede manejar una alerta o una vista, donde se visualice los arrendatarios que estan proximos a cumplir el año (Esta variable ya calcula cuando cumple el año.)
 
@@ -150,12 +150,12 @@ def  actualizar_estados():
         fechaObjeto4 = datetime.strptime(fechaFinCobroFormateada, "%Y-%m-%d")
 
         objetoArrendatario = arrendatario.objects.get(id=idArrendatario)
-        if fechaObjeto1 >= fechaObjeto3 and fechaObjeto1 <= fechaObjeto4:
+        if fechaObjeto1 >= fechaObjeto3 and fechaObjeto1 <= fechaObjeto4 and (EstadoArrendatario == 1 or EstadoArrendatario == 4):
             objetoArrendatario.habilitarPago = 2
             print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido)
             print("fechaa en debe")
             objetoArrendatario.save()
-        elif fechaObjeto1 > fechaObjeto4:
+        elif fechaObjeto1 > fechaObjeto4 and EstadoPropietario != 1:
             objetoArrendatario.habilitarPago = 3
             print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido )
             print("fechaa no pago")

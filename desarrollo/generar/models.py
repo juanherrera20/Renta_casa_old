@@ -80,7 +80,7 @@ class arrendatario(models.Model): #Tabla usuarios
     fin_contrato = models.DateField(max_length = 20)
     tipo_contrato = models.CharField(max_length = 100) #Se puede hacer la alarma mediante este campo.
     inicio = models.DateField(auto_now_add=True)
-    habilitarPago = models.IntegerField(default=2) 
+    habilitarPago = models.IntegerField(default=4) 
     obs = models.CharField(max_length = 400) 
        
     class Meta:
@@ -91,7 +91,7 @@ class propietario(models.Model): #Tabla usuarios
     usuarios_id = models.ForeignKey('usuarios', on_delete=models.PROTECT) #Declaracion de FK
     direccion = models.CharField(max_length = 200)
     fecha_pago = models.DateField(max_length = 20)
-    habilitarPago = models.IntegerField(default=2)
+    habilitarPago = models.IntegerField(default=4)
     bancos = models.CharField(max_length = 200)
     obs = models.CharField(max_length = 400)
     
@@ -102,7 +102,7 @@ class propietario(models.Model): #Tabla usuarios
 class inmueble(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True) 
     propietario_id = models.ForeignKey('propietario', on_delete=models.PROTECT) 
-    arrendatario_id = models.ForeignKey('arrendatario', related_name='inmueble', on_delete=models.PROTECT)
+    arrendatario_id = models.ForeignKey('arrendatario', related_name='inmueble', on_delete=models.PROTECT, null=True, blank=True)
     ref = models.CharField(max_length = 10) #referencia unica que se pueda mostrar al usuario   
     tipo = models.IntegerField() #Si es casa, edificio, local...   
     canon = models.IntegerField() 
@@ -118,15 +118,15 @@ class inmueble(models.Model): #Tabla usuarios
     def save(self, *args, **kwargs): #pk igual a id
         if self.pk: #Verificó si es actualización o creación de una instacia
             original = inmueble.objects.get(pk=self.pk)# Obtener la instancia original del inmueble
-            if hasattr(original, 'arrendatario_id'):
-                if hasattr(self, 'arrendatario_id') and original.arrendatario_id != self.arrendatario_id:
+            if original.arrendatario_id:
+                if self.arrendatario_id and original.arrendatario_id != self.arrendatario_id:
                     self.historial += 1
             else:
-                if hasattr(self, 'arrendatario_id'):
+                if self.arrendatario_id:
                     self.historial += 1
                 
         else:
-            if hasattr(self, 'arrendatario_id'):# Si es una nueva instancia y el arrendatario_id no es nulo, incrementar el historial
+            if self.arrendatario_id:# Si es una nueva instancia y el arrendatario_id no es nulo, incrementar el historial
                 self.historial += 1
         
         super().save(*args, **kwargs) # Llamar al método save de la superclase para guardar todo lo demas que se solicita en la vista
