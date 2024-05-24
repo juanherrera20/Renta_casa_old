@@ -49,10 +49,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 event.preventDefault();
                 var descuento = document.querySelector('input[name="descuento"]').value;
                 var valorPago = document.querySelector('input[name="valor_pago"]').value;
-
+                
                 descuento = parseFloat(descuento);
                 valorPago = parseFloat(valorPago);
-                var nuevoTotal = valorPago - descuento;
+                var nuevoTotal = valorPago - descuento;     
 
                 var prueba = document.createElement('input');
                 prueba.type = 'hidden';

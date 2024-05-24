@@ -675,14 +675,11 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
 def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
 
     objetoInmuebles = inmueble.objects.select_related('arrendatario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Solo para arrendatarios que estan vinculados a un inmueble
-    print(f"Inmueble: {objetoInmuebles}")
     objetoTipo = objetoInmuebles.values_list('tipo', flat=True)
-    print(f"Este es el tipo {objetoTipo}")
     tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
 
     objetoEstadoArrendatario = objetoInmuebles.values_list('arrendatario_id__habilitarPago', flat=True)
     
-    print(f"este es: {objetoEstadoArrendatario}")
     estadoArrendatario = [diccionarioPago[str(values)]for values in objetoEstadoArrendatario]
 
     All = list(zip(objetoInmuebles, tipoInmueble, estadoArrendatario))
@@ -785,7 +782,7 @@ def noti(request):
 
 #-----------------------------------------------------------------Logica para visualizar todos los datos (en analisis)--------------------------------------------------
 
-def all_values(request, id):
+def all_values_pro(request, id): #Vista exclusivamente para los propietarios
     #------------------------------------------------------Individuo_inmueble----------------------------------------------------
     objetoInmueble = inmueble.objects.filter(id=id).first()
 
@@ -825,11 +822,11 @@ def all_values(request, id):
     else: 
         respaldo = 2
 
-    return render(request, 'analisis/all_values.html', {'inmueble': All, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
+    return render(request, 'analisis/all_values_pro.html', {'inmueble': All, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
                                                         'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos, 'total':totalPago,
                                                         'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})
 
-def redireccion(request):
+def redireccion_pro(request): #Redirección solo para los propietarios
     btn = request.POST.get('btn')
     btnPagar = request.POST.get('btnRespaldoPagar')
     idInmueble = request.POST.get('idInmueble')
@@ -875,3 +872,88 @@ def redireccion(request):
         guardar.save()
         return redirect('analisis_propietarios')
     return redirect('analisis_propietarios') #Este return se puede cambiar para el control de errores.
+
+def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
+    #------------------------------------------------------Individuo_inmueble----------------------------------------------------
+    objetoInmueble = inmueble.objects.filter(id=id).first()
+
+    documentos = objetoInmueble.documentos.all()
+    imagenes = objetoInmueble.imagenes.all()
+    
+    clave_tipo = diccionarioTipoInmueble.get(str(objetoInmueble.tipo))
+    clave_estado = diccionarioInmueble.get(str(objetoInmueble.habilitada))
+    clave_porcentaje = diccionarioPorcentajeDescuento.get(str(objetoInmueble.porcentaje))
+    
+    servicios = [servicio.strip() for servicio in objetoInmueble.servicios.split(',')] if objetoInmueble.servicios else []
+    newServicios = extract_numbers(servicios)
+    matriculas = [numero if numero!= 0 else 'No existe' for numero in newServicios]
+
+    All = [(objetoInmueble, clave_tipo,clave_estado,clave_porcentaje,servicios)]
+    #------------------------------------------------------Individuo_Propietario----------------------------------------------------
+
+    objetoPropietario = propietario.objects.filter(id=objetoInmueble.propietario_id_id).first()
+    pago = diccionarioPago[str(objetoPropietario.habilitarPago)]
+    objetoUser = usuarios.objects.get( id = objetoPropietario.usuarios_id_id)
+    documentos = objetoPropietario.DocsPersona.all()
+
+    canon = objetoInmueble.canon
+    objetoPorcentaje = objetoInmueble.porcentaje
+
+    descuento_porcentaje = diccionarioPorcentajeDescuento[str(objetoPorcentaje)]
+    descuento = float(descuento_porcentaje)
+    totalDescuento = ((canon * descuento)/ 100)
+    totalPago = (canon - totalDescuento)
+
+    #------------------------------------------------------Individuo_Arrendatario----------------------------------------------------
+    if objetoInmueble.arrendatario_id_id:
+        respaldo = 1
+        objetoArrendatario = arrendatario.objects.filter(id=objetoInmueble.arrendatario_id_id).first()
+        objetoUser2 = usuarios.objects.filter( id = objetoArrendatario.usuarios_id_id).first()
+        estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
+    else: 
+        respaldo = 2
+
+    return render(request, 'analisis/all_values_arr.html', {'inmueble': All, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
+                                                        'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos, 'total':totalPago,
+                                                        'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})
+
+def redireccion_arr(request): #Redirección solo para los arrendatarios
+    btn = request.POST.get('btn')
+    btnPago = request.POST.get('btnRespaldoPago')
+    idInmueble = request.POST.get('idInmueble')
+    idUsuario = request.POST.get('idUser')
+    idArrendatario = request.POST.get('idArrendatario')
+    
+    idA = request.POST.get('idA') #extraigo el id arrendatario para actualizar valores
+    
+    if btn == '1':
+        resultado = individuo_propietario(request, idUsuario)
+        return HttpResponse(resultado)
+    elif btn == '2':
+        resultado = individuo_inmueble(request, idInmueble)
+        return HttpResponse(resultado)
+    elif btn == '3':
+        resultado = individuo_inquilino(request, idArrendatario)
+        return HttpResponse(resultado)
+    elif btnPago == '4':
+        fechaCobro = request.POST.get('fecha_inicio')
+        
+        dat = datetime.strptime(fechaCobro, "%B %d, %Y")
+        nuevaFecha = dat + timedelta(days=30)                    
+        fechaCobro = nuevaFecha.strftime("%Y-%m-%d")
+
+        fechaObjeto = datetime.strptime(fechaCobro, "%Y-%m-%d")
+        newDate = fechaObjeto + timedelta(days=5)
+        fecha_limite = newDate.strftime('%Y-%m-%d')
+        
+        habilitarPago = 1
+        
+        guardar = arrendatario.objects.get(id = idA)
+        guardar.habilitarPago = habilitarPago
+        guardar.fecha_inicio_cobro = fechaCobro
+        guardar.fecha_fin_cobro = fecha_limite
+        guardar.save()
+        
+        resultado = analisis_inquilinos(request)
+        return HttpResponse(resultado)
+    return redirect('dash') #Este return se puede cambiar para el control de errores.

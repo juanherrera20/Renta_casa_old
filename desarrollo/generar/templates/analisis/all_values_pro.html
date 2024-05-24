@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block static %}
-  <script type="text/javascript"  src='{% static "js/analisis/all_values.js" %}'></script>
+  <script type="text/javascript"  src='{% static "js/analisis/all_values_pro.js" %}'></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock static %}
 
@@ -16,7 +16,7 @@
 {% block contenido %}
     <!-- Inicio de individuo propietario -->
     
-  <form action="{% url 'redirec' %}" id="miFormulario" method="post" enctype="multipart/form-data">
+  <form action="{% url 'redirecPro' %}" id="miFormulario" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <button type="button" id="btnDescuento" name="btnDescuento">+ descuento</button>
     <button type="button" id="btnCancelar" name="btnCancelar" style="display:none;">Cancelar descuento</button>
@@ -102,8 +102,6 @@
       </ul>
     {% endif %}
 
-    <label for="documentos_nuevos">Cargar nuevos documentos:</label>
-    <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled><br><br>
               <!-- Fin de individuo Propietario e inicio de individuo inmueble -->
 
     {% for inmueble, tipo, habilitada, porcentaje, servicios in inmueble %}
@@ -185,9 +183,6 @@
         </ul>
       {% endif %}
 
-      <label for="documentos_nuevos">Cargar nuevos documentos:</label>
-      <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled>
-
       {% if imagenes %}
         <h3>Imágenes existentes:</h3>
         <ul id="lista-imagenes">
@@ -201,97 +196,90 @@
           {% endfor %}
         </ul>
       {% endif %}
-      <label for="imagenes_nuevas">Cargar nuevas imágenes:</label>
-      <input type="file" name="imagenes_nuevas" accept="image/*" multiple disabled>
     {% endfor %}
 
       <!-- Fin de individuo Inmueble e inicio de individuo Arrendatario -->
-      {% if respaldo == 1 %}
-        <br><br><h3>Arrendatario: {{ usuario2.nombre |add:" "|add:usuario2.apellido}}</h3><button type="submit" id="btn"name="btn" value="3">Editar Arrendatario</button><br><br><br>
-        <input type="hidden" name="idArrendatario" id="idArrendatario" value="{{ usuario2.id }}">
-        <input type="hidden" name="idA" id="idA" value="{{ arrendatario.id }}">
+  
+    <br><br><h3>Arrendatario: {{ usuario2.nombre |add:" "|add:usuario2.apellido}}</h3><button type="submit" id="btn"name="btn" value="3">Editar Arrendatario</button><br><br><br>
+    <input type="hidden" name="idArrendatario" id="idArrendatario" value="{{ usuario2.id }}">
+    <input type="hidden" name="idA" id="idA" value="{{ arrendatario.id }}">
 
-        <label for="nombre">Nombre</label>
-        <input type="text" name="nombre" value="{{ usuario2.nombre }}" readonly><br>
-  
-        <label for="apellido">Apellido</label>
-        <input type="text" name="apellido" value="{{ usuario2.apellido }}" readonly><br>
-  
-        <label for="tipo_documento">Tipo de Documento</label>
-        <select name="tipo_documento" id="tipo_documento" disabled>
-            <option value="{{ usuario2.tipo_documento }}">{{ usuario2.tipo_documento }}</option>
-            <option value="Cedula">Cedula de Ciudadania</option>
-            <option value="Pasaporte">Pasaporte</option>
-        </select><br>
-  
-        <label for="documento">Documento</label>
-        <input type="number" name="documento" value="{{ usuario2.documento }}" readonly><br>
-        
-        <label for="expedida">Expedida en</label>
-        <input type="text" name="expedida" value="{{ usuario2.expedida }}" readonly><br>
-  
-        <label for="telefono">Telefono principal</label>
-        <input type="number" name="telefono" value="{{ usuario2.telefono }}" readonly><br>
-        
-        <label for="telefono2">Telefono 2</label>
-        <input type="number" name="telefono2" value="{{ usuario2.telefono2 }}" readonly><br>
-        
-        <label for="telefono3">Telefono 3</label>
-        <input type="number" name="telefono3" value="{{ usuario2.telefono3 }}" readonly><br>
-  
-        <label for="email">Correo electronico principal</label>
-        <input type="email" name="email" value="{{ usuario2.email }}" readonly><br>
-        
-        <label for="email2">Correo electronico 2</label>
-        <input type="email" name="email2" value="{{ usuario2.email2 }}" readonly><br>
-        
-        <label for="email3">Correo electronico 3</label>
-        <input type="email" name="email3" value="{{ usuario2.email3 }}" readonly><br>
-  
-        <label for="direccion">Dirección</label>
-        <input type="text" name="direccion" value="{{ arrendatario.direccion }}" readonly><br>
-  
-        <label for="fecha_inicio">Fecha de Pago</label>
-        <input type="datetime" name="fecha_inicio" value="{{ arrendatario.fecha_inicio_cobro }}" readonly><br>
-        <input type="hidden" name="fecha_inicioRes" value="{{ arrendatario.fecha_inicio_cobro }}">
-        
-        <label for="fecha_fin" id="LabelFechaFin">Límite de Pago</label>
-        <input type="datetime" name="fecha_fin" value="{{ arrendatario.fecha_fin_cobro }}" readonly><br>
-        <input type="hidden" name="fecha_finRes" value="{{ arrendatario.fecha_fin_cobro }}">
-  
-        <label for="inicio_contrato">Inicio del contrato</label>
-        <input type="datetime" name="inicio_contrato" value="{{ arrendatario.inicio_contrato }}" readonly><br>
-        <input type="hidden" name="inicio_contratoRes" value="{{ arrendatario.inicio_contrato }}">
-  
-        <label for="fin_contrato">Fin del contrato</label>
-        <input type="datetime" name="fin_contrato" value="{{ arrendatario.fin_contrato }}" readonly><br>
-        <input type="hidden" name="fin_contratoRes" value="{{ arrendatario.fin_contrato }}">
-  
-        <label for="estado">Estado</label>
-        <select name="estado" id="estado" disabled>
-            <option value="{{ arrendatario.habilitarPago }}">{{ estado }}</option>
-            <option value="1">Pagado</option>
-            <option value="2">Debe</option>
-            <option value="3">No pago</option>
-            <option value="4">Indefinido</option>
-        </select><br>
-  
-        <label for="tipo_contrato">Tipo de Contrato</label>
-        <select name="tipo_contrato" id="tipo_contrato" disabled>
-            <option value="{{ arrendatario.tipo_contrato }}">{{ arrendatario.tipo_contrato }}</option>
-            <option value="Trimestral">Trimestral</option>
-            <option value="Semestral">Semestral</option>
-            <option value="Anual">Anual</option>
-            <option value="Indefinido">Indefinido</option>
-        </select><br>
-  
-        <label for="obs">Observaciones</label>
-        <input type="text" name="obs" value="{{ arrendatario.obs }}" readonly><br>
+    <label for="nombre">Nombre</label>
+    <input type="text" name="nombre" value="{{ usuario2.nombre }}" readonly><br>
 
-      {% elif respaldo == 2 %}
-      <h3>Este inmueble aún no tiene ningún arrendatario.</h3>
-      <h5>Puede asignarle un inmueble por este medio: <a href="{% url 'inmu' %}">Inmueble</a> o por este medio: Añadir <a href="{% url 'AddInquilinos' %}">arrendatario</a></h5>
+    <label for="apellido">Apellido</label>
+    <input type="text" name="apellido" value="{{ usuario2.apellido }}" readonly><br>
 
-    {% endif %}
+    <label for="tipo_documento">Tipo de Documento</label>
+    <select name="tipo_documento" id="tipo_documento" disabled>
+        <option value="{{ usuario2.tipo_documento }}">{{ usuario2.tipo_documento }}</option>
+        <option value="Cedula">Cedula de Ciudadania</option>
+        <option value="Pasaporte">Pasaporte</option>
+    </select><br>
+
+    <label for="documento">Documento</label>
+    <input type="number" name="documento" value="{{ usuario2.documento }}" readonly><br>
+    
+    <label for="expedida">Expedida en</label>
+    <input type="text" name="expedida" value="{{ usuario2.expedida }}" readonly><br>
+
+    <label for="telefono">Telefono principal</label>
+    <input type="number" name="telefono" value="{{ usuario2.telefono }}" readonly><br>
+    
+    <label for="telefono2">Telefono 2</label>
+    <input type="number" name="telefono2" value="{{ usuario2.telefono2 }}" readonly><br>
+    
+    <label for="telefono3">Telefono 3</label>
+    <input type="number" name="telefono3" value="{{ usuario2.telefono3 }}" readonly><br>
+
+    <label for="email">Correo electronico principal</label>
+    <input type="email" name="email" value="{{ usuario2.email }}" readonly><br>
+    
+    <label for="email2">Correo electronico 2</label>
+    <input type="email" name="email2" value="{{ usuario2.email2 }}" readonly><br>
+    
+    <label for="email3">Correo electronico 3</label>
+    <input type="email" name="email3" value="{{ usuario2.email3 }}" readonly><br>
+
+    <label for="direccion">Dirección</label>
+    <input type="text" name="direccion" value="{{ arrendatario.direccion }}" readonly><br>
+
+    <label for="fecha_inicio">Fecha de Pago</label>
+    <input type="datetime" name="fecha_inicio" value="{{ arrendatario.fecha_inicio_cobro }}" readonly><br>
+    <input type="hidden" name="fecha_inicioRes" value="{{ arrendatario.fecha_inicio_cobro }}">
+    
+    <label for="fecha_fin" id="LabelFechaFin">Límite de Pago</label>
+    <input type="datetime" name="fecha_fin" value="{{ arrendatario.fecha_fin_cobro }}" readonly><br>
+    <input type="hidden" name="fecha_finRes" value="{{ arrendatario.fecha_fin_cobro }}">
+
+    <label for="inicio_contrato">Inicio del contrato</label>
+    <input type="datetime" name="inicio_contrato" value="{{ arrendatario.inicio_contrato }}" readonly><br>
+    <input type="hidden" name="inicio_contratoRes" value="{{ arrendatario.inicio_contrato }}">
+
+    <label for="fin_contrato">Fin del contrato</label>
+    <input type="datetime" name="fin_contrato" value="{{ arrendatario.fin_contrato }}" readonly><br>
+    <input type="hidden" name="fin_contratoRes" value="{{ arrendatario.fin_contrato }}">
+
+    <label for="estado">Estado</label>
+    <select name="estado" id="estado" disabled>
+        <option value="{{ arrendatario.habilitarPago }}">{{ estado }}</option>
+        <option value="1">Pagado</option>
+        <option value="2">Debe</option>
+        <option value="3">No pago</option>
+        <option value="4">Indefinido</option>
+    </select><br>
+
+    <label for="tipo_contrato">Tipo de Contrato</label>
+    <select name="tipo_contrato" id="tipo_contrato" disabled>
+        <option value="{{ arrendatario.tipo_contrato }}">{{ arrendatario.tipo_contrato }}</option>
+        <option value="Trimestral">Trimestral</option>
+        <option value="Semestral">Semestral</option>
+        <option value="Anual">Anual</option>
+        <option value="Indefinido">Indefinido</option>
+    </select><br>
+
+    <label for="obs">Observaciones</label>
+    <input type="text" name="obs" value="{{ arrendatario.obs }}" readonly><br>
+
   </form>
 {% endblock %}

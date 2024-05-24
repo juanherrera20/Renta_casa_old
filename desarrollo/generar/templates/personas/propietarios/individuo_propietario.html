@@ -73,8 +73,7 @@
 
       <label for="obs">Observaciones</label>
       <input type="text" name="obs" value="{{ propietario.obs }}" readonly><br>
-      <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
-
+      
       {% if documentos %}
         <h3>Documentos existentes:</h3>
         <ul>
@@ -88,7 +87,9 @@
       {% endif %}
 
       <label for="documentos_nuevos">Cargar nuevos documentos:</label>
-      <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled>
+      <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled><br>
+
+      <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><!-- CSS -->
   </form>
 
 {% endblock %}

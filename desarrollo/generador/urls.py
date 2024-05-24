@@ -21,8 +21,8 @@ from django.conf.urls.static import static
 #Se importan las vistas que se deseen ver en la página
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
 from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino,  add_tarea, guardar_tarea, modal_ver_tarea
-from generar.views import individuo_propietario, individuo_inquilino,all_values, add_inmueble, guardar_inmueble, individuo_inmueble, actualizar_propietario, actualizar_inquilino
-from generar.views import actualizar_modal, actualizar_inmueble, redireccion
+from generar.views import individuo_propietario, individuo_inquilino,all_values_pro, add_inmueble, guardar_inmueble, individuo_inmueble, actualizar_propietario, actualizar_inquilino
+from generar.views import actualizar_modal, actualizar_inmueble, redireccion_pro, redireccion_arr, all_values_arr
 
 urlpatterns = [
 
@@ -34,7 +34,7 @@ urlpatterns = [
     #añadir inmuebles
     path('AddInmuebles/', add_inmueble, name="addInmu"),
     path('GuardarInmueble/', guardar_inmueble, name="guardarInmueble"),
-    path('Inmuebles/Code/<int:id>', individuo_inmueble, name="IndividuoInmueble"),
+    path('Inmuebles/C ode/<int:id>', individuo_inmueble, name="IndividuoInmueble"),
     path('ActualizarInmueble/', actualizar_inmueble, name="actualizarInmueble"),
 
     path('Personas/Propietarios/', personas_propietarios, name="personas_propietarios"),
@@ -63,8 +63,12 @@ urlpatterns = [
     path('Personas/Propietarios/Code/<int:id>', individuo_propietario, name="IndividuoPropietario"),
     path('Personas/inquilinos/Code/<int:id>', individuo_inquilino, name="IndividuoInquilino"),
     #Visualizar todos los datos
-    path('Analisis/All/Values/<int:id>', all_values, name="AllValues"),
-    path('Analisis/Redireccion/',redireccion, name="redirec")
+    #---------Propietarios-----------------
+    path('Analisis/All/ValuesPro/<int:id>', all_values_pro, name="AllValuesPro"),
+    path('Analisis/RedireccionPro/',redireccion_pro, name="redirecPro"),
+    #---------Arrendatarios-----------------
+    path('Analisis/All/ValuesArr/<int:id>', all_values_arr, name="AllValuesArr"),
+    path('Analisis/RedireccionArr/',redireccion_arr, name="redirecArr")
 ]
 
 if settings.DEBUG:

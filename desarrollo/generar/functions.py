@@ -152,15 +152,15 @@ def  actualizar_estados():
         objetoArrendatario = arrendatario.objects.get(id=idArrendatario)
         if fechaObjeto1 >= fechaObjeto3 and fechaObjeto1 <= fechaObjeto4 and (EstadoArrendatario == 1 or EstadoArrendatario == 4):
             objetoArrendatario.habilitarPago = 2
-            print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido)
-            print("fechaa en debe")
             objetoArrendatario.save()
-        elif fechaObjeto1 > fechaObjeto4 and EstadoPropietario != 1:
+        
+        elif fechaObjeto1 > fechaObjeto4 and EstadoArrendatario != 1:
             objetoArrendatario.habilitarPago = 3
-            print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido )
-            print("fechaa no pago")
             objetoArrendatario.save()
-
+            
+        print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido)
+        print("fecha " + str(fechaObjeto1 > fechaObjeto4))
+        print("estado " + str(EstadoArrendatario != 1))
     inicioContrato = objeto.arrendatario_id.inicio_contrato
     finContrato = objeto.arrendatario_id.fin_contrato
     return print(fechaFormateada)
