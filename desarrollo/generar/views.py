@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 import re, uuid
@@ -26,7 +27,6 @@ def index(request):
         
         # Busco el usuario en la base de datos
         user = superuser.objects.filter(documento=username_form).first()
-
         if user is not None:
             # Verifico si la contraseña coincide con la almacenada en la base de datos
             if check_password_hash(user.password, password_form): #Permite autenticar la contraseña del usuario encontrado
@@ -39,9 +39,11 @@ def index(request):
                 datos = { 'nombre' : user.nombre, 'apellido' : user.apellido} #Usar los datos a nivel de template
                 return redirect('dash')
             else:
-                return render(request, 'index.html', {"error": "Contraseña incorrecta"})
+                messages.error(request, "Contraseña incorrecta") 
         else:
-            return render(request, 'index.html', {"error": "Usuario no encontrado en la base de datos"})
+            messages.error(request, "Usuario no encontrado en la base de datos")
+
+        return redirect('index')
 
 def close(request):
     try: #Elimino las variables de sesion
@@ -476,7 +478,8 @@ def analisis_propietarios(request):
 #-------------------------------------------------------------------Logica para inquilinos/Arrendatarios----------------------------------------------------------------
 
 def personas_inquilinos(request): #Logica para la tabla de Inquilinos-Personas
-    objetoUsuario = usuarios.objects.filter(propie_client=2) # Se filtra para saber si son propietarios o clientes
+    objetoArrendatario = arrendatario.objects.values_list('usuarios_id_id')
+    objetoUsuario = usuarios.objects.filter(id__in = objetoArrendatario) # Se filtra para saber si son propietarios o clientes
     habilitar = usuarios.objects.filter(propie_client=2).values_list('habilitar', flat=True) # Se filtra solo el campo de 'habilitar'
     estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diccionarioHabilitar
     usuarios_con_estados = []
