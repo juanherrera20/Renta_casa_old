@@ -1,0 +1,189 @@
+body {
+
+    font-family: Arial, sans-serif; /* tipo de texto */
+    color: white;/* color del texto */
+    position: relative;
+}
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../image/image.png');
+    background-position: center center;/* Centra la imagen */
+    background-repeat: no-repeat;/* No se repite la imagen */
+    background-attachment: fixed;
+    background-size: cover;/* background-attachment y background-size ajustan la imagen y la vuelven adaptativa */
+    z-index: -2; /* Coloca la pseudo-capa detrás del contenido */
+}
+body::after {
+    content: "";
+    position: fixed; /* Fijo para que cubra todo el fondo */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Capa negra semi-transparente */
+    z-index: -1; /* Asegura que el pseudo-elemento esté detrás del contenido pero delante de la imagen de fondo */
+}
+body > * {
+    position: relative;
+    z-index: 1;
+}
+.header h1 {
+    font-size: 100px; /* Adjust font size for the title */
+    font-weight: bold; /* Make the title bold */
+}
+.body p{
+    font-size: 20px; /* Adjust font size for the paragraph */
+    font-weight: bold; /* Make the paragraph bold */
+}
+#casa{
+    color: #89EBEB;
+}
+.welcome{
+    margin: 20px;
+    margin-right: 400px;
+}
+.login-form {
+    color: black;
+    background-color: #ffffff; /* Color del fondo */
+    border-radius: 10px; /* Borde de los componentes */
+    padding: 20px; /* se le añade un padding  */
+    width: 400px; /* Adjust the width as needed */
+}
+.login-form button {
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center;
+}
+
+
+input[type=text], input[type=password] {
+    /* margin-bottom: 10px; */ /* Add spacing between input fields */
+    border-radius: 5px; /* Rounded corners for input fields */
+    border: none; /* Remove default borders */
+    padding-left: 10px; /* Add left padding to input fields */
+}
+/* ----------------------Estilos para el botón de registrarse----------------------- */
+#registrarse {
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+  }
+  
+  #registrarse {
+    --primary-color: #111;
+    --hovered-color: #6eb9b9;
+    position: relative;
+    display: flex;
+    font-weight: 600;
+    font-size: 20px;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  button p {
+    margin: 0;
+    position: relative;
+    font-size: 20px;
+    color: var(--primary-color);
+  }
+  
+  button::after {
+    position: absolute;
+    content: "";
+    width: 0;
+    left: 0;
+    bottom: -7px;
+    background: var(--hovered-color);
+    height: 2px;
+    transition: 0.3s ease-out;
+  }
+  
+  button p::before {
+    position: absolute;
+    /*   box-sizing: border-box; */
+    content: "Registrate";
+    width: 0%;
+    inset: 0;
+    color: var(--hovered-color);
+    overflow: hidden;
+    transition: 0.3s ease-out;
+  }
+  
+  button:hover::after {
+    width: 100%;
+  }
+  
+  button:hover p::before {
+    width: 100%;
+  }
+  
+  button:hover svg {
+    transform: translateX(4px);
+    color: var(--hovered-color);
+  }
+  
+  button svg {
+    color: var(--primary-color);
+    transition: 0.2s;
+    position: relative;
+    width: 15px;
+    transition-delay: 0.2s;
+  }
+  /* -----------------------------Fin de estilos de botón de registrarse ----------------------------- */
+
+  /*----------------------------------------Inicio de botón para Entrar-------------------------------- */
+
+  .button {
+    width: 120px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    border: 3px solid #6eb9b9;
+    background-color: #6eb9b9;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.137);
+  }
+  
+  .text {
+    width: 70%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #6eb9b9;
+    color: rgb(0, 0, 0);
+  }
+  
+  .arrow path {
+    fill: rgb(19, 19, 19);
+  }
+  
+  .button:hover .arrow {
+    animation: slide-in-left 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+  }
+  
+  @keyframes slide-in-left {
+    0% {
+      transform: translateX(-8px);
+      opacity: 0;
+    }
+  
+    100% {
+      transform: translateX(0px);
+      opacity: 1;
+    }
+  }
+  
+  .button:active {
+    transform: scale(0.97);
+  }
+  /*----------------------------------------Fin de botón para Entrar-------------------------------- */
