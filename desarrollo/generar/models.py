@@ -72,7 +72,7 @@ class usuarios(models.Model): #Tabla usuarios
 
 class arrendatario(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
-    usuarios_id = models.ForeignKey('usuarios', on_delete=models.PROTECT) #Declaracion de FK
+    usuarios_id = models.ForeignKey('usuarios', related_name='arrendatario', on_delete=models.PROTECT) #Declaracion de FK
     direccion = models.CharField(max_length = 200)
     fecha_inicio_cobro = models.DateField(max_length = 20)
     fecha_fin_cobro = models.DateField(max_length = 20)
@@ -88,7 +88,7 @@ class arrendatario(models.Model): #Tabla usuarios
     
 class propietario(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True)
-    usuarios_id = models.ForeignKey('usuarios', on_delete=models.PROTECT) #Declaracion de FK
+    usuarios_id = models.ForeignKey('usuarios', related_name='propietario', on_delete=models.PROTECT) #Declaracion de FK
     direccion = models.CharField(max_length = 200)
     fecha_pago = models.DateField(max_length = 20)
     habilitarPago = models.IntegerField(default=4)
@@ -101,7 +101,7 @@ class propietario(models.Model): #Tabla usuarios
         
 class inmueble(models.Model): #Tabla usuarios
     id = models.AutoField(primary_key=True, unique=True) 
-    propietario_id = models.ForeignKey('propietario', on_delete=models.PROTECT) 
+    propietario_id = models.ForeignKey('propietario',related_name='inmueble', on_delete=models.PROTECT) 
     arrendatario_id = models.ForeignKey('arrendatario', related_name='inmueble', on_delete=models.PROTECT, null=True, blank=True)
     ref = models.CharField(max_length = 10) #referencia unica que se pueda mostrar al usuario   
     tipo = models.IntegerField() #Si es casa, edificio, local...   

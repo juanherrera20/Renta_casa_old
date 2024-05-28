@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
 import re, uuid
-from django.db.models import Max, Count
+from django.db.models import Max, Count, Q
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -105,15 +105,15 @@ def dash(request):
         }
     usuarios_propietarios = []
     for propietario in objetoPropietario:
-        direccion = propietario.propietario_set.first().direccion if propietario.propietario_set.exists() else None
-        estadosDiccionario = propietario.propietario_set.first().habilitarPago if propietario.propietario_set.exists() else None
+        direccion = propietario.propietario.first().direccion if propietario.propietario.exists() else None
+        estadosDiccionario = propietario.propietario.first().habilitarPago if propietario.propietario.exists() else None
         estados = diccionarioPago[str(estadosDiccionario)]
         usuarios_propietarios.append((propietario, direccion, estados))
 
     usuarios_arrendatarios = []
     for arrendatario in objetoArrendatario:
-        direccionArrendatario = arrendatario.arrendatario_set.first().direccion if arrendatario.arrendatario_set.exists() else None
-        estadosDiccionarioArrendatario = arrendatario.arrendatario_set.first().habilitarPago if arrendatario.arrendatario_set.exists() else None
+        direccionArrendatario = arrendatario.arrendatario.first().direccion if arrendatario.arrendatario.exists() else None
+        estadosDiccionarioArrendatario = arrendatario.arrendatario.first().habilitarPago if arrendatario.arrendatario.exists() else None
         estadosArrendatario = diccionarioPago[str(estadosDiccionarioArrendatario)]
         usuarios_arrendatarios.append((arrendatario, direccionArrendatario, estadosArrendatario))
     
@@ -129,7 +129,7 @@ def dash(request):
 
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
 
-actualizar_estados() #Llamamos a la función
+#actualizar_estados() #Llamamos a la función
 
 #------------------------------------------------------------------------------Vistas para inmuebles-----------------------------------------------------------------------------
 @autenticado_required
@@ -147,27 +147,10 @@ def inmu(request): #Visualizar los inmuebles (Tabla)
 
 @autenticado_required
 def add_inmueble(request): #ayuda a la Vista para añadir inmueble
-    objetoPropietario = usuarios.objects.filter(propie_client=1)
-    objetoArrendatario = usuarios.objects.filter(propie_client=2)
-    propietarios_info = []
-    for propietario in objetoPropietario:
-        primer_propietario = propietario.propietario_set.first()
-        if primer_propietario:
-            # Crea un diccionario con el ID y el nombre completo del propietario
-            propietarios_info.append({
-                'id': primer_propietario.id,
-                'nombre_completo': f"{propietario.apellido} {propietario.nombre}" 
-            })
-    arrendatarios_info = []
-    for arrendatario in objetoArrendatario:
-        primer_arrendatario = arrendatario.arrendatario_set.first()
-        if primer_arrendatario:
-            # Crea un diccionario con el ID y el nombre completo del propietario
-            arrendatarios_info.append({
-                'id': primer_arrendatario.id,
-                'nombre_completo': f"{arrendatario.nombre} {arrendatario.apellido}"
-            })
-    return render(request, 'inmuebles/add_inmueble.html', {'propietarios': objetoPropietario, 'arrendatarios':objetoArrendatario, 'propietarios_info': propietarios_info, 'arrendatarios_info': arrendatarios_info})
+    objetoUsuarioPropietarios = usuarios.objects.filter(propie_client=1)
+    objetoUsuarioArrendatarios = usuarios.objects.filter(propie_client=2).exclude(Q(arrendatario__inmueble__isnull=False))  #El Q permite anidar condiciones para el filtro
+ 
+    return render(request, 'inmuebles/add_inmueble.html', {'UsuarioPropietarios': objetoUsuarioPropietarios, 'UsuariosArrendatarios':objetoUsuarioArrendatarios})
 
 @autenticado_required
 def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
@@ -243,7 +226,7 @@ def individuo_inmueble(request, id):
     matriculas = [numero if numero!= 0 else 'No existe' for numero in newServicios]
 
     All = [(objetoInmueble, clave_tipo,clave_estado,clave_porcentaje,servicios)]
-    objetoArrendatario = usuarios.objects.filter(propie_client=2)
+    objetoArrendatario = usuarios.objects.filter(propie_client=2).exclude(Q(arrendatario__inmueble__isnull=False)) #El Q permite anidar condiciones para el filtro
     objetoPropietario = usuarios.objects.filter(propie_client=1)
     return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario, 'propietario':objetoPropietario, 'matricula':matriculas, 
                                                                  'documentos':documentos, 'imagenes':imagenes})
@@ -328,7 +311,7 @@ def personas_propietarios(request): #Tabla en vista de personas propietarios
     
     usuarios_con_estados = []
     for usuario, estado in zip(objetoUsuario, estados): #Enpaquetando variables para que quede en una sola y poder iteraralas
-        banco = usuario.propietario_set.first().bancos if usuario.propietario_set.exists() else None
+        banco = usuario.propietario.first().bancos if usuario.propietario.exists() else None
         bancoLink = [diccionarioBancos[str(banco)]] 
         usuarios_con_estados.append((usuario, estado, banco, bancoLink))
 
@@ -484,7 +467,7 @@ def personas_inquilinos(request): #Logica para la tabla de Inquilinos-Personas
     estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diccionarioHabilitar
     usuarios_con_estados = []
     for usuario, estado in zip(objetoUsuario, estados): #Enpaquetando variables para que quede en una sola y poder iteraralas
-        direccion = usuario.arrendatario_set.first().direccion if usuario.arrendatario_set.exists() else None
+        direccion = usuario.arrendatario.first().direccion if usuario.arrendatario.exists() else None
         usuarios_con_estados.append((usuario, estado, direccion))
     return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados})
 
@@ -612,11 +595,6 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
         date =  datetime.strptime(fecha_cobroRes, "%B %d, %Y")
         fechaCobro = date.strftime("%Y-%m-%d")
         
-    # if habilitarPago == '1':
-    #     date = datetime.strptime(fechaCobro, "%Y-%m-%d")
-    #     nuevaFecha = date + timedelta(days=30)                    Reutilizar este codigo
-    #     fechaCobro = nuevaFecha.strftime("%Y-%m-%d")
-
     fechaObjeto = datetime.strptime(fechaCobro, "%Y-%m-%d")
     newDate = fechaObjeto + timedelta(days=5)
     fecha_limite = newDate.strftime('%Y-%m-%d')
@@ -675,15 +653,21 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
 def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
 
     objetoInmuebles = inmueble.objects.select_related('arrendatario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Solo para arrendatarios que estan vinculados a un inmueble
-    objetoTipo = objetoInmuebles.values_list('tipo', flat=True)
-    tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
-
-    objetoEstadoArrendatario = objetoInmuebles.values_list('arrendatario_id__habilitarPago', flat=True)
     
-    estadoArrendatario = [diccionarioPago[str(values)]for values in objetoEstadoArrendatario]
+    # Obtener los tipos de inmuebles y estados de habilitación de pago de los arrendatarios
+    tipoInmueble = []
+    estadoArrendatario = []
 
+    for objeto in objetoInmuebles:  #De esta manera obtengo los valores especificos para cada inmueble directamente desde el
+        tipoInmueble.append(diccionarioTipoInmueble[str(objeto.tipo)])
+        estadoArrendatario.append(diccionarioPago[str(objeto.arrendatario_id.habilitarPago)])
+        print(f"id inmueble: {objeto.id}")
+        print(f"id arendatario: {objeto.arrendatario_id}")
+   
+    print(f"ESto es los habilitar: {estadoArrendatario}")
+    
     All = list(zip(objetoInmuebles, tipoInmueble, estadoArrendatario))
-
+    
     return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': All})
 
 #----------------------------------------------------------------Logica para las tareas--------------------------------------------------------------------------------

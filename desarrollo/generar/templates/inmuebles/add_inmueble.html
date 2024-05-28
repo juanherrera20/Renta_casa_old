@@ -26,8 +26,8 @@
         <label for="propietario">Propietario:</label>
         <select name="propietario" required>
             <option value="">Seleccionar el propietario</option>
-            {% for info in propietarios_info %}
-            <option value="{{ info.id }}">{{ info.nombre_completo }}</option>
+            {% for objeto in UsuarioPropietarios %}
+            <option value="{{ objeto.propietario.id }}">{{ objeto.nombre }} {{objeto.apellido}}</option>
             {% endfor %}
         </select><br>
 
@@ -62,8 +62,8 @@
             <option value="">Seleccionar al arrendatario
             </option>
             <option value="">Aún no tiene arrendatario</option>
-            {% for info in arrendatarios_info %}
-            <option value="{{ info.id }}">{{ info.nombre_completo }}</option>
+            {% for objeto in UsuariosArrendatarios %}
+            <option value="{{ objeto.arrendatario.id }}">{{ objeto.nombre }} {{objeto.apellido}}</option>
             {% endfor %}
         </select><br>
 

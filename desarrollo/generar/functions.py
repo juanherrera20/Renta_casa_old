@@ -120,10 +120,6 @@ def  actualizar_estados():
         fechaObjeto2 = datetime.strptime(fechaPagoFormateada, "%Y-%m-%d")
 
         fechaResta = (fechaObjeto2 - fechaObjeto1).days
-        # print(objeto.propietario_id.usuarios_id.nombre)
-        # print("fecha 1: " + str(fechaObjeto1))
-        # print("fecha 2: " + str(fechaObjeto2))
-        # print("resta: " + str(fechaResta))
         guardar = propietario.objects.get(id=idPropietario)
 
         if fechaObjeto2 > fechaObjeto1: 
@@ -159,8 +155,8 @@ def  actualizar_estados():
             objetoArrendatario.save()
             
         print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido)
-        print("fecha " + str(fechaObjeto1 > fechaObjeto4))
-        print("estado " + str(EstadoArrendatario != 1))
+        # print("fecha " + str(fechaObjeto1 > fechaObjeto4))
+        # print("estado " + str(EstadoArrendatario != 1))
     inicioContrato = objeto.arrendatario_id.inicio_contrato
     finContrato = objeto.arrendatario_id.fin_contrato
     return print(fechaFormateada)
