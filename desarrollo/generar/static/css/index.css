@@ -1,5 +1,4 @@
 body {
-
     font-family: Arial, sans-serif; /* tipo de texto */
     color: white;/* color del texto */
     position: relative;
@@ -33,34 +32,37 @@ body > * {
     z-index: 1;
 }
 .header h1 {
-    font-size: 100px; /* Adjust font size for the title */
+    font-size: 150px; /* Adjust font size for the title */
     font-weight: bold; /* Make the title bold */
 }
 .body p{
     font-size: 20px; /* Adjust font size for the paragraph */
     font-weight: bold; /* Make the paragraph bold */
+    text-align: justify;
 }
 #casa{
     color: #89EBEB;
 }
 .welcome{
-    margin: 20px;
-    margin-right: 400px;
+    float: left;
+    width: 50%;
+    padding: 20px;
 }
 .login-form {
     color: black;
     background-color: #ffffff; /* Color del fondo */
     border-radius: 10px; /* Borde de los componentes */
-    padding: 20px; /* se le añade un padding  */
-    width: 400px; /* Adjust the width as needed */
-}
-.login-form button {
-    display: flex;
-    justify-content: center; /* Centra horizontalmente */
+    padding: 30px; /* se le añade un padding  */
+    width: 500px; /* Adjust the width as needed */
+    float: right;
+    margin: 35px 120px 10px 40px;
     align-items: center;
+    justify-content: center;
+    text-align: center;
 }
-
-
+a{
+    text-decoration: none;
+}
 input[type=text], input[type=password] {
     /* margin-bottom: 10px; */ /* Add spacing between input fields */
     border-radius: 5px; /* Rounded corners for input fields */
@@ -74,9 +76,6 @@ input[type=text], input[type=password] {
     border: none;
     background: none;
     cursor: pointer;
-  }
-  
-  #registrarse {
     --primary-color: #111;
     --hovered-color: #6eb9b9;
     position: relative;
@@ -85,16 +84,17 @@ input[type=text], input[type=password] {
     font-size: 20px;
     gap: 0.5rem;
     align-items: center;
-  }
-  
-  button p {
+}
+button p {
     margin: 0;
     position: relative;
     font-size: 20px;
     color: var(--primary-color);
-  }
-  
-  button::after {
+}
+#registrarse {
+    min-height: 40px; /* Ajusta según sea necesario */
+}
+button::after {
     position: absolute;
     content: "";
     width: 0;
@@ -103,9 +103,8 @@ input[type=text], input[type=password] {
     background: var(--hovered-color);
     height: 2px;
     transition: 0.3s ease-out;
-  }
-  
-  button p::before {
+}
+button p::before {
     position: absolute;
     /*   box-sizing: border-box; */
     content: "Registrate";
@@ -114,35 +113,31 @@ input[type=text], input[type=password] {
     color: var(--hovered-color);
     overflow: hidden;
     transition: 0.3s ease-out;
-  }
-  
-  button:hover::after {
+}
+button:hover::after {
     width: 100%;
-  }
+}
+button:hover p::before {
+    width: 100%;}
   
-  button:hover p::before {
-    width: 100%;
-  }
-  
-  button:hover svg {
+button:hover svg {
     transform: translateX(4px);
     color: var(--hovered-color);
-  }
-  
-  button svg {
+}
+button svg {
     color: var(--primary-color);
     transition: 0.2s;
     position: relative;
     width: 15px;
     transition-delay: 0.2s;
-  }
-  /* -----------------------------Fin de estilos de botón de registrarse ----------------------------- */
+}
+/* -----------------------------Fin de estilos de botón de registrarse ----------------------------- */
 
-  /*----------------------------------------Inicio de botón para Entrar-------------------------------- */
+/*----------------------------------------Inicio de botón para Entrar-------------------------------- */
 
-  .button {
-    width: 120px;
-    height: 30px;
+#entrar {
+    width: 200px;
+    height: 50px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -151,9 +146,9 @@ input[type=text], input[type=password] {
     border: 3px solid #6eb9b9;
     background-color: #6eb9b9;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.137);
-  }
-  
-  .text {
+    margin: 10px 10px 10px 125px;
+}
+.text {
     width: 70%;
     height: 100%;
     display: flex;
@@ -161,29 +156,240 @@ input[type=text], input[type=password] {
     justify-content: center;
     background-color: #6eb9b9;
     color: rgb(0, 0, 0);
-  }
-  
-  .arrow path {
+    font-size: 20px; 
+    font-weight: bold;
+}
+.arrow path {
     fill: rgb(19, 19, 19);
-  }
-  
-  .button:hover .arrow {
+}
+.button:hover .arrow {
     animation: slide-in-left 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-  }
-  
-  @keyframes slide-in-left {
+}
+@keyframes slide-in-left {
     0% {
       transform: translateX(-8px);
       opacity: 0;
     }
-  
     100% {
       transform: translateX(0px);
       opacity: 1;
     }
-  }
+}
   
-  .button:active {
+.button:active {
     transform: scale(0.97);
+}
+/*----------------------------------------Fin de botón para Entrar-------------------------------- */
+
+.contenedor{
+    display: flex;
+    align-items: center;
+}
+.parrafo{
+    font-size: 20px; /* Adjust font size for the paragraph */
+    text-align: center;
+    margin: 33px 10px 30px 38px;
+}
+.image{
+    width: 35%; /* Ajusta el ancho según necesites */
+    height: auto; /* Mantiene la proporción de la imagen */
+    margin-left: 80px;
+}
+/* ----------------------------------------Cambios para ser responsive------------------------------------- */
+@media (max-width: 1350px) {
+  .header h1 {
+    font-size: 50px; /* Adjust font size for the title */
+    font-weight: bold; /* Make the title bold */
+}
+.body p{
+    font-size: 20px; /* Adjust font size for the paragraph */
+    font-weight: bold; /* Make the paragraph bold */
+    text-align: justify;
+}
+.welcome{
+    float: left;
+    width: 50%;
+    padding: 20px;
+}
+  .image {
+      width: 40%; /* Ajusta el tamaño de la imagen */
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
   }
-  /*----------------------------------------Fin de botón para Entrar-------------------------------- */
+
+  .login-form {
+      margin: 20px auto; /* Centra el formulario */
+      width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+      max-width: 500px; /* Ancho máximo para evitar que se expanda demasiado */
+      padding: 30px; /* se le añade un padding  */
+      margin: 40px 120px 10px 40px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+  }
+}
+@media (max-width: 1339px) {
+  .header h1 {
+    font-size: 50px; /* Adjust font size for the title */
+    font-weight: bold; /* Make the title bold */
+}
+.body p{
+    font-size: 20px; /* Adjust font size for the paragraph */
+    font-weight: bold; /* Make the paragraph bold */
+    text-align: justify;
+}
+.welcome{
+    float: left;
+    width: 50%;
+    padding: 20px;
+}
+  .image {
+      width: 40%; /* Ajusta el tamaño de la imagen */
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+  }
+
+  .login-form {
+      margin: 40px 20px auto 5px; /* Centra el formulario */
+      width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+      max-width: 500px; /* Ancho máximo para evitar que se expanda demasiado */
+      padding: 30px; /* se le añade un padding  */
+
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+  }
+}
+@media (max-width: 1050px) {
+  .header h1 {
+    font-size: 80px; /* Adjust font size for the title */
+    font-weight: bold; /* Make the title bold */
+}
+.body p{
+    font-size: 30px; /* Adjust font size for the paragraph */
+    font-weight: bold; /* Make the paragraph bold */
+    text-align: justify;
+}
+.welcome{
+    float: left;
+    width: 50%;
+    padding: 10px;
+}
+  .image {
+      width: 40%; /* Ajusta el tamaño de la imagen */
+      display: block;
+      margin: 40px auto auto 20px;
+  }
+
+  .login-form {
+      margin: 40px 20px auto 5px; /* Centra el formulario */
+      width: 40%; /* Ajusta el ancho del formulario según sea necesario */
+      max-width: 500px; /* Ancho máximo para evitar que se expanda demasiado */
+      padding: 30px; /* se le añade un padding  */
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+  }
+  #entrar {
+    margin: 10px auto 10px 80px;
+}
+#registrarse {
+  padding: 0;
+  margin: 0 30px;
+
+  align-items: center;
+}
+}
+@media (max-width: 1020px) {
+  #entrar {
+    margin: 10px auto 10px 70px;
+  }
+
+}
+@media (max-width: 1000px) {
+  .header h1 {
+    font-size: 50px; /* Adjust font size for the title */
+    font-weight: bold; /* Make the title bold */
+}
+.body p{
+    font-size: 20px; /* Adjust font size for the paragraph */
+    font-weight: bold; /* Make the paragraph bold */
+    text-align: justify;
+}
+.welcome{
+    float: left;
+    width: 50%;
+    padding: 10px;
+}
+  .image {
+      width: 45%; /* Ajusta el tamaño de la imagen */
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+  }
+
+  .login-form {
+      width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+      max-width: 500px; /* Ancho máximo para evitar que se expanda demasiado */
+      padding: 30px; /* se le añade un padding  */
+      margin: 40px 250px 30px 20px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+  }
+  #entrar {
+    margin: 10px 10px 10px 105px;
+}
+}
+@media (max-width: 920px) {
+  #entrar {
+    margin: 10px auto 10px 90px;
+  }
+  .login-form {
+    margin: 40px 240px 30px 20px;
+}
+}
+@media (max-width: 870px) {
+  #entrar {
+    margin: 10px auto 10px 80px;
+  }
+  .login-form {
+    margin: 40px 220px 30px 20px;
+}
+}
+@media (max-width: 820px) {
+  .welcome{
+    float: left;
+    width: 95%;
+    padding: 20px;
+}
+.header h1 {
+  font-size: 70px; /* Adjust font size for the title */
+  font-weight: bold; /* Make the title bold */
+}
+  #entrar {
+    margin: 10px auto 10px 72px;
+  }
+  .image {
+    width: 70%; /* Ajusta el tamaño de la imagen */
+    display: block;
+    margin-left: 85px;
+    margin-right: auto;
+}
+}
+@media (max-width: 800px) {
+  #entrar {
+    margin: 10px auto 10px 70px;
+  }
+  .login-form {
+    width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+    max-width: 1000px; /* Ancho máximo para evitar que se expanda demasiado */
+    padding: 30px; /* se le añade un padding  */
+    margin: 40px 200px 30px 10px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+}
