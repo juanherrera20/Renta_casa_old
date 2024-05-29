@@ -9,6 +9,7 @@ from .models import superuser, usuarios, arrendatario, propietario, tareas, inmu
 from werkzeug.security import generate_password_hash, check_password_hash
 from .functions import autenticado_required, actualizar_estados, extract_numbers, convert_time #Importo las funciones desde functions.py
 from .functions import diccionarioContrato, diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
+from django.core.paginator import Paginator
 
 #Librerias y paquetes posbilemente utiles
 # from cryptography.fernet import Fernet
@@ -215,7 +216,7 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
 def individuo_inmueble(request, id):
     objetoInmueble = inmueble.objects.select_related('propietario_id__usuarios_id').get(id = id) #Get arroja un solo objeto filter un conjutno con n elementos
     documentos = objetoInmueble.documentos.all()
-    imagenes = objetoInmueble.imagenes.all()
+    imagenes = objetoInmueble.imagenes.all()[:40]
     
     clave_tipo = diccionarioTipoInmueble.get(str(objetoInmueble.tipo))
     clave_estado = diccionarioInmueble.get(str(objetoInmueble.habilitada))
@@ -228,8 +229,14 @@ def individuo_inmueble(request, id):
     All = [(objetoInmueble, clave_tipo,clave_estado,clave_porcentaje,servicios)]
     objetoArrendatario = usuarios.objects.filter(propie_client=2).exclude(Q(arrendatario__inmueble__isnull=False)) #El Q permite anidar condiciones para el filtro
     objetoPropietario = usuarios.objects.filter(propie_client=1)
+    
+    # Crear Paginacion para las imagenes y no mostrarlas todas
+    paginator = Paginator(imagenes, 8)  # Mostrar 5 imágenes por página
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
     return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario, 'propietario':objetoPropietario, 'matricula':matriculas, 
-                                                                 'documentos':documentos, 'imagenes':imagenes})
+                                                                 'documentos':documentos, 'imagenes':imagenes, 'page_obj': page_obj})
 
 @autenticado_required
 def actualizar_inmueble(request):

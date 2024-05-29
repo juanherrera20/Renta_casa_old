@@ -116,6 +116,7 @@
       <label for="documentos_nuevos">Cargar nuevos documentos:</label>
       <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled>
 
+      <!-- Forma anterior
       {% if imagenes %}
         <h3>Imágenes existentes:</h3>
         <ul id="lista-imagenes">
@@ -128,35 +129,42 @@
             </li>
         {% endfor %}
         </ul>
-      {% endif %}
+      {% endif %} -->
 
+      <h3>Imágenes existentes:</h3>
+      <ul id="lista-imagenes">
+        {% for img in page_obj %}
+            <li>
+                <label>
+                    <input type="checkbox" name="eliminar_imagenes" value="{{ img.id }}" class="checkbox-imagen" disabled>
+                    <img src="{{ img.imagen.url }}" width="200" height="200">
+                </label>
+            </li>
+        {% endfor %}
+      </ul>
+
+      <!-- Paginación -->
+      <div class="pagination">
+          <span class="step-links">
+              {% if page_obj.has_previous %}
+                  <a href="?page=1">&laquo; primero</a>
+                  <a href="?page={{ page_obj.previous_page_number }}">anterior</a>
+              {% endif %}
+
+              <span class="current">
+                  Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+              </span>
+
+              {% if page_obj.has_next %}
+                  <a href="?page={{ page_obj.next_page_number }}">siguiente</a>
+                  <a href="?page={{ page_obj.paginator.num_pages }}">último &raquo;</a>
+              {% endif %}
+          </span>
+      </div>
+      
       <label for="imagenes_nuevas">Cargar nuevas imágenes:</label>
       <input type="file" name="imagenes_nuevas" accept="image/*" multiple disabled>
 
-      <!--
-      <h3>{{ documentos.documento }}</h3>
-
-      {% if documentos %}
-        {% for doc in documentos %}
-        <div>
-        <a href="{{ doc.documento.url }}" target="_blank">{{ doc.documento.name }}</a> <br>
-        </div>
-        {% endfor %}
-      {% else %}
-      <p>No hay documentos relacionados</p>
-      {% endif %}
-      <input type="file" name="documentoRes" id="documentoInput" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" style="display:none;"> 
-      
-
-      <label for="imagen">Imagen: </label>
-      {% if imagenes %}
-        {% for img in imagenes %}
-          <br><img src="{{ img.imagen.url }}" name="imagen" width="200" height="200"><br>
-        {% endfor %}
-      {% else %}
-      <p>Este inmueble no tiene imagenes asociadas</p>
-      {% endif %}
-      -->
       <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button>
       
     </form>
