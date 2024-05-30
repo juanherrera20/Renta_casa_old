@@ -63,14 +63,14 @@ body > * {
 a{
     text-decoration: none;
 }
-input[type=text], input[type=password] {
+input[type=text], input[type=password], input[type=email], input[type=number]{
     /* margin-bottom: 10px; */ /* Add spacing between input fields */
     border-radius: 5px; /* Rounded corners for input fields */
     border: none; /* Remove default borders */
     padding-left: 10px; /* Add left padding to input fields */
 }
-/* ----------------------Estilos para el botón de registrarse----------------------- */
-#registrarse {
+/* ----------------------Estilos para el botón de inicio de sesión----------------------- */
+#sesion {
     padding: 0;
     margin: 0;
     border: none;
@@ -107,7 +107,7 @@ button::after {
 button p::before {
     position: absolute;
     /*   box-sizing: border-box; */
-    content: "Registrate";
+    content: "Ingresa";
     width: 0%;
     inset: 0;
     color: var(--hovered-color);
@@ -118,8 +118,8 @@ button:hover::after {
     width: 100%;
 }
 button:hover p::before {
-    width: 100%;
-}
+    width: 100%;}
+  
 button:hover svg {
     transform: translateX(4px);
     color: var(--hovered-color);
@@ -131,10 +131,10 @@ button svg {
     width: 15px;
     transition-delay: 0.2s;
 }
-/* -----------------------------Fin de estilos de botón de registrarse ----------------------------- */
+/* -----------------------------Fin de estilos de botón de inicio de sesión----------------------------- */
 
-/*----------------------------------------Inicio de botón para Entrar-------------------------------- */
-#entrar {
+/*----------------------------------------Inicio de botón para Registrarse-------------------------------- */
+#registro {
     width: 200px;
     height: 50px;
     display: flex;
@@ -267,9 +267,9 @@ button svg {
         text-align: justify;
     }
     .welcome{
-        float: left;
-        width: 50%;
-        padding: 10px;
+      float: left;
+      width: 50%;
+      padding: 10px;
     }
     .image {
         width: 40%; /* Ajusta el tamaño de la imagen */
@@ -285,17 +285,17 @@ button svg {
         justify-content: center;
         text-align: center;
     }
-    #entrar {
+    #sesion {
         margin: 10px auto 10px 80px;
     }
-    #registrarse {
+    #registro {
         padding: 0;
         margin: 0 30px;
         align-items: center;
     }
 }
 @media (max-width: 1020px) {
-    #entrar {
+    #sesion {
         margin: 10px auto 10px 70px;
     }
 }
@@ -329,12 +329,12 @@ button svg {
         justify-content: center;
         text-align: center;
     }
-    #entrar {
+    #sesion {
         margin: 10px 10px 10px 105px;
     }
 }
 @media (max-width: 920px) {
-    #entrar {
+    #sesion {
         margin: 10px auto 10px 90px;
     }
     .login-form {
@@ -342,7 +342,7 @@ button svg {
     }
 }
 @media (max-width: 870px) {
-    #entrar {
+    #sesion {
         margin: 10px auto 10px 80px;
     }
     .login-form {
@@ -359,7 +359,7 @@ button svg {
         font-size: 70px; /* Adjust font size for the title */
         font-weight: bold; /* Make the title bold */
     }
-    #entrar {
+    #sesion {
         margin: 10px auto 10px 72px;
     }
     .image {
@@ -370,7 +370,7 @@ button svg {
     }
 }
 @media (max-width: 800px) {
-    #entrar {
+    #sesion {
         margin: 10px auto 10px 70px;
     }
     .login-form {
