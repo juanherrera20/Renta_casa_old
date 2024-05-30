@@ -83,6 +83,8 @@ def register(request):
 
 @autenticado_required #Decorador personalizado 
 def dash(request):
+    actualizar_estados() #Llamamos a la función
+    
     objetoPropietario = usuarios.objects.filter(propie_client=1).order_by('-id')[:5] #Propietarios
     contadorPropietario = usuarios.objects.filter(propie_client=1)
     num_propietarios = contadorPropietario.count()
@@ -130,7 +132,6 @@ def dash(request):
 
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
 
-#actualizar_estados() #Llamamos a la función
 
 #------------------------------------------------------------------------------Vistas para inmuebles-----------------------------------------------------------------------------
 @autenticado_required
@@ -427,13 +428,15 @@ def actualizar_propietario(request): #Actualizar propietario.
 
 def individuo_propietario(request, id):
     objetoPropietarios = propietario.objects.get(usuarios_id_id = id)
-    cantidad_inmuebles = objetoPropietarios.inmueble_set.count()# Calcular la cantidad de inmuebles solo para este propietario
+    cantidad_inmuebles = objetoPropietarios.inmueble.count()# Calcular la cantidad de inmuebles solo para este propietario
     pago = diccionarioPago[str(objetoPropietarios.habilitarPago)]
     objetoUser = usuarios.objects.get( id = objetoPropietarios.usuarios_id_id)
     documentos = objetoPropietarios.DocsPersona.all()
     return render(request, 'personas/propietarios/individuo_propietario.html', {'usuario':objetoUser, 'propietario':objetoPropietarios, 'pago': pago, 'documentos':documentos, 'cantidad_inmuebles': cantidad_inmuebles})
 
 def analisis_propietarios(request):
+    actualizar_estados() #Llamamos a la función
+    
     #Logica para la tabla de propietarios
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Aquí filtro para que solo aparezcan los inmuebles con arrendatario
 
@@ -658,6 +661,7 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     return redirect('personas_inquilinos')
 
 def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
+    actualizar_estados() #Llamamos a la función
 
     objetoInmuebles = inmueble.objects.select_related('arrendatario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Solo para arrendatarios que estan vinculados a un inmueble
     
@@ -680,6 +684,8 @@ def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
 #----------------------------------------------------------------Logica para las tareas--------------------------------------------------------------------------------
 
 def tarea(request): #Visualizar las tareas
+    actualizar_estados() #Llamamos a la función
+    
     tareas_completas = tareas.objects.filter(estado='Completa').select_related('superuser_id')#Filtrar tareas Completas
     tareas_incompletas = tareas.objects.filter(estado='Incompleta').select_related('superuser_id')#Filtrar tareas incompletas
     tareas_pendientes = tareas.objects.filter(estado='Pendiente').select_related('superuser_id')#Filtrar tareas pendientes
@@ -769,11 +775,15 @@ def actualizar_modal(request): #Logica para actualizar cada modal o tarea
 #------------------------------------------------------------------------------Logica para las notificaciones-----------------------------------------------------------------------------------------  
 
 def noti(request):
+    actualizar_estados() #Llamamos a la función
+    
     return render(request, 'noti.html')
 
 #-----------------------------------------------------------------Logica para visualizar todos los datos (en analisis)--------------------------------------------------
 
 def all_values_pro(request, id): #Vista exclusivamente para los propietarios
+    actualizar_estados() #Llamamos a la función
+    
     #------------------------------------------------------Individuo_inmueble----------------------------------------------------
     objetoInmueble = inmueble.objects.filter(id=id).first()
 
@@ -812,7 +822,7 @@ def all_values_pro(request, id): #Vista exclusivamente para los propietarios
         estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
     else: 
         respaldo = 2
-
+        
     return render(request, 'analisis/all_values_pro.html', {'inmueble': All, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
                                                         'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos, 'total':totalPago,
                                                         'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})
@@ -865,6 +875,8 @@ def redireccion_pro(request): #Redirección solo para los propietarios
     return redirect('analisis_propietarios') #Este return se puede cambiar para el control de errores.
 
 def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
+    actualizar_estados() #Llamamos a la función
+    
     #------------------------------------------------------Individuo_inmueble----------------------------------------------------
     objetoInmueble = inmueble.objects.filter(id=id).first()
 

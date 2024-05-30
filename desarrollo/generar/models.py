@@ -25,17 +25,6 @@ def Crear_carpetas(instance, filename): #Inmuebles
         os.makedirs(folder_direct)
     return os.path.join(subfolder, folder_name, tipo, filename)
  
-    
-# def Crear_carpetas_propi(instance, filename): #Inmueble
-#         folder_name = str(instance.propietario.usuarios_id.documento) # Obtener el nombre de la carpeta basado en el documento del propietario
-       
-#         folder_direct = os.path.join('media', "Propietarios", folder_name)
-        
-#         if not os.path.exists(folder_direct): 
-#             os.makedirs(folder_direct)
-#         return os.path.join("Propietarios",folder_name, filename)
-#---------------------------------------------------------------------------------------------------------------------------------s
-#Si molesta tenerla aquí, se puede contemplar el crear un archivo solo para funciones
 
 # Creations the models.
 class superuser(models.Model): #Tabla usuarios
@@ -112,7 +101,6 @@ class inmueble(models.Model): #Tabla usuarios
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no. 
     historial = models.IntegerField(default=0)
-   
     # descuento = models.IntegerField() #Descuento que se descuenta al propietario por comisión 
     
     def save(self, *args, **kwargs): #pk igual a id
@@ -153,6 +141,13 @@ class Imagenes(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     inmueble = models.ForeignKey(inmueble, related_name='imagenes', on_delete=models.CASCADE)
     imagen = models.ImageField(upload_to=Crear_carpetas)
+    
+    #Función para eliminar los archivos cuando se eliminan de la base de datos
+    def delete(self, *args, **kwargs): #Llamamos al metodo delete que tiene la clase
+        if os.path.isfile(self.imagen.path):
+            os.remove(self.imagen.path)
+        super().delete(*args, **kwargs)
+        
     class Meta:
         db_table = 'Imagenes'
     
@@ -160,6 +155,13 @@ class Documentos(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
     inmueble = models.ForeignKey(inmueble, related_name='documentos', on_delete=models.CASCADE)
     documento = models.FileField(upload_to=Crear_carpetas)
+    
+    #Función para eliminar los archivos cuando se eliminan de la base de datos
+    def delete(self, *args, **kwargs): #Llamamos al metodo delete que tiene la clase
+        if os.path.isfile(self.documento.path):
+            os.remove(self.documento.path)
+        super().delete(*args, **kwargs)
+        
     class Meta:
         db_table = 'Documentos'
         
@@ -168,6 +170,13 @@ class DocsPersonas(models.Model):
     propietario = models.ForeignKey(propietario, related_name='DocsPersona', on_delete=models.CASCADE) #Al hacer las migraciones cambiar este valor en la base de dato a Nulo
     arrendatario = models.ForeignKey(arrendatario, related_name='DocsPersona', on_delete=models.CASCADE)  #Al hacer las migraciones cambiar este valor en la base de dato a Nulo
     documento = models.FileField(upload_to=Crear_carpetas) 
+    
+    #Función para eliminar los archivos cuando se eliminan de la base de datos
+    def delete(self, *args, **kwargs): #Llamamos al metodo delete que tiene la clase
+        if os.path.isfile(self.documento.path):
+            os.remove(self.documento.path)
+        super().delete(*args, **kwargs)
+        
     class Meta:
         db_table = 'DocsPersonas'
     

@@ -1,4 +1,0 @@
-En individuo propietario, hay un texto que dice: "Trabajar este campo según el comentario" a que se refiera?
-
-
-Debido a que manejamos los documentos de personas (Arrendatarios y propietarios) en una misma tabla, porque no manejar los documentos de inmuebles también ahí?, o quedaría muy abarrotado de documentos? como lo ve? porque podemos manejar los documentos ahí y dejar la tabla actual de documentos de inmuebles para manejar los documentos relacionados a descuentos, eso si hay que tener en cuenta que la función de crear carpetas crearía muchos problemas si usamos la misma tabla para todo, a menos que encontremos una solución para esta.
