@@ -32,11 +32,11 @@ body > * {
     z-index: 1;
 }
 .header h1 {
-    font-size: 150px; /* Adjust font size for the title */
+    font-size: 90px; /* Adjust font size for the title */
     font-weight: bold; /* Make the title bold */
 }
 .body p{
-    font-size: 20px; /* Adjust font size for the paragraph */
+    font-size: 18px; /* Adjust font size for the paragraph */
     font-weight: bold; /* Make the paragraph bold */
     text-align: justify;
 }
@@ -52,13 +52,16 @@ body > * {
     color: black;
     background-color: #ffffff; /* Color del fondo */
     border-radius: 10px; /* Borde de los componentes */
-    padding: 30px; /* se le añade un padding  */
-    width: 500px; /* Adjust the width as needed */
+    padding: 20px; /* se le añade un padding  */
+    width: 430px; /* Adjust the width as needed */
     float: right;
-    margin: 35px 120px 10px 40px;
+    margin: 25px 120px 10px 40px;
     align-items: center;
     justify-content: center;
     text-align: center;
+}
+#login, #bienvenido{
+    font-size: 40px; /* Adjust font size for the title */
 }
 a{
     text-decoration: none;
@@ -145,7 +148,7 @@ button svg {
     border: 3px solid #6eb9b9;
     background-color: #6eb9b9;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.137);
-    margin: 10px 10px 10px 125px;
+    margin: 10px 10px 10px 100px;
 }
 .text {
     width: 70%;
@@ -195,11 +198,101 @@ button svg {
 /* ----------------------------------------Cambios para ser responsive------------------------------------- */
 @media (max-width: 1350px) {
     .header h1 {
+        font-size: 55px; /* Adjust font size for the title */
+        font-weight: bold; /* Make the title bold */
+    }
+    .body p{
+        font-size: 18px; /* Adjust font size for the paragraph */
+        font-weight: bold; /* Make the paragraph bold */
+        text-align: justify;
+    }
+    .welcome{
+        float: left;
+        width: 50%;
+        padding: 20px;
+    }
+    .image {
+        width: 30%; /* Ajusta el tamaño de la imagen */
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .login-form {
+        margin: 20px auto; /* Centra el formulario */
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 410px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 10px 120px 10px 40px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    #registrarse {
+        min-height: 10px; /* Ajusta según sea necesario */
+    }
+    #entrar {
+        width: 200px;
+        height: 50px;
+        margin: 8px 10px 5px 100px;
+    }
+    .parrafo{
+        font-size: 20px; /* Adjust font size for the paragraph */
+        text-align: center;
+        margin: 30px 10px 30px 4px;
+    }
+}
+@media (max-width: 1339px) {
+    .header h1 {
+        font-size: 55px; /* Adjust font size for the title */
+        font-weight: bold; /* Make the title bold */
+    }
+    .body p{
+        font-size: 18px; /* Adjust font size for the paragraph */
+        font-weight: bold; /* Make the paragraph bold */
+        text-align: justify;
+    }
+    .welcome{
+        float: left;
+        width: 50%;
+        padding: 20px;
+    }
+    .image {
+        width: 30%; /* Ajusta el tamaño de la imagen */
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .login-form {
+        margin: 20px auto; /* Centra el formulario */
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 410px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 10px 120px 10px 40px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    #registrarse {
+        min-height: 10px; /* Ajusta según sea necesario */
+    }
+    #entrar {
+        width: 200px;
+        height: 50px;
+        margin: 8px 10px 5px 80px;
+    }
+    .parrafo{
+        font-size: 20px; /* Adjust font size for the paragraph */
+        text-align: center;
+        margin: 30px 10px 30px 5px;
+    }
+}
+@media (max-width: 1150px) {
+    .header h1 {
         font-size: 50px; /* Adjust font size for the title */
         font-weight: bold; /* Make the title bold */
     }
     .body p{
-        font-size: 20px; /* Adjust font size for the paragraph */
+        font-size: 15px; /* Adjust font size for the paragraph */
         font-weight: bold; /* Make the paragraph bold */
         text-align: justify;
     }
@@ -217,21 +310,34 @@ button svg {
     .login-form {
         margin: 20px auto; /* Centra el formulario */
         width: 50%; /* Ajusta el ancho del formulario según sea necesario */
-        max-width: 500px; /* Ancho máximo para evitar que se expanda demasiado */
+        max-width: 410px; /* Ancho máximo para evitar que se expanda demasiado */
         padding: 30px; /* se le añade un padding  */
-        margin: 40px 120px 10px 40px;
+        margin: 10px 90px 10px 20px;
         align-items: center;
         justify-content: center;
         text-align: center;
     }
+    #registrarse {
+        min-height: 10px; /* Ajusta según sea necesario */
+    }
+    #entrar {
+        width: 200px;
+        height: 50px;
+        margin: 8px 10px 5px 80px;
+    }
+    .parrafo{
+        font-size: 20px; /* Adjust font size for the paragraph */
+        text-align: center;
+        margin: 30px 10px 30px 5px;
+    }
 }
-@media (max-width: 1339px) {
+@media (max-width: 1050px) {
     .header h1 {
         font-size: 50px; /* Adjust font size for the title */
         font-weight: bold; /* Make the title bold */
     }
     .body p{
-        font-size: 20px; /* Adjust font size for the paragraph */
+        font-size: 15px; /* Adjust font size for the paragraph */
         font-weight: bold; /* Make the paragraph bold */
         text-align: justify;
     }
@@ -247,51 +353,27 @@ button svg {
         margin-right: auto;
     }
     .login-form {
-        margin: 40px 20px auto 5px; /* Centra el formulario */
+        margin: 20px auto; /* Centra el formulario */
         width: 50%; /* Ajusta el ancho del formulario según sea necesario */
-        max-width: 500px; /* Ancho máximo para evitar que se expanda demasiado */
+        max-width: 410px; /* Ancho máximo para evitar que se expanda demasiado */
         padding: 30px; /* se le añade un padding  */
+        margin: 10px 55px 10px 20px;
         align-items: center;
         justify-content: center;
         text-align: center;
-    }
-}
-@media (max-width: 1050px) {
-    .header h1 {
-        font-size: 80px; /* Adjust font size for the title */
-        font-weight: bold; /* Make the title bold */
-    }
-    .body p{
-        font-size: 30px; /* Adjust font size for the paragraph */
-        font-weight: bold; /* Make the paragraph bold */
-        text-align: justify;
-    }
-    .welcome{
-        float: left;
-        width: 50%;
-        padding: 10px;
-    }
-    .image {
-        width: 40%; /* Ajusta el tamaño de la imagen */
-        display: block;
-        margin: 40px auto auto 20px;
-    }
-    .login-form {
-        margin: 40px 20px auto 5px; /* Centra el formulario */
-        width: 40%; /* Ajusta el ancho del formulario según sea necesario */
-        max-width: 500px; /* Ancho máximo para evitar que se expanda demasiado */
-        padding: 30px; /* se le añade un padding  */
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-    #entrar {
-        margin: 10px auto 10px 80px;
     }
     #registrarse {
-        padding: 0;
-        margin: 0 30px;
-        align-items: center;
+        min-height: 10px; /* Ajusta según sea necesario */
+    }
+    #entrar {
+        width: 200px;
+        height: 50px;
+        margin: 8px 10px 5px 80px;
+    }
+    .parrafo{
+        font-size: 20px; /* Adjust font size for the paragraph */
+        text-align: center;
+        margin: 30px 10px 30px 5px;
     }
 }
 @media (max-width: 1020px) {
@@ -319,6 +401,7 @@ button svg {
         display: block;
         margin-left: auto;
         margin-right: auto;
+        margin-top: 10px;
     }
     .login-form {
         width: 50%; /* Ajusta el ancho del formulario según sea necesario */
@@ -371,7 +454,7 @@ button svg {
 }
 @media (max-width: 800px) {
     #entrar {
-        margin: 10px auto 10px 70px;
+        margin: 10px auto 10px 50px;
     }
     .login-form {
         width: 50%; /* Ajusta el ancho del formulario según sea necesario */
@@ -381,5 +464,27 @@ button svg {
         align-items: center;
         justify-content: center;
         text-align: center;
+    }
+}
+@media (max-width: 670px) {
+    #entrar {
+        margin: 10px auto 10px 40px;
+    }
+    .login-form {
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 1000px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 40px 145px 30px 10px;
+    }
+}
+@media (max-width: 620px) {
+    #entrar {
+        margin: 10px auto 10px 20px;
+    }
+    .login-form {
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 1000px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 40px 120px 30px 8px;
     }
 }
