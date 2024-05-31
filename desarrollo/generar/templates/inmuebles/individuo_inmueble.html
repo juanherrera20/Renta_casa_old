@@ -116,7 +116,6 @@
       <label for="documentos_nuevos">Cargar nuevos documentos:</label>
       <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled>
 
-      <!-- Forma anterior
       {% if imagenes %}
         <h3>Imágenes existentes:</h3>
         <ul id="lista-imagenes">
@@ -129,8 +128,9 @@
             </li>
         {% endfor %}
         </ul>
-      {% endif %} -->
+      {% endif %} 
 
+      <!-- Codigo reutilizable
       <h3>Imágenes existentes:</h3>
       <ul id="lista-imagenes">
         {% for img in page_obj %}
@@ -143,7 +143,7 @@
         {% endfor %}
       </ul>
 
-      <!-- Paginación -->
+      -------------------------------------------------------Paginación 
       <div class="pagination">
           <span class="step-links">
               {% if page_obj.has_previous %}
@@ -160,7 +160,7 @@
                   <a href="?page={{ page_obj.paginator.num_pages }}">último &raquo;</a>
               {% endif %}
           </span>
-      </div>
+      </div> -->
       
       <label for="imagenes_nuevas">Cargar nuevas imágenes:</label>
       <input type="file" name="imagenes_nuevas" accept="image/*" multiple disabled>
