@@ -2,7 +2,8 @@
 #En este archivo se registran todas las funciones y diccionarios que usamos para manejar la logica del backend.
 #--------------------------------------------------------------------------------------------------------------------------------s
 
-from datetime import datetime,timedelta, date
+from datetime import datetime,timedelta
+from dateutil.relativedelta import relativedelta
 import re
 from django.shortcuts import redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos

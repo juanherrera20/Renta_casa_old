@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
@@ -217,7 +218,7 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
 def individuo_inmueble(request, id):
     objetoInmueble = inmueble.objects.select_related('propietario_id__usuarios_id').get(id = id) #Get arroja un solo objeto filter un conjutno con n elementos
     documentos = objetoInmueble.documentos.all()
-    imagenes = objetoInmueble.imagenes.all()[:40]
+    imagenes = objetoInmueble.imagenes.all()[:10]
     
     clave_tipo = diccionarioTipoInmueble.get(str(objetoInmueble.tipo))
     clave_estado = diccionarioInmueble.get(str(objetoInmueble.habilitada))
@@ -232,12 +233,12 @@ def individuo_inmueble(request, id):
     objetoPropietario = usuarios.objects.filter(propie_client=1)
     
     # Crear Paginacion para las imagenes y no mostrarlas todas
-    paginator = Paginator(imagenes, 8)  # Mostrar 5 imágenes por página
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # paginator = Paginator(imagenes, 8)  # Mostrar 5 imágenes por página
+    # page_number = request.GET.get('page')
+    # page_obj = paginator.get_page(page_number)
     
     return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario, 'propietario':objetoPropietario, 'matricula':matriculas, 
-                                                                 'documentos':documentos, 'imagenes':imagenes, 'page_obj': page_obj})
+                                                                 'documentos':documentos, 'imagenes':imagenes}) #Si se usa Añadir esto para paginacion 'page_obj': page_obj
 
 @autenticado_required
 def actualizar_inmueble(request):
@@ -354,6 +355,7 @@ def guardar(request): #Logica para guardar propietarios en dB
         
         direc = request.POST.get('direc', None)
         fecha_pagar = request.POST.get('fecha_pagar', None)
+        print(f"Fecha: {fecha_pagar}")
         tipo_banco = request.POST.get('tipo_banco', None)
         observ = request.POST.get('obs', None)
         
@@ -404,8 +406,7 @@ def actualizar_propietario(request): #Actualizar propietario.
     if fecha_pago:
         fechaPago = fecha_pago
     else:
-        date =  datetime.strptime(respaldo_fecha, "%B %d, %Y")
-        fechaPago = date.strftime("%Y-%m-%d")
+        fechaPago =  datetime.strptime(respaldo_fecha, "%b. %d, %Y")
     obs = request.POST.get('obs')
 
     guardar2 = propietario.objects.get(id=idPropietario)
@@ -846,13 +847,17 @@ def redireccion_pro(request): #Redirección solo para los propietarios
         return HttpResponse(resultado)
     elif btnPagar == '4':
         fechaPago = request.POST.get('fecha_pago')
-        dat = datetime.strptime(fechaPago, "%B %d, %Y")
-        nuevaFecha = dat + timedelta(days=30)
-        fechaPago = nuevaFecha.strftime("%Y-%m-%d")
+        
+        print(f" Fecha optenida {fechaPago}")
+        
+        dat = datetime.strptime(fechaPago, "%b. %d, %Y")
+        nuevaFecha = dat + relativedelta(months = 1)
+        
         habilitarPago = 1
+        
         save = propietario.objects.get(id=idp)
         save.habilitarPago = habilitarPago
-        save.fecha_pago = fechaPago
+        save.fecha_pago = nuevaFecha
         save.save()
         
         resultado = analisis_propietarios(request)
@@ -920,14 +925,14 @@ def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
                                                         'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos, 'total':totalPago,
                                                         'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})
 
-def redireccion_arr(request): #Redirección solo para los arrendatarios
+def redireccion_arr(request):  # Redirección solo para los arrendatarios
     btn = request.POST.get('btn')
     btnPago = request.POST.get('btnRespaldoPago')
     idInmueble = request.POST.get('idInmueble')
     idUsuario = request.POST.get('idUser')
     idArrendatario = request.POST.get('idArrendatario')
     
-    idA = request.POST.get('idA') #extraigo el id arrendatario para actualizar valores
+    idA = request.POST.get('idA')  # Extraigo el id arrendatario para actualizar valores
     
     if btn == '1':
         resultado = individuo_propietario(request, idUsuario)
@@ -941,22 +946,21 @@ def redireccion_arr(request): #Redirección solo para los arrendatarios
     elif btnPago == '4':
         fechaCobro = request.POST.get('fecha_inicio')
         
-        dat = datetime.strptime(fechaCobro, "%B %d, %Y")
-        nuevaFecha = dat + timedelta(days=30)                    
-        fechaCobro = nuevaFecha.strftime("%Y-%m-%d")
-
-        fechaObjeto = datetime.strptime(fechaCobro, "%Y-%m-%d")
-        newDate = fechaObjeto + timedelta(days=5)
-        fecha_limite = newDate.strftime('%Y-%m-%d')
+        dat = datetime.strptime(fechaCobro, "%b. %d, %Y")
+        nuevaFecha = dat + relativedelta(months=1)
+        
+        fecha_limite = nuevaFecha + timedelta(days=5)
         
         habilitarPago = 1
         
-        guardar = arrendatario.objects.get(id = idA)
+        # Recuperar el arrendatario y actualizar los campos
+        guardar = arrendatario.objects.get(id=idA)
         guardar.habilitarPago = habilitarPago
-        guardar.fecha_inicio_cobro = fechaCobro
-        guardar.fecha_fin_cobro = fecha_limite
+        guardar.fecha_inicio_cobro = nuevaFecha  # Guardar el objeto datetime directamente
+        guardar.fecha_fin_cobro = fecha_limite   # Guardar el objeto datetime directamente
         guardar.save()
         
         resultado = analisis_inquilinos(request)
         return HttpResponse(resultado)
-    return redirect('dash') #Este return se puede cambiar para el control de errores.
+    
+    return redirect('dash')  # Este return se puede cambiar para el control de errores
