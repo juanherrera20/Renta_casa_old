@@ -22,9 +22,11 @@ from django.conf.urls.static import static
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
 from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino,  add_tarea, guardar_tarea, modal_ver_tarea
 from generar.views import individuo_propietario, individuo_inquilino,all_values_pro, add_inmueble, guardar_inmueble, individuo_inmueble, actualizar_propietario, actualizar_inquilino
-from generar.views import actualizar_modal, actualizar_inmueble, redireccion_pro, redireccion_arr, all_values_arr
+from generar.views import actualizar_modal, actualizar_inmueble, redireccion_pro, redireccion_arr, all_values_arr, nav
 
 urlpatterns = [
+
+    path('prueba/', nav, name="navegacion"),#Esta vista es solo una prueba "ayuda" para el diseño de la barra de navegación
 
     path('',index, name="index"), #Se indica que nombre a url se le agrega para la facilidad de rutas.
     path('Register/', register, name="register"),

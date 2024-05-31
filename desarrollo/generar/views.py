@@ -18,7 +18,8 @@ from django.core.paginator import Paginator
 # from django.contrib.auth import authenticate
 
 # Creations the views.
-
+def nav(request):
+    return render(request,'barra_navegacion.html') #Esta vista es solo una prueba "ayuda" para el diseño de la barra de navegación
 def index(request):
     if request.method == 'GET':
         return render(request, 'index.html')
