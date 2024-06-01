@@ -32,7 +32,7 @@
     display: block; /* Mostrar los elementos como bloques */
     padding: 10px 10px; /* Padding interno de los enlaces */
     text-decoration: none; /* Eliminar la decoración por defecto de los enlaces */
-    color: #000000; /* Color del texto de los enlaces */
+    color: #ffffff; /* Color del texto de los enlaces */
     transition: background-color 0.3s ease; /* Efecto de transición al hover */
 }
 a {
@@ -44,22 +44,22 @@ a {
     text-align: left;
 }
 .containerr nav ul li a:hover {
-    background-color: rgb(190, 215, 255); /* Color de fondo al hover */
-    color: rgb(0, 0, 0);
+    background-color: rgb(22, 111, 255); /* Color de fondo al hover */
+    color: rgb(255, 255, 255);
 }
 
 .containerr nav ul li p {
     margin: 0; /* Eliminar el margen por defecto */
     padding: 0; /* Eliminar el padding por defecto */
-    color: #000000; /* Color del texto de los párrafos */
+    color: #ffffff; /* Color del texto de los párrafos */
 }
 .containerr nav ul li select {
-    width: 100%; /* Ancho de los selectores */
+    width: 85%; /* Ancho de los selectores */
     padding: 5px 0px; /* Padding interno de los selectores */
     border: 1px solid rgb(103, 128, 253); /* Borde de los selectores */
     font-weight: bold;
     background-color: rgb(103, 128, 253); /* Color de fondo de los selectores */
-    color: #000000; /* Color del texto de los selectores */
+    color: #ffffff; /* Color del texto de los selectores */
     appearance: none; /* Eliminar el estilo por defecto de los selectores */
     margin-bottom: 8px; /* Margen inferior de los selectores */
     margin-left: 12px;
@@ -86,7 +86,7 @@ a {
 .ini{
     display: flex;
     align-items: left; /* Asegura que el icono y el texto estén alineados verticalmente */
-    gap: 8px;
+    gap: 53.5px;
 }
 .text-inmueble{
     text-align: left;
@@ -95,16 +95,17 @@ a {
 .inmue{
     display: flex;
     align-items: left; /* Asegura que el icono y el texto estén alineados verticalmente */
-    gap: 7px;
+    gap: 22px;
 }
 .text-tarea{
     text-align: left;
     align-items: left;
+    
 }
 .homework{
     display: flex;
     align-items: left; /* Asegura que el icono y el texto estén alineados verticalmente */
-    gap: 7px;
+    gap: 50px;
 }
 .text-close{
     font-size: 14px;
