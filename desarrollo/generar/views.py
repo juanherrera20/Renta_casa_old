@@ -516,27 +516,22 @@ def guardar_inquilino(request): #Función para guardar inquilinos
 
         #Logica para agregarle los 5 días de plazo para el pago.
         fechaObjeto = datetime.strptime(fecha_cobrar, "%Y-%m-%d")
-        newDate = fechaObjeto + timedelta(days=5)
-        fecha_limite = newDate.strftime('%Y-%m-%d')
+        fecha_limite = fechaObjeto + timedelta(days=5)
 
         inicioContrato = request.POST.get('inicioContrato', None)
         tipo_contrato = request.POST.get('tipo_contrato', None)
         finalContrato =""
         if tipo_contrato == "Trimestral":
-            days = 3 * 30.67
-            fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
-            nuevaFecha = fechaSuma + timedelta(days=days)
-            finalContrato = nuevaFecha.strftime('%Y-%m-%d')
+            fechaSuma = inicioContrato
+            finalContrato = fechaSuma + relativedelta(months=3, days=-1)
+      
         elif tipo_contrato == "Semestral":
-            days = 3 * 61.34
-            fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
-            nuevaFecha = fechaSuma + timedelta(days=days)
-            finalContrato = nuevaFecha.strftime('%Y-%m-%d')
+            fechaSuma = inicioContrato
+            finalContrato = fechaSuma + relativedelta(months=6, days=-1)
+            
         elif tipo_contrato == "Anual":
-            days = 365
-            fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
-            nuevaFecha = fechaSuma + timedelta(days=days)
-            finalContrato = nuevaFecha.strftime('%Y-%m-%d')
+            fechaSuma = inicioContrato
+            finalContrato = fechaSuma + relativedelta(years = 1, days=-1)
 
         observ = request.POST.get('obs', None)
         modelo = arrendatario(direccion = direc, fecha_inicio_cobro= fecha_cobrar, fecha_fin_cobro = fecha_limite, inicio_contrato = inicioContrato, fin_contrato = finalContrato, tipo_contrato = tipo_contrato, obs = observ, usuarios_id_id = usuarios_id)
@@ -600,43 +595,44 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     fecha_cobro = request.POST.get('fecha_inicio')
     fecha_cobroRes = request.POST.get('fecha_inicioRes')
     
-    
     if fecha_cobro: #Compruebo si se modifico la fecha
-        fechaCobro = fecha_cobro
+        date_cobro = fecha_cobro
+        fechaCobro = datetime.strptime(date_cobro, '%Y-%m-%d')
+    
     else:
-        date =  datetime.strptime(fecha_cobroRes, "%B %d, %Y")
-        fechaCobro = date.strftime("%Y-%m-%d")
-        
-    fechaObjeto = datetime.strptime(fechaCobro, "%Y-%m-%d")
-    newDate = fechaObjeto + timedelta(days=5)
-    fecha_limite = newDate.strftime('%Y-%m-%d')
-
+        try:
+            fechaCobro =  datetime.strptime(fecha_cobroRes, "%B %d, %Y")
+        except:
+            fechaCobro =  datetime.strptime(fecha_cobroRes, "%b. %d, %Y")
+      
+    fecha_limite = fechaCobro + timedelta(days=5)
+  
     inicio_contrato = request.POST.get('inicio_contrato')
     inicio_contratoRes = request.POST.get('inicio_contratoRes')
+   
     if inicio_contrato:
-        inicioContrato = inicio_contrato
+        date_contrato = inicio_contrato
+        inicioContrato = datetime.strptime(date_contrato, '%Y-%m-%d')
     else:
-        date =  datetime.strptime(inicio_contratoRes, "%B %d, %Y")
-        inicioContrato = date.strftime("%Y-%m-%d")
+        try:
+            inicioContrato =  datetime.strptime(inicio_contratoRes, "%B %d, %Y")
+        except:
+            inicioContrato =  datetime.strptime(inicio_contratoRes, "%b. %d, %Y")
 
     tipo_contrato = request.POST.get('tipo_contrato')
 
     finalContrato =""
     if tipo_contrato == "Trimestral":
-        days = 3 * 30.67
-        fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
-        nuevaFecha = fechaSuma + timedelta(days=days)
-        finalContrato = nuevaFecha.strftime('%Y-%m-%d')
+        fechaSuma = inicioContrato
+        finalContrato = fechaSuma + relativedelta(months=3, days=-1)
+      
     elif tipo_contrato == "Semestral":
-        days = 3 * 61.34
-        fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
-        nuevaFecha = fechaSuma + timedelta(days=days)
-        finalContrato = nuevaFecha.strftime('%Y-%m-%d')
+        fechaSuma = inicioContrato
+        finalContrato = fechaSuma + relativedelta(months=6, days=-1)
+        
     elif tipo_contrato == "Anual":
-        days = 365
-        fechaSuma = datetime.strptime(inicioContrato, "%Y-%m-%d")
-        nuevaFecha = fechaSuma + timedelta(days=days)
-        finalContrato = nuevaFecha.strftime('%Y-%m-%d')
+        fechaSuma = inicioContrato
+        finalContrato = fechaSuma + relativedelta(years = 1, days=-1)
 
     obs = request.POST.get('obs')
     
@@ -847,16 +843,13 @@ def redireccion_pro(request): #Redirección solo para los propietarios
         resultado = individuo_inquilino(request, idArrendatario)
         return HttpResponse(resultado)
     elif btnPagar == '4':
-        fechaPago = request.POST.get('fecha_pago')
+        save = propietario.objects.get(id=idp) #Obtengo el propietario
+        fechaPago = save.fecha_pago
         
-        print(f" Fecha optenida {fechaPago}")
-        
-        dat = datetime.strptime(fechaPago, "%b. %d, %Y")
-        nuevaFecha = dat + relativedelta(months = 1)
+        nuevaFecha = fechaPago + relativedelta(months = 1)
         
         habilitarPago = 1
         
-        save = propietario.objects.get(id=idp)
         save.habilitarPago = habilitarPago
         save.fecha_pago = nuevaFecha
         save.save()
@@ -945,17 +938,16 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         resultado = individuo_inquilino(request, idArrendatario)
         return HttpResponse(resultado)
     elif btnPago == '4':
-        fechaCobro = request.POST.get('fecha_inicio')
+        guardar = arrendatario.objects.get(id=idA)
+        fechaCobro = guardar.fecha_inicio_cobro
         
-        dat = datetime.strptime(fechaCobro, "%b. %d, %Y")
-        nuevaFecha = dat + relativedelta(months=1)
+        nuevaFecha = fechaCobro + relativedelta(months=1)
         
         fecha_limite = nuevaFecha + timedelta(days=5)
         
         habilitarPago = 1
         
-        # Recuperar el arrendatario y actualizar los campos
-        guardar = arrendatario.objects.get(id=idA)
+        # Actualizar los campos
         guardar.habilitarPago = habilitarPago
         guardar.fecha_inicio_cobro = nuevaFecha  # Guardar el objeto datetime directamente
         guardar.fecha_fin_cobro = fecha_limite   # Guardar el objeto datetime directamente
