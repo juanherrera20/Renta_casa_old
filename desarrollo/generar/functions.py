@@ -113,7 +113,7 @@ def  actualizar_estados():
     for objeto in ObjetoPago:
         #-----------------------Propietario-----------------------
         idPropietario = objeto.propietario_id.id
-        EstadoPropietario = objeto.propietario_id.habilitarPago
+        EstadoPropietario = objeto.estadoPago
         fechaPago = objeto.propietario_id.fecha_pago
         print(f"fechaPago {fechaPago}")
         print(f"fecha actual {fecha}")
@@ -122,15 +122,14 @@ def  actualizar_estados():
         fechaObjeto2 = fechaPago
 
         fechaResta = (fechaObjeto2 - fechaObjeto1).days
-        guardar = propietario.objects.get(id=idPropietario) #Obtengo objeto propietario
 
         if fechaObjeto2 > fechaObjeto1: 
             if (EstadoPropietario == 1 or EstadoPropietario == 4) and fechaResta <=7: #La fecha de pago es el ultimo día habil para pagar
-                guardar.habilitarPago = 2
-                guardar.save()
+                objeto.estadoPago = 2
+                objeto.save()
         elif fechaObjeto1 >= fechaObjeto2 and EstadoPropietario != 1: #Si el estado es pagado no debería cambiarse a no pago
-            guardar.habilitarPago = 3
-            guardar.save()
+            objeto.estadoPago = 3
+            objeto.save()
             
         #-----------------------Arrendatario-----------------------
         idArrendatario = objeto.arrendatario_id.id

@@ -111,9 +111,10 @@ def dash(request):
     usuarios_propietarios = []
     for propietario in objetoPropietario:
         direccion = propietario.propietario.first().direccion if propietario.propietario.exists() else None
-        estadosDiccionario = propietario.propietario.first().habilitarPago if propietario.propietario.exists() else None
-        estados = diccionarioPago[str(estadosDiccionario)]
-        usuarios_propietarios.append((propietario, direccion, estados))
+        for objeto in propietario.propietario.all():
+            estadosDiccionario = objeto.inmueble.first().estadoPago if objeto.inmueble.exists() else None
+            estados = diccionarioPago[str(estadosDiccionario)]
+            usuarios_propietarios.append((propietario, direccion, estados))
 
     usuarios_arrendatarios = []
     for arrendatario in objetoArrendatario:
@@ -436,7 +437,7 @@ def actualizar_propietario(request): #Actualizar propietario.
 def individuo_propietario(request, id):
     objetoPropietarios = propietario.objects.get(usuarios_id_id = id)
     cantidad_inmuebles = objetoPropietarios.inmueble.count()# Calcular la cantidad de inmuebles solo para este propietario
-    pago = diccionarioPago[str(objetoPropietarios.habilitarPago)]
+    pago = diccionarioPago[str(objetoPropietarios.inmueble.first().estadoPago)]  #Solo muestra un estado en caso de que tenga mas
     objetoUser = usuarios.objects.get( id = objetoPropietarios.usuarios_id_id)
     documentos = objetoPropietarios.DocsPersona.all()
     return render(request, 'personas/propietarios/individuo_propietario.html', {'usuario':objetoUser, 'propietario':objetoPropietarios, 'pago': pago, 'documentos':documentos, 'cantidad_inmuebles': cantidad_inmuebles})
@@ -462,8 +463,8 @@ def analisis_propietarios(request):
     bancoLink = []         
     
     for objeto in objetoInmuebles: #De esta manera obtengo los valores especificos para cada inmueble directamente desde el
-        estadoPropietario.append(diccionarioPago[str(objeto.propietario_id.habilitarPago)])
-        bancoLink.append(diccionarioBancos[str(objeto.propietario_id.bancos)])                                                                              
+        estadoPropietario.append(diccionarioPago[str(objeto.estadoPago)])
+        bancoLink.append(diccionarioBancos[str(objeto.propietario_id.bancos)])                                                                               
     # print(f"habilitar: {estadoPropietario}")
     # print(f"Bancos: {bancoLink}")
     
@@ -768,7 +769,7 @@ def actualizar_modal(request): #Logica para actualizar cada modal o tarea
     descrip = request.POST.get('descrip')
     etiqueta = request.POST.get('etiqueta')
     responsable = request.POST.get('usuario')
-
+ 
     guardarT = tareas.objects.get(id=id)
     guardarT.titulo = titulo
     guardarT.descrip = descrip
@@ -810,7 +811,7 @@ def all_values_pro(request, id): #Vista exclusivamente para los propietarios
     #------------------------------------------------------Individuo_Propietario----------------------------------------------------
 
     objetoPropietario = propietario.objects.filter(id=objetoInmueble.propietario_id_id).first()
-    pago = diccionarioPago[str(objetoPropietario.habilitarPago)]
+    pago = diccionarioPago[str(objetoInmueble.estadoPago)]
     objetoUser = usuarios.objects.get( id = objetoPropietario.usuarios_id_id)
     documentos = objetoPropietario.DocsPersona.all()
 
@@ -854,15 +855,20 @@ def redireccion_pro(request): #Redirección solo para los propietarios
         return HttpResponse(resultado)
     elif btnPagar == '4':
         save = propietario.objects.get(id=idp) #Obtengo el propietario
+        saveinmueble = inmueble.objects.get(id = idInmueble)  #Obtengo el inmueble
         fechaPago = save.fecha_pago
         
         nuevaFecha = fechaPago + relativedelta(months = 1)
         
-        habilitarPago = 1
+        estadoPago = 1
         
-        save.habilitarPago = habilitarPago
+        #Guardo el propietario
         save.fecha_pago = nuevaFecha
         save.save()
+        
+        #Guardo el inmueble
+        saveinmueble.estadoPago = estadoPago
+        saveinmueble.save()
         
         resultado = analisis_propietarios(request)
         return HttpResponse(resultado)
@@ -904,7 +910,7 @@ def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     #------------------------------------------------------Individuo_Propietario----------------------------------------------------
 
     objetoPropietario = propietario.objects.filter(id=objetoInmueble.propietario_id_id).first()
-    pago = diccionarioPago[str(objetoPropietario.habilitarPago)]
+    pago = diccionarioPago[str(objetoPropietario.inmueble.estadoPago)]
     objetoUser = usuarios.objects.get( id = objetoPropietario.usuarios_id_id)
     documentos = objetoPropietario.DocsPersona.all()
 

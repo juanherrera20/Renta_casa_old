@@ -80,7 +80,7 @@ class propietario(models.Model): #Tabla usuarios
     usuarios_id = models.ForeignKey('usuarios', related_name='propietario', on_delete=models.PROTECT) #Declaracion de FK
     direccion = models.CharField(max_length = 200)
     fecha_pago = models.DateField(max_length = 20)
-    habilitarPago = models.IntegerField(default=4)
+    #habilitarPago = models.IntegerField(default=4)
     bancos = models.CharField(max_length = 200)
     obs = models.CharField(max_length = 400)
     
@@ -101,7 +101,7 @@ class inmueble(models.Model): #Tabla usuarios
     descripcion = models.CharField(max_length = 400) 
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no. 
     historial = models.IntegerField(default=0)
-    # descuento = models.IntegerField() #Descuento que se descuenta al propietario por comisión 
+    estadoPago = models.IntegerField(default=4)  #Estado de pago para el propietario (Pagado, debe, ...)
     
     def save(self, *args, **kwargs): #pk igual a id
         if self.pk: #Verificó si es actualización o creación de una instacia
