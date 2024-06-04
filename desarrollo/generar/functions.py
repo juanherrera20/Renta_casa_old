@@ -2,7 +2,7 @@
 #En este archivo se registran todas las funciones y diccionarios que usamos para manejar la logica del backend.
 #--------------------------------------------------------------------------------------------------------------------------------s
 
-from datetime import datetime,timedelta
+from datetime import date,timedelta, datetime
 from dateutil.relativedelta import relativedelta
 import re
 from django.shortcuts import redirect
@@ -104,10 +104,10 @@ def autenticado_required(view_func):
 
 
 #------------Función para actualizar los estados de pago de propietarios e inquilinos automaticamente-----------------------------------
-fecha = datetime.now()
+fecha = date.today()  
+#No uso variable datetime.datetime si no una datetime.date que solo da el día y no las horas y segundos, esto permite poder hacer comparaciones con las fechas de la base de datos
 def  actualizar_estados():
     global fecha
-    fechaFormateada = fecha.strftime("%Y-%m-%d")
     ObjetoPago = inmueble.objects.filter(arrendatario_id__isnull=False)
     days = 365
     for objeto in ObjetoPago:
@@ -115,13 +115,14 @@ def  actualizar_estados():
         idPropietario = objeto.propietario_id.id
         EstadoPropietario = objeto.propietario_id.habilitarPago
         fechaPago = objeto.propietario_id.fecha_pago
-        fechaPagoFormateada = fechaPago.strftime("%Y-%m-%d")
+        print(f"fechaPago {fechaPago}")
+        print(f"fecha actual {fecha}")
 
-        fechaObjeto1 = datetime.strptime(fechaFormateada, "%Y-%m-%d")
-        fechaObjeto2 = datetime.strptime(fechaPagoFormateada, "%Y-%m-%d")
+        fechaObjeto1 = fecha
+        fechaObjeto2 = fechaPago
 
         fechaResta = (fechaObjeto2 - fechaObjeto1).days
-        guardar = propietario.objects.get(id=idPropietario)
+        guardar = propietario.objects.get(id=idPropietario) #Obtengo objeto propietario
 
         if fechaObjeto2 > fechaObjeto1: 
             if (EstadoPropietario == 1 or EstadoPropietario == 4) and fechaResta <=7: #La fecha de pago es el ultimo día habil para pagar
@@ -130,37 +131,32 @@ def  actualizar_estados():
         elif fechaObjeto1 >= fechaObjeto2 and EstadoPropietario != 1: #Si el estado es pagado no debería cambiarse a no pago
             guardar.habilitarPago = 3
             guardar.save()
+            
         #-----------------------Arrendatario-----------------------
         idArrendatario = objeto.arrendatario_id.id
         EstadoArrendatario = objeto.arrendatario_id.habilitarPago
         inicio = objeto.arrendatario_id.inicio
         
+        #Esto es para verificar cuando cumple el año el arrendatarios
         nuevaFecha = inicio + timedelta(days=days)
         fechaInicio = nuevaFecha.strftime('%Y-%m-%d') #mirar como se puede manejar una alerta o una vista, donde se visualice los arrendatarios que estan proximos a cumplir el año (Esta variable ya calcula cuando cumple el año.)
 
         fechaInicioCobro = objeto.arrendatario_id.fecha_inicio_cobro
-        fechaInicioCobroFormateada = fechaInicioCobro.strftime("%Y-%m-%d")
         fechaFinCobro = objeto.arrendatario_id.fecha_fin_cobro
-        fechaFinCobroFormateada = fechaFinCobro.strftime("%Y-%m-%d")
 
-        fechaObjeto3 = datetime.strptime(fechaInicioCobroFormateada, "%Y-%m-%d")
-        fechaObjeto4 = datetime.strptime(fechaFinCobroFormateada, "%Y-%m-%d")
-
-        objetoArrendatario = arrendatario.objects.get(id=idArrendatario)
-        if fechaObjeto1 >= fechaObjeto3 and fechaObjeto1 <= fechaObjeto4 and (EstadoArrendatario == 1 or EstadoArrendatario == 4):
+        objetoArrendatario = arrendatario.objects.get(id=idArrendatario)  #Obtengo el objeto arrendatario 
+        if fechaObjeto1 >= fechaInicioCobro and fechaObjeto1 <= fechaFinCobro and (EstadoArrendatario == 1 or EstadoArrendatario == 4):
             objetoArrendatario.habilitarPago = 2
             objetoArrendatario.save()
         
-        elif fechaObjeto1 > fechaObjeto4 and EstadoArrendatario != 1:
+        elif fechaObjeto1 > fechaFinCobro and EstadoArrendatario != 1:
             objetoArrendatario.habilitarPago = 3
             objetoArrendatario.save()
             
-        print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido)
-        # print("fecha " + str(fechaObjeto1 > fechaObjeto4))
-        # print("estado " + str(EstadoArrendatario != 1))
+        #print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido)
     inicioContrato = objeto.arrendatario_id.inicio_contrato
     finContrato = objeto.arrendatario_id.fin_contrato
-    return print(fechaFormateada)
+    return print(fecha)
 #---------------------------------------------------------------------------------------------------------------------------------------
 
 

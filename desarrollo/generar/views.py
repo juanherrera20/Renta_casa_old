@@ -356,7 +356,7 @@ def guardar(request): #Logica para guardar propietarios en dB
         
         direc = request.POST.get('direc', None)
         fecha_pagar = request.POST.get('fecha_pagar', None)
-        print(f"Fecha: {fecha_pagar}")
+        #print(f"Fecha: {fecha_pagar}")
         tipo_banco = request.POST.get('tipo_banco', None)
         observ = request.POST.get('obs', None)
         
@@ -403,11 +403,16 @@ def actualizar_propietario(request): #Actualizar propietario.
     direccion = request.POST.get('direccion')
     fecha_pago = request.POST.get('fecha_pago')
     respaldo_fecha = request.POST.get('respaldo_fecha') 
+    print(f"Fecha cambiada: {fecha_pago}")
+    print(f"Fecha respaldo: {respaldo_fecha}")
 
     if fecha_pago:
         fechaPago = fecha_pago
     else:
-        fechaPago =  datetime.strptime(respaldo_fecha, "%b. %d, %Y")
+        try:
+            fechaPago =  datetime.strptime(respaldo_fecha, "%b. %d, %Y")
+        except:
+            fechaPago =  datetime.strptime(respaldo_fecha, "%B %d, %Y")
     obs = request.POST.get('obs')
 
     guardar2 = propietario.objects.get(id=idPropietario)
@@ -442,6 +447,7 @@ def analisis_propietarios(request):
     #Logica para la tabla de propietarios
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Aquí filtro para que solo aparezcan los inmuebles con arrendatario
 
+    print(f"Inmuebles: {objetoInmuebles}")
     objetoTipo = inmueble.objects.values_list('tipo', flat=True).filter(arrendatario_id__isnull=False)
     tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
 
@@ -450,14 +456,18 @@ def analisis_propietarios(request):
 
     objetoEstado = inmueble.objects.values_list('habilitada', flat=True).filter(arrendatario_id__isnull=False)
     habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado]
-                                                                                                    #REvisar Revisar
-    objetoEstadoPropietario = inmueble.objects.values_list('propietario_id__habilitarPago', flat=True).filter(arrendatario_id__isnull=False) #Aquí puede estar el error de porque se mezclan los estados en analisis
-    estadoPropietario = [diccionarioPago[str(values)]for values in objetoEstadoPropietario]
-
+    
+    # Obtener los estados de habilitación de pago y bancos de los propietarios
+    estadoPropietario = []
+    bancoLink = []         
+    
+    for objeto in objetoInmuebles: #De esta manera obtengo los valores especificos para cada inmueble directamente desde el
+        estadoPropietario.append(diccionarioPago[str(objeto.propietario_id.habilitarPago)])
+        bancoLink.append(diccionarioBancos[str(objeto.propietario_id.bancos)])                                                                              
+    # print(f"habilitar: {estadoPropietario}")
+    # print(f"Bancos: {bancoLink}")
+    
     objetoCanon = inmueble.objects.values_list('canon', flat=True).filter(arrendatario_id__isnull=False)
-
-    ObjetoBancos = inmueble.objects.values_list('propietario_id__bancos', flat=True).filter(arrendatario_id__isnull=False)
-    bancoLink = [diccionarioBancos[str(values)]for values in ObjetoBancos]
     totales = []
 
     for canon, des in zip(objetoCanon,descuento):
