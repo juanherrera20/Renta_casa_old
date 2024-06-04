@@ -2,8 +2,8 @@
 {% load static %}
 
 {% block static %}
-  <link rel="stylesheet" href='{% static "css/dash.css" %}' type="text/css"> <!-- Se implementa el archivo CSS -->
-  <link rel="icon" href="../static/image/icons/icons.jpg" type="image/x-icon">
+ <!-- Se implementa el archivo CSS -->
+  <link rel="stylesheet" href='{% static "css/dash.css" %}' type="text/css">
   <script type="text/javascript"  src='{% static "js/dash.js" %}'></script>
 {% endblock static %}
 
@@ -12,124 +12,142 @@
 {% endblock encabezado %}
 
 {% block title %}
-  Dashboard
+  <div class="tittle">
+    Dashboard
+  </div>
 {% endblock title %}
 
 {% block contenido %}
-  <ul>
-    <h2>Inmuebles Totales</h2>
-    <li><h3>{{ context.inmuebles }}</h3></li>
-    <br>
-    <h2>Arrendatarios Totales</h2>
-    <li><h3>{{ context.arrendatarios }}</h3></li>
-    <br>
-    <h2>Propietarios Totales</h2>
-    <li><h3>{{ context.propietarios }}</h3></li>
-    <br>
-  </ul>
-  --------------------------------------------------------------- 
-  <h2>Tareas</h2>
-  <a href="{% url 'AddTarea' %}"> + Crear Tarea</a>
-  <br><br>
+  <div class="containerr">
+    <div class="totales">
+      <ul>
+        <div class="uno">
+          <div class="img">
+            <img width="32" height="32" src="https://img.icons8.com/windows/32/building-with-rooftop-terrace.png" alt="building-with-rooftop-terrace"/>
+          </div>
+          <h2>Inmuebles Totales</h2>
+          <li><h3>{{ context.inmuebles }}</h3></li>
+        </div>
+        <div class="dos">
+          <div class="img">
+            <img width="32" height="32" src="https://img.icons8.com/windows/32/defend-family--v3.png" alt="defend-family--v3"/>
+          </div>
+          <h2>Arrendatarios Totales</h2>
+          <li><h3>{{ context.arrendatarios }}</h3></li>
+        </div>
+        <div class="tres">
+          <div class="img">
+            <img width="32" height="32" src="https://img.icons8.com/windows/32/landlord.png" alt="landlord"/>
+          </div>
+          <h2>Propietarios Totales</h2>
+          <li><h3>{{ context.propietarios }}</h3></li>
+        </div>
+      </ul>
+    </div>
+    <div class="tareas">
+      <h2 id="tittle-tareas">Tareas</h2>
+      <a href="{% url 'AddTarea' %}" id="Add-tarea"> <p>+ Crear Tarea</p></a>
+      <br>
+      <ul>
+        <li>
+          <div class="pendientes">
+            <h5>Pendientes:</h5>
+            <h6>{{ context.tareas }} tareas abiertas</h6>
+          </div>
+        </li>
+      </ul>
+      <ul>
+        {% for tarea in context.pendientes %}
+        <button class="btn btn-primary tarea-btn" data-tarea-id="{{ tarea.id }}" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap" data-id="{{ tarea.id }}" data-descripcion="{{ tarea.descripcion }}">
+          <li>Etiqueta: {{ tarea.etiqueta }}</li>
+          <li><h3>Titulo: {{ tarea.titulo }}</h3></li>
+          <li>Fecha incio: {{ tarea.fecha_inicio }}      Fecha fin: {{ tarea.fecha_fin }}</li>
+          <h4>{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4></button> <br>
+        ----------------------------------------------------- <br><br><!-- Estos guiones solo son para guiarnos y saber cuando termina cada tarea -->
+        {% endfor %}
+      </ul>
+    </div>
+    <h4>Propietarios</h4> <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
 
-  <ul>
-    <li>
-      <h5>Pendientes:</h5>
-      <h6>{{ context.tareas }} tareas abiertas</h6>
-    </li>
-  </ul>
-  <ul>
-    {% for tarea in context.pendientes %}
-    <button class="btn btn-primary tarea-btn" data-tarea-id="{{ tarea.id }}" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap" data-id="{{ tarea.id }}" data-descripcion="{{ tarea.descripcion }}">
-      <li>Etiqueta: {{ tarea.etiqueta }}</li>
-      <li><h3>Titulo: {{ tarea.titulo }}</h3></li>
-      <li>Fecha incio: {{ tarea.fecha_inicio }}      Fecha fin: {{ tarea.fecha_fin }}</li>
-      <h4>{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4></button> <br>
-    ----------------------------------------------------- <br><br><!-- Estos guiones solo son para guiarnos y saber cuando termina cada tarea -->
-    {% endfor %}
-  </ul>
-  <h4>Propietarios</h4> <input type="search" id="buscar" name="buscar" placeholder="Buscar...">
-
-  <table>
-    <thead>
+    <table>
+      <thead>
+          <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Telefono</th>
+              <th>Estado</th>
+              <th>Dirección</th>
+          </tr>
+      </thead>
+      <tbody id="propietarios">
+        {% for propietario, direccion, estados in propietarios %}
         <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Telefono</th>
-            <th>Estado</th>
-            <th>Dirección</th>
+            <td>{{ forloop.counter}}</td>
+            <td>{{ propietario.nombre |add:" "|add:propietario.apellido}}</td>
+            <td>{{ propietario.email }}</td>
+            <td>{{ propietario.telefono }}</td>
+            <td>{{ estados }}</td>
+            <td>{{ direccion }}</td>
         </tr>
-    </thead>
-    <tbody id="propietarios">
-      {% for propietario, direccion, estados in propietarios %}
-      <tr>
-          <td>{{ forloop.counter}}</td>
-          <td>{{ propietario.nombre |add:" "|add:propietario.apellido}}</td>
-          <td>{{ propietario.email }}</td>
-          <td>{{ propietario.telefono }}</td>
-          <td>{{ estados }}</td>
-          <td>{{ direccion }}</td>
-      </tr>
-      {% endfor %}
-  </tbody>
-  </table>
--------------------------------------------------------------------------------------------------- <br><br><!-- Fin de la tabla de propietarios -->
-
-
-  <h4>Clientes/Arrendatarios</h4> <input type="search" id="buscar1" name="buscar1" placeholder="Buscar...">
-
-  <table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Telefono</th>
-            <th>Estado</th>
-            <th>Dirección</th>
-        </tr>
-    </thead>
-    <tbody id="inquilinos">
-      {% for arrendatario, direccionArrendatario, estadosArrendatario in arrendatarios %}
-      <tr>
-          <td>{{ forloop.counter}}</td>
-          <td>{{ arrendatario.nombre |add:" "|add:arrendatario.apellido}}</td>
-          <td>{{ arrendatario.email }}</td>
-          <td>{{ arrendatario.telefono }}</td>
-          <td>{{ estadosArrendatario }}</td>
-          <td>{{ direccionArrendatario }}</td>
-      </tr>
-      {% endfor %}
+        {% endfor %}
     </tbody>
-  </table>
--------------------------------------------------------------------------------------------------------- <br><br><!-- Fin de la tabla de Arrendatarios -->
-  <!-- Enlistar el resumen de los inmuebles tipo lista-->
-  <h4>Inmuebles</h4> <input type="search" id="buscar2" name="buscar" placeholder="Buscar..."> <br>
-  <table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Propietario</th>
-            <th>Telefono</th>
-            <th>Dirección</th>
-            <th>Tipo</th>
-            <th>Estado</th>
-        </tr>
-    </thead>
-    <tbody id="inmuebles">
-      {% for inmueble, tipoInmueble, habilitada in inmuebles %}
-            <tr>
-              <td>{{ forloop.counter }}</td>
-              <td>{{ inmueble.propietario_id.usuarios_id.nombre |add:" "|add:inmueble.propietario_id.usuarios_id.apellido }}</td>
-              <td>{{ inmueble.propietario_id.usuarios_id.telefono }}</td>
-              <td>{{ inmueble.direccion }}</td>
-              <td>{{ tipoInmueble }}</td>
-              <td>{{ habilitada }}</td>
-            </tr>
-      {% endfor %}
-    </tbody>
+    </table>
+  -------------------------------------------------------------------------------------------------- <br><br><!-- Fin de la tabla de propietarios -->
 
+    <h4>Clientes/Arrendatarios</h4> <input type="search" id="buscar1" name="buscar1" placeholder="Buscar...">
+
+    <table>
+      <thead>
+          <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Telefono</th>
+              <th>Estado</th>
+              <th>Dirección</th>
+          </tr>
+      </thead>
+      <tbody id="inquilinos">
+        {% for arrendatario, direccionArrendatario, estadosArrendatario in arrendatarios %}
+        <tr>
+            <td>{{ forloop.counter}}</td>
+            <td>{{ arrendatario.nombre |add:" "|add:arrendatario.apellido}}</td>
+            <td>{{ arrendatario.email }}</td>
+            <td>{{ arrendatario.telefono }}</td>
+            <td>{{ estadosArrendatario }}</td>
+            <td>{{ direccionArrendatario }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  -------------------------------------------------------------------------------------------------------- <br><br><!-- Fin de la tabla de Arrendatarios -->
+    <!-- Enlistar el resumen de los inmuebles tipo lista-->
+    <h4>Inmuebles</h4> <input type="search" id="buscar2" name="buscar" placeholder="Buscar..."> <br>
+    <table>
+      <thead>
+          <tr>
+              <th>ID</th>
+              <th>Propietario</th>
+              <th>Telefono</th>
+              <th>Dirección</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+          </tr>
+      </thead>
+      <tbody id="inmuebles">
+        {% for inmueble, tipoInmueble, habilitada in inmuebles %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ inmueble.propietario_id.usuarios_id.nombre |add:" "|add:inmueble.propietario_id.usuarios_id.apellido }}</td>
+                <td>{{ inmueble.propietario_id.usuarios_id.telefono }}</td>
+                <td>{{ inmueble.direccion }}</td>
+                <td>{{ tipoInmueble }}</td>
+                <td>{{ habilitada }}</td>
+              </tr>
+        {% endfor %}
+      </tbody>
+  </div>
   <!-- Modal para tareas. -->
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -147,5 +165,4 @@
       </div>
     </div>
   </div>
-
 {% endblock %}

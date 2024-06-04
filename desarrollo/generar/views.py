@@ -98,7 +98,7 @@ def dash(request):
     objetoInmueble = inmueble.objects.all()
     num_inmueble = objetoInmueble.count()
 
-    tareas_pendientes = tareas.objects.filter(estado='Pendiente').select_related('superuser_id')
+    tareas_pendientes = tareas.objects.filter(estado='Pendiente').select_related('superuser_id').order_by('-id')[:3]
     num_tareas = tareas_pendientes.count()
 
     context = {
