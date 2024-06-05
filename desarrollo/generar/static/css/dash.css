@@ -64,27 +64,30 @@
     margin: 8px 15px 40px;
     font-size: 50px;
 }
+.tareas-hover{
+    border: 2px solid #ababab;
+    border-radius: 5px; /* Rounded corners for input fields */
+    width: 92%;
+    height: 40px;
+    margin-left: 20px;
+}
 #Add-tarea{
     text-decoration: none;
     color: #000;
     font-weight: bold;
     font-size: 20px;
-    border: 2px solid #ababab;
-    border-radius: 5px; /* Rounded corners for input fields */
-    align-items: center;
-    text-align: center;
-    width: 92%;
-    height: 40px;
-    margin-left: 20px;
+    margin-top: -5px;
 }
-#add-tarea:hover{
+.tareas-hover:hover{
     background-color: rgb(62, 85, 203);
-    color: rgb(230, 230, 230);
 }
 .tareas p{
-    margin-top: -2px;
+    margin-top: -28px;
     align-items: center;
     text-align: center;
+}
+.tareas p:hover{
+    color: rgb(230, 230, 230);
 }
 .pendientes{
     margin-left: -2.6%;
@@ -95,8 +98,8 @@
     border-radius: 5px; /* Rounded corners for input fields */
     width: 98.3%;
     height: 55px;
+    margin-bottom: 10px;
 }
-
 .pendientes h5{
     font-size: 30px;
     padding-left: 20px;
@@ -105,4 +108,36 @@
     color: #8a8a8a;
     font-size: 22px;
     padding-top: 4px;
+}
+.tarea-btn{
+    width: 98%;
+    margin-left: -11px;
+    margin-bottom: -20px;
+    background-color: white;
+    color: black;
+    border:solid #ababab;
+}
+.tarea-btn:hover{
+    background-color: rgb(62, 85, 203);
+    color: rgb(230, 230, 230);
+}
+.ciclo li{
+    text-align: left;
+    align-items: left;
+}
+.presentar{
+    background-color: rgb(150, 255, 142); /* Color para "Pendiente" */
+    color: rgb(67, 156, 59);
+}
+.visitar{
+    background-color: rgb(255, 253, 142); /* Color para "Pendiente" */
+    color: rgb(156, 148, 59);
+}
+.mantenimiento{
+    background-color: rgb(142, 165, 255); /* Color para "Pendiente" */
+    color: rgb(59, 62, 156);
+}
+.urgente{
+    background-color: rgb(255, 142, 142); /* Color para "Pendiente" */
+    color: rgb(156, 59, 59);
 }
