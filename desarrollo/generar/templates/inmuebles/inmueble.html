@@ -1,6 +1,5 @@
 {% extends "barra_navegacion.html" %}
 {% load static %}
-
 {% block static %}
   <link rel="stylesheet" href='{% static "css/inmuebles/inmueble.css" %}' type="text/css">
   <script type="text/javascript"  src='{% static "js/inmuebles/inmueble.js" %}'></script>
@@ -11,30 +10,31 @@
 {% endblock encabezado %}
 
 {% block title %}
+<div class="tittle">
   Inmuebles y propiedades
+</div>
 {% endblock title %}
 
 {% block contenido %}
-  <h2>Inmueble</h2>
+  <div class="contenido">
+    <h2>Inmueble</h2>
     <h3>Seguimiento de los Inmuebles</h3>
     <h5>Todos los Inmuebles Registrados en la plataforma</h5>
     <p>Total de Inmuebles: Numero-------------------</p> 
-    <input type="search" id="buscar" name="buscar" placeholder="Buscar..."> <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'addInmu' %}"> + Añadir Inmueble</a>
-    <br>
+    <input type="search" id="buscar" name="buscar" placeholder="Buscar..."> <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'addInmu' %}"> + Añadir Inmueble</a><br>
     <p>Tabla donde se muestran a todos los propietarios.</p>
     <table>
       <thead>
-          <tr>
-              <th>ID</th>
-              <th>Referencia</th>
-              <th>Propietario</th>
-              <th>Dirección</th>
-              <th>Tipo</th>
-              <th>Fecha de Pago</th>
-              <th>Estado</th>
-              <th>Canon</th>
-              
-          </tr>
+        <tr>
+          <th>ID</th>
+          <th>Referencia</th>
+          <th>Propietario</th>
+          <th>Dirección</th>
+          <th>Tipo</th>
+          <th>Fecha de Pago</th>
+          <th>Estado</th>
+          <th>Canon</th>
+        </tr>
       </thead>
       <tbody id="inmuebles">
         {% for inmueble, tipoInmueble, habilitada in inmuebles %}
@@ -47,7 +47,10 @@
             <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.propietario_id.fecha_pago }}</button></td>
             <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ habilitada }}</button></td>
             <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">${{ inmueble.canon }}</button></td>
+          </tr>
         {% endfor %}
       </tbody>
+    </table>
+  </div>
 {% endblock %}
 

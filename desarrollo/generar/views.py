@@ -98,7 +98,7 @@ def dash(request):
     objetoInmueble = inmueble.objects.all()
     num_inmueble = objetoInmueble.count()
 
-    tareas_pendientes = tareas.objects.filter(estado='Pendiente').select_related('superuser_id').order_by('-id')[:3]
+    tareas_pendientes = tareas.objects.filter(estado='Pendiente').select_related('superuser_id').order_by('-id')[:4]
     num_tareas = tareas_pendientes.count()
 
     context = {
@@ -114,14 +114,16 @@ def dash(request):
         for objeto in propietario.propietario.all():
             estadosDiccionario = objeto.inmueble.first().estadoPago if objeto.inmueble.exists() else None
             estados = diccionarioPago[str(estadosDiccionario)]
-            usuarios_propietarios.append((propietario, direccion, estados))
+            estados_espacio = estados.lower().replace(' ', '')
+            usuarios_propietarios.append((propietario, direccion, estados, estados_espacio))
 
     usuarios_arrendatarios = []
     for arrendatario in objetoArrendatario:
         direccionArrendatario = arrendatario.arrendatario.first().direccion if arrendatario.arrendatario.exists() else None
         estadosDiccionarioArrendatario = arrendatario.arrendatario.first().habilitarPago if arrendatario.arrendatario.exists() else None
         estadosArrendatario = diccionarioPago[str(estadosDiccionarioArrendatario)]
-        usuarios_arrendatarios.append((arrendatario, direccionArrendatario, estadosArrendatario))
+        estados_espacioA = estadosArrendatario.lower().replace(' ', '')
+        usuarios_arrendatarios.append((arrendatario, direccionArrendatario, estadosArrendatario, estados_espacioA))
     
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').order_by('-id')[:5]
 
@@ -130,7 +132,8 @@ def dash(request):
 
     objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
     habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
-    All = list(zip(objetoInmuebles, tipoInmueble, habilitada))
+    habilitada_espacio = [item.lower().replace(' ', '') for item in habilitada]
+    All = list(zip(objetoInmuebles, tipoInmueble, habilitada, habilitada_espacio))
     actualizar_estados()
 
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
