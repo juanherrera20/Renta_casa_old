@@ -48,6 +48,7 @@ urlpatterns = [
     #Ver modales de tareas y de dashboard
     path('Tareas/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
     path('Inicio/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
+    path('Dashboard/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
     path('Tareas/Modal/Actualizado', actualizar_modal, name="actualizarModal"),
 
     path('Notificaciones/', noti, name="noti"),

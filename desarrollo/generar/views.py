@@ -145,15 +145,17 @@ def dash(request):
 @autenticado_required
 def inmu(request): #Visualizar los inmuebles (Tabla)
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').all()
+    num_inmueble = objetoInmuebles.count()
 
     objetoTipo = inmueble.objects.values_list('tipo', flat=True)
-    tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
+    tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo]
 
     objetoEstado = inmueble.objects.values_list('habilitada', flat=True)
-    habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
-    All = list(zip(objetoInmuebles, tipoInmueble, habilitada))
+    habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado]
+    habilitada_espacio = [item.lower().replace(' ', '') for item in habilitada]
+    All = list(zip(objetoInmuebles, tipoInmueble, habilitada, habilitada_espacio))
 
-    return render(request, 'inmuebles/inmueble.html', {'inmuebles': All})
+    return render(request, 'inmuebles/inmueble.html', {'inmuebles': All, 'number':num_inmueble})
 
 @autenticado_required
 def add_inmueble(request): #ayuda a la Vista para añadir inmueble
