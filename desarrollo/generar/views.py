@@ -8,7 +8,7 @@ from django.db.models import Max, Count, Q
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
-from .functions import autenticado_required, actualizar_estados, extract_numbers, convert_time #Importo las funciones desde functions.py
+from .functions import autenticado_required, actualizar_estados, extract_numbers, convert_time, jerarquia_estadoPago_propietario #Importo las funciones desde functions.py
 from .functions import diccionarioContrato, diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
 from django.core.paginator import Paginator
 
@@ -112,7 +112,9 @@ def dash(request):
     for propietario in objetoPropietario:
         direccion = propietario.propietario.first().direccion if propietario.propietario.exists() else None
         for objeto in propietario.propietario.all():
-            estadosDiccionario = objeto.inmueble.first().estadoPago if objeto.inmueble.exists() else None
+            print(f"Propietario: {objeto}")
+            estadosDiccionario = jerarquia_estadoPago_propietario(objeto)
+            print(f"estado pago: {estadosDiccionario}")
             estados = diccionarioPago[str(estadosDiccionario)]
             estados_espacio = estados.lower().replace(' ', '')
             usuarios_propietarios.append((propietario, direccion, estados, estados_espacio))

@@ -166,6 +166,27 @@ def extract_numbers(lst): #
     return [int(x) for sublist in extracted_numbers for x in sublist]# Convierte los números extraídos de strings a enteros
 #---------------------------------------------------------------------------------------------------------------------------------------s
 
+#-------------------------------------------Función para establecer la Jerarquia de los estados propietario.------------------------------------------s
+def jerarquia_estadoPago_propietario(propietario):
+    try:
+        estado_no_pagado = propietario.inmueble.filter(estadoPago=3).exists()
+        if estado_no_pagado:
+            return 3  # 'No pago'
+        
+        estado_debe = propietario.inmueble.filter(estadoPago=2).exists()
+        if estado_debe:
+            return 2  # 'Debe'
+        
+        estado_pagado = propietario.inmueble.filter(estadoPago=1).exists()
+        if estado_pagado:
+            return 1  # 'Pagado'
+        
+        return 4  # 'Indefinido' u otro estado por defecto
+    except Exception as e:
+        print(f"Error al obtener el estado prioritario: {e}")
+        return 4  # En caso de error, devolver 'Indefinido'
+#---------------------------------------------------------------------------------------------------------------------------------------s
+
 
 #-------------------------------------------Función para transformar la hora (No lo se muy bien)----------------------------------------s
 def convert_time(horaRes):
