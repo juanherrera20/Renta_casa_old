@@ -1,3 +1,236 @@
-ul {
-    list-style: none;
+.title-add, .contenido {
+    margin-left: 13%;
+}
+.title-add {
+    padding: 12px;
+    font-size: 50px;
+}
+.contenido h4{
+    display: flex;
+    font-size: 20px;
+    margin-top: -2px;
+    padding-left: 10px;
+}
+.contenido h4 p{
+    color:red;
+}
+.firts-block-form {
+    margin-top: 40px;
+}
+.firts-block-form, .second-block-form, .third-block-form {
+    margin-bottom: 8px;
+    display: flex;
+    gap: 10px;
+}
+.pre-label {
+    display: flex;
+    font-weight: bold;
+    font-size: 18px;
+    padding-top: 4px;
+}
+.pre-label p {
+    color:red
+}
+.aux {
+    margin-right: 35px;
+}
+/* ----------------------------------------Inicio de select ---------------------------------------------------------------- */
+.form-add select {
+    width: 300px; /* Ancho de los selectores */
+    height: 35px;
+    padding: 5px 0px; /* Padding interno de los selectores */
+    padding-left: 5px;
+    border: 1px solid rgb(103, 128, 253); /* Borde de los selectores */
+    font-weight: bold;
+    background-color: rgb(255, 255, 255); /* Color de fondo de los selectores */
+    color: #000000; /* Color del texto de los selectores */
+    appearance: none; /* Eliminar el estilo por defecto de los selectores */
+    margin-bottom: 8px; /* Margen inferior de los selectores */
+    border-radius: 8px;
+}
+.form-add select:focus {
+    outline: none; /* Eliminar el contorno al enfocar */
+    border-color: #000000; /* Color del borde al enfocar */
+}
+.form-add select.form-select option {
+    color: rgb(0, 0, 0)!important; /* Cambiar el color del texto a blanco */
+    background-color: white!important;
+}
+/* ----------------------------------------Fin de select --------------------Inicio de input-------------------------------------------- */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    position: relative;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    width: 22%;
+    margin-left: -8px;
+  }
+  
+  .container .label {
+    display: flex;
+    font-size: 15px;
+    padding-left: 10px;
+    position: absolute;
+    top: 5px;
+    transition: 0.3s;
+    pointer-events: none;
+  }
+  .container .label p{
+    color: red;
+    
+  }
+  .input {
+    width: 300px;
+    height: 35px;
+    border: none;
+    outline: none;
+    padding: 0px 7px;
+    border-radius: 6px;
+    color: #000000;
+    font-size: 15px;
+    background-color: transparent;
+    box-shadow: 3px 3px 10px rgb(103, 128, 253),
+    -1px -1px 6px rgba(255, 255, 255, 0.4);
+  }
+  
+  .input:focus {
+    border: 2px solid transparent;
+    color: #000000;
+    box-shadow: 3px 3px 10px rgb(103, 128, 253),
+    -1px -1px 6px rgba(255, 255, 255, 0.4),
+    inset 3px 3px 10px rgba(0,0,0,1),
+    inset -1px -1px 6px rgba(255, 255, 255, 0.4);
+  }
+  
+  .container .input:valid ~ .label,
+  .container .input:focus ~ .label {
+    transition: 0.3s;
+    padding-left: 2px;
+    top: 12px;
+    transform: translateY(-35px);
+  }
+  
+  .container .input:valid,
+  .container .input:focus {
+    box-shadow: 3px 3px 10px rgb(103, 128, 253);
+  }
+  /* -----------------------------------------------fin de input---------------------------------inicio de checkox----------------------- */
+.ui-checkbox, 
+.ui-checkbox *, 
+.ui-checkbox *::before, 
+.ui-checkbox *::after {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.ui-checkbox {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: white;
+    border: 1px solid #d9d9d9;
+    -webkit-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    margin-left: 20px;
+    margin-top: 7px;
+}
+.ui-checkbox::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-box-shadow: 0 0 0 calc(20px / 2.5) #1677ff;
+    box-shadow: 0 0 0 calc(20px / 2.5) #1677ff;
+    border-radius: inherit;
+    opacity: 0;
+    -webkit-transition: all 0.5s cubic-bezier(0.12, 0.4, 0.29, 1.46);
+    -o-transition: all 0.5s cubic-bezier(0.12, 0.4, 0.29, 1.46);
+    transition: all 0.5s cubic-bezier(0.12, 0.4, 0.29, 1.46);
+}
+.ui-checkbox::before {
+    top: 40%;
+    left: 50%;
+    content: "";
+    position: absolute;
+    width: 4px;
+    height: 7px;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    -webkit-transform: translate(-50%, -50%) rotate(45deg) scale(0);
+    -ms-transform: translate(-50%, -50%) rotate(45deg) scale(0);
+    transform: translate(-50%, -50%) rotate(45deg) scale(0);
+    opacity: 0;
+    -webkit-transition: all 0.1s cubic-bezier(0.71, -0.46, 0.88, 0.6),opacity 0.1s;
+    -o-transition: all 0.1s cubic-bezier(0.71, -0.46, 0.88, 0.6),opacity 0.1s;
+    transition: all 0.1s cubic-bezier(0.71, -0.46, 0.88, 0.6),opacity 0.1s;
+}
+.ui-checkbox:hover {
+    border-color: #1677ff;
+}
+.ui-checkbox:checked {
+    background: #1677ff;
+    border-color: transparent;
+}
+.ui-checkbox:checked::before {
+    opacity: 1;
+    -webkit-transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
+    -ms-transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
+    transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
+    -webkit-transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) 0.1s;
+    -o-transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) 0.1s;
+    transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) 0.1s;
+}
+.ui-checkbox:active:not(:checked)::after {
+    -webkit-transition: none;
+    -o-transition: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    transition: none;
+    opacity: 1;
+}
+.checkbox-container h4{
+    font-weight: bold;
+    font-size: 25px;
+}
+.checkbox-label {
+    display: flex;
+    gap: 12px;
+}
+.checkbox-label p {
+    font-size: 18px;
+    margin-top: 3px;
+}
+.checkbox-container2 {
+    margin-top: 18px;
+}
+.input-electric { 
+    width: 250px;
+}
+.input-gas {
+    width: 313px;
+}
+.input-internet {
+    width: 279.5px;
+}
+.img-file {
+    display: flex;
+}
+/* -----------------------------------------------fin de checkox---------------------------------inicio de descripción y documentos----------------------- */
+.input-descrip {
+    margin-left: 20px;
+    width: 800px;
+    height: 50px;
+    margin-bottom: 25px;
+}
+.label-decrip {
+    margin-left: 20px;
 }

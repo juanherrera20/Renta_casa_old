@@ -20,6 +20,7 @@
 .encabezado-total{
     font-size: 20px;
     font-weight: bold;
+    margin-top: 5px;
 }
 /* ---------------------------------------------------Inicio de input------------------------------------------------------------------------- */
 .search {
@@ -156,19 +157,9 @@
     color: white;
 }
 /* -----------------------------------------------------------Inicio de tabla----------------------------------------------------- */
-.table-container {
-    height: 440px;
-    overflow-y: auto;
-  }
-.table-container::-webkit-scrollbar {
-    margin-left: 0px;
-    width: 10px; /* Set width */
-    background-color: #007bff; /* Set track color */
-}
-.table-container::-webkit-scrollbar-thumb {
-    background-color: #0056b3; /* Set thumb color */
-}
 .table-inmuebles{
+    height: 448px;
+    overflow-y: auto;
     margin-left: 10px;
     border-collapse: collapse; /* Elimina los bordes entre las celdas */
     width: 94.2%;
@@ -178,7 +169,25 @@
     margin-bottom: 20px;
     margin-top: 20px;
 }
+::-webkit-scrollbar {
+    width: 6px; /* Ancho de la barra de desplazamiento */
+}
+/* Fondo de la barra de desplazamiento */
+::-webkit-scrollbar-track {
+    background: #ffffff; /* Color de fondo */
+}
 
+/* El bloque que representa el control deslizable */
+::-webkit-scrollbar-thumb {
+    background-color: rgb(103, 128, 253); /* Color principal */
+    border-radius: 6px; /* Redondeado de los bordes */
+    border: 3px solid rgb(103, 128, 253); /* Bordes alrededor del thumb */
+}
+
+/* Cambia el color cuando el usuario pasa el cursor sobre el thumb */
+::-webkit-scrollbar-thumb:hover {
+    background-color: #4f5c86; 
+}
 .table-inmuebles th,
 .table-inmuebles td {
   padding: 5px;
@@ -207,7 +216,6 @@
 #canon {
     width: 140px;
 }
-
 .table-inmuebles thead{
     height: 50px;
     align-items: center;
