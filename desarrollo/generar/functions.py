@@ -112,22 +112,29 @@ def  actualizar_estados():
     days = 365
     for objeto in ObjetoPago:
         #-----------------------Propietario-----------------------
-        idPropietario = objeto.propietario_id.id
-        EstadoPropietario = objeto.estadoPago
+        propietario = objeto.propietario_id
+        EstadoPago1 = jerarquia_estadoPago_propietario(propietario) #Equivalente al obtenido a la jerarquia
+        EstadoPago2 = objeto.estadoPago
+        print(f"Estado propietario: {EstadoPago1}")
+        print(f"Estado propietario: {EstadoPago1}")
         fechaPago = objeto.propietario_id.fecha_pago
-        print(f"fechaPago {fechaPago}")
-        print(f"fecha actual {fecha}")
 
-        fechaObjeto1 = fecha
+        fechaObjeto1 = fecha  #Fecha actual
         fechaObjeto2 = fechaPago
 
         fechaResta = (fechaObjeto2 - fechaObjeto1).days
 
-        if fechaObjeto2 > fechaObjeto1: 
-            if (EstadoPropietario == 1 or EstadoPropietario == 4) and fechaResta <=7: #La fecha de pago es el ultimo día habil para pagar
+        if fechaObjeto2 >= fechaObjeto1: 
+            
+            """ Uso EstadoPago1 para evitar que mi estado de pago se cambie de "Pagado" a "debe" ya que si no se ha pagado todos los inmuebles de un propietario
+                la fecha no aumenta y el siguiente condicional se cumpliría, y nos interesa que se cumpla solo cuando todo este pago"""
+            if (EstadoPago1 == 1 or EstadoPago1 == 4) and fechaResta <=7: #La fecha de pago es el ultimo día habil para pagar
                 objeto.estadoPago = 2
                 objeto.save()
-        elif fechaObjeto1 >= fechaObjeto2 and EstadoPropietario != 1: #Si el estado es pagado no debería cambiarse a no pago
+                
+            """Aquí uso el EstadoPago2 ya que si uso el 1 los ya pagados se marcaran como "No pagos" si no se han pagado todos, de esta manera 
+                el programa tomara el estado unico y no el ponderado de varios que siempre tiende a ser el peor"""
+        elif fechaObjeto1 > fechaObjeto2 and EstadoPago2 != 1: #Si el estado es pagado no debería cambiarse a no pago
             objeto.estadoPago = 3
             objeto.save()
             

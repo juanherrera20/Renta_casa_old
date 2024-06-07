@@ -411,8 +411,8 @@ def actualizar_propietario(request): #Actualizar propietario.
     direccion = request.POST.get('direccion')
     fecha_pago = request.POST.get('fecha_pago')
     respaldo_fecha = request.POST.get('respaldo_fecha') 
-    print(f"Fecha cambiada: {fecha_pago}")
-    print(f"Fecha respaldo: {respaldo_fecha}")
+    # print(f"Fecha cambiada: {fecha_pago}")
+    # print(f"Fecha respaldo: {respaldo_fecha}")
 
     if fecha_pago:
         fechaPago = fecha_pago
@@ -444,7 +444,7 @@ def actualizar_propietario(request): #Actualizar propietario.
 def individuo_propietario(request, id):
     objetoPropietarios = propietario.objects.get(usuarios_id_id = id)
     cantidad_inmuebles = objetoPropietarios.inmueble.count()# Calcular la cantidad de inmuebles solo para este propietario
-    pago = diccionarioPago[str(objetoPropietarios.inmueble.first().estadoPago)]  #Solo muestra un estado en caso de que tenga mas
+    pago = diccionarioPago[str(jerarquia_estadoPago_propietario(objetoPropietarios))]  #Solo muestra un estado en caso de que tenga mas
     objetoUser = usuarios.objects.get( id = objetoPropietarios.usuarios_id_id)
     documentos = objetoPropietarios.DocsPersona.all()
     return render(request, 'personas/propietarios/individuo_propietario.html', {'usuario':objetoUser, 'propietario':objetoPropietarios, 'pago': pago, 'documentos':documentos, 'cantidad_inmuebles': cantidad_inmuebles})
@@ -537,18 +537,21 @@ def guardar_inquilino(request): #Función para guardar inquilinos
         fecha_limite = fechaObjeto + timedelta(days=5)
 
         inicioContrato = request.POST.get('inicioContrato', None)
+        fecha_inicio_contrato = datetime.strptime(inicioContrato, "%Y-%m-%d")
+        
         tipo_contrato = request.POST.get('tipo_contrato', None)
         finalContrato =""
+        
         if tipo_contrato == "Trimestral":
-            fechaSuma = inicioContrato
+            fechaSuma = fecha_inicio_contrato
             finalContrato = fechaSuma + relativedelta(months=3, days=-1)
       
         elif tipo_contrato == "Semestral":
-            fechaSuma = inicioContrato
+            fechaSuma = fecha_inicio_contrato
             finalContrato = fechaSuma + relativedelta(months=6, days=-1)
             
         elif tipo_contrato == "Anual":
-            fechaSuma = inicioContrato
+            fechaSuma = fecha_inicio_contrato
             finalContrato = fechaSuma + relativedelta(years = 1, days=-1)
 
         observ = request.POST.get('obs', None)
@@ -861,22 +864,30 @@ def redireccion_pro(request): #Redirección solo para los propietarios
         resultado = individuo_inquilino(request, idArrendatario)
         return HttpResponse(resultado)
     elif btnPagar == '4':
-        save = propietario.objects.get(id=idp) #Obtengo el propietario
+        savepropietario = propietario.objects.get(id=idp) #Obtengo el propietario
         saveinmueble = inmueble.objects.get(id = idInmueble)  #Obtengo el inmueble
-        fechaPago = save.fecha_pago
-        
-        nuevaFecha = fechaPago + relativedelta(months = 1)
-        
+        fechaPago = savepropietario.fecha_pago
+        antespagado = jerarquia_estadoPago_propietario(savepropietario)
+        print(f"estado antes: {antespagado}")
         estadoPago = 1
-        
-        #Guardo el propietario
-        save.fecha_pago = nuevaFecha
-        save.save()
-        
+       
         #Guardo el inmueble
         saveinmueble.estadoPago = estadoPago
         saveinmueble.save()
         
+        pagado = jerarquia_estadoPago_propietario(savepropietario)
+        print(f"jerarquia despues: {pagado}")
+        if pagado == 1: #Comprobar que todos los estados esten en "Pagado" para aumentar la fecha
+            nuevaFecha = fechaPago + relativedelta(months = 1)
+            print("paso el filtro")
+            #Guardo el propietario
+            savepropietario.fecha_pago = nuevaFecha
+            savepropietario.save()
+            
+        print("siempre se ve")
+        for inmueblex in savepropietario.inmueble.all():
+            print(f"estados inmuebles despues:{inmueblex.estadoPago} ")
+            
         resultado = analisis_propietarios(request)
         return HttpResponse(resultado)
     elif btnConfirmar == '5':
