@@ -66,9 +66,8 @@
     font-weight: bold;
     width: 22%;
     margin-left: -8px;
-  }
-  
-  .container .label {
+}
+.container .label {
     display: flex;
     font-size: 15px;
     padding-left: 10px;
@@ -76,12 +75,11 @@
     top: 5px;
     transition: 0.3s;
     pointer-events: none;
-  }
-  .container .label p{
-    color: red;
-    
-  }
-  .input {
+}
+.container .label p{
+    color: red;  
+}
+.input {
     width: 300px;
     height: 35px;
     border: none;
@@ -93,30 +91,25 @@
     background-color: transparent;
     box-shadow: 3px 3px 10px rgb(103, 128, 253),
     -1px -1px 6px rgba(255, 255, 255, 0.4);
-  }
-  
-  .input:focus {
+}
+.input:focus {
     border: 2px solid transparent;
     color: #000000;
     box-shadow: 3px 3px 10px rgb(103, 128, 253),
     -1px -1px 6px rgba(255, 255, 255, 0.4),
     inset 3px 3px 10px rgba(0,0,0,1),
     inset -1px -1px 6px rgba(255, 255, 255, 0.4);
-  }
-  
-  .container .input:valid ~ .label,
-  .container .input:focus ~ .label {
+}
+  .container .input:valid ~ .label, .container .input:focus ~ .label {
     transition: 0.3s;
     padding-left: 2px;
     top: 12px;
     transform: translateY(-35px);
-  }
-  
-  .container .input:valid,
-  .container .input:focus {
+}
+.container .input:valid, .container .input:focus {
     box-shadow: 3px 3px 10px rgb(103, 128, 253);
-  }
-  /* -----------------------------------------------fin de input---------------------------------inicio de checkox----------------------- */
+}
+/* -----------------------------------------------fin de input---------------------------------inicio de checkox----------------------- */
 .ui-checkbox, 
 .ui-checkbox *, 
 .ui-checkbox *::before, 
@@ -224,13 +217,114 @@
 .img-file {
     display: flex;
 }
+.label-aux {
+    width: 200px;
+    font-size: 10px;
+    margin-right: 0px;
+}
+.checkbox-container2 {
+    display: flex;
+    gap: 300px;
+}
 /* -----------------------------------------------fin de checkox---------------------------------inicio de descripción y documentos----------------------- */
 .input-descrip {
     margin-left: 20px;
-    width: 800px;
+    width: 1007px;
     height: 50px;
     margin-bottom: 25px;
 }
 .label-decrip {
     margin-left: 20px;
+}
+/* -------------------------------------------------------------------Documentos ---------------------------------------------------------------------------- */
+.pre-label-documentos{
+    display: flex;
+    font-weight: bold;
+    font-size: 18px;
+    padding-top: 4px;
+}
+.pre-label-documentos p {
+    color:red
+}
+.documents input[type="file"]::-webkit-file-upload-button {
+    background-color: rgb(85, 113, 255); /* Change to your desired blue shade */
+    color: white; /* Adjust text color for better contrast */
+    border: none;
+    padding: 8px 10px; /* Adjust padding as needed */
+    border-radius: 4px; /* Add a subtle border radius */
+    cursor: pointer;
+  }
+.documents input[type="file"]:hover::file-selector-button {
+    background-color: rgb(22, 111, 255); /* Blue color on hover */
+    color: white;
+}
+.documents input[type="file"]:focus::file-selector-button {
+    background-color: #1677ff; /* Blue color on focus (file selected) */
+}
+/* -----------------------------------------------fin de descripción y documentos------------------------------- Inicio de imagenes------------------- */
+.custum-file-upload {
+    height: 200px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: space-between;
+    gap: 20px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #cacaca;
+    background-color: rgba(255, 255, 255, 1);
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+}
+.custum-file-upload .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.custum-file-upload .icon svg {
+    height: 80px;
+    fill: rgba(75, 85, 99, 1);
+}
+
+.custum-file-upload .text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.custum-file-upload .text span {
+    font-weight: 400;
+    color: rgba(75, 85, 99, 1);
+}
+.custum-file-upload input {
+    display: none;
+}
+/* ---------------------------------------------------------fin de imagenes ------------------------------------Inicio de botones ------------------------------- */
+.btn-guardar, .btn-eliminar{
+    width: 200px;
+    height: 50px;
+    border-radius: 10px;
+    background-color: #1677ff;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 40px;
+    margin-left: 20px;
+    cursor: pointer;
+    border: 2px dashed #1677ff;
+    box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+}
+.btn-guardar:hover {
+    background-color: #30db12;
+    border: 2px dashed #30db12;
+}
+.btn-eliminar:hover {
+    background-color: #b31111;
+    border: 2px dashed #b31111;
+}
+.label-eliminar {
+    font-weight: bold;
+    font-size: 15px;
+    padding-top: 52px;
 }

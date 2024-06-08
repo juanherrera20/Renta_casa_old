@@ -159,9 +159,8 @@ def inmu(request): #Visualizar los inmuebles (Tabla)
 
 @autenticado_required
 def add_inmueble(request): #ayuda a la Vista para añadir inmueble
-    objetoUsuarioPropietarios = usuarios.objects.filter(propie_client=1)
-    objetoUsuarioArrendatarios = usuarios.objects.filter(propie_client=2).exclude(Q(arrendatario__inmueble__isnull=False))  #El Q permite anidar condiciones para el filtro
- 
+    objetoUsuarioPropietarios = propietario.objects.select_related('usuarios_id').all()
+    objetoUsuarioArrendatarios = arrendatario.objects.select_related('usuarios_id').all()
     return render(request, 'inmuebles/add_inmueble.html', {'UsuarioPropietarios': objetoUsuarioPropietarios, 'UsuariosArrendatarios':objetoUsuarioArrendatarios})
 
 @autenticado_required
