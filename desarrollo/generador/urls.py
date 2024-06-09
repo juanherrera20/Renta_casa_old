@@ -36,7 +36,7 @@ urlpatterns = [
     #añadir inmuebles
     path('AddInmuebles/', add_inmueble, name="addInmu"),
     path('GuardarInmueble/', guardar_inmueble, name="guardarInmueble"),
-    path('Inmuebles/C ode/<int:id>', individuo_inmueble, name="IndividuoInmueble"),
+    path('Inmuebles/Code/<int:id>', individuo_inmueble, name="IndividuoInmueble"),
     path('ActualizarInmueble/', actualizar_inmueble, name="actualizarInmueble"),
 
     path('Personas/Propietarios/', personas_propietarios, name="personas_propietarios"),

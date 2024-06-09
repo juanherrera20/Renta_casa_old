@@ -11,165 +11,167 @@
 {% endblock encabezado %}
 
 {% block title %}
+  <div class="title-add">
+    <h2>Propietario del inmueble: {{ inmueble.propietario_id.usuarios_id.nombre }} {{ inmueble.propietario_id.usuarios_id.apellido }}</h2>
+  </div>
 {% endblock title %}
 
 {% block contenido %}
-  {% for inmueble, tipo, habilitada, porcentaje, servicios in inmueble %}
-    <h2>Propietario del inmueble: {{ inmueble.propietario_id.usuarios_id.nombre }} {{ inmueble.propietario_id.usuarios_id.apellido }}</h2>
-    <h5>Historial de arrendatarios: {{inmueble.historial}}</h5>
-    <button type="button" id="btnEdit"name="btnEdit">Edit</button>
-    <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
+  <div class="contenido">
+    {% for inmueble, tipo, habilitada, porcentaje, servicios in inmueble %}
+      <h5>Historial de arrendatarios: {{inmueble.historial}}</h5>
+      <button type="button" id="btnEdit"name="btnEdit">Edit</button>
+      <button type="button" id="btnCancel" style="display:none;">Cancelar</button><!-- CSS -->
 
-    <form action="{% url 'actualizarInmueble' %}"  method="post" id="miFormulario" enctype="multipart/form-data">
-      {% csrf_token %}
-      <input type="hidden" name="id" id="id" value="{{ inmueble.id }}">
+      <form action="{% url 'actualizarInmueble' %}"  method="post" id="miFormulario" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="id" id="id" value="{{ inmueble.id }}">
 
-      <h3>Datos del propietario</h3>
-      <label for="propietario_name">Nombre del Propietario</label>
-      <input type="text" name="propietario_name" value="{{ inmueble.propietario_id.usuarios_id.nombre }}" readonly><br>
-      <label for="propietario_apellido">Apellido del Propietario</label>
-      <input type="text" name="propietario_name" value="{{ inmueble.propietario_id.usuarios_id.apellido }}" readonly><br>
+        <h3>Datos del propietario</h3>
+        <label for="propietario_name">Nombre del Propietario</label>
+        <input type="text" name="propietario_name" value="{{ inmueble.propietario_id.usuarios_id.nombre }}" readonly><br>
+        <label for="propietario_apellido">Apellido del Propietario</label>
+        <input type="text" name="propietario_name" value="{{ inmueble.propietario_id.usuarios_id.apellido }}" readonly><br>
 
-      <label for="addPropietario" id="pripietarioTitle" style="display:none;">Añadir o cambiar propietario:</label>
-      <select name="addPropietario" id="addPropietario" style="display:none;">
-          <option value="{{inmueble.propietario_id.usuarios_id.id}}">{{ inmueble.propietario_id.usuarios_id.nombre }} {{ inmueble.propietario_id.usuarios_id.apellido }}</option>
-          {% for info in propietario %}
-          <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
+        <label for="addPropietario" id="pripietarioTitle" style="display:none;">Añadir o cambiar propietario:</label>
+        <select name="addPropietario" id="addPropietario" style="display:none;">
+            <option value="{{inmueble.propietario_id.usuarios_id.id}}">{{ inmueble.propietario_id.usuarios_id.nombre }} {{ inmueble.propietario_id.usuarios_id.apellido }}</option>
+            {% for info in propietario %}
+            <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
+            {% endfor %}
+        </select>
+        
+        <label for="propietario_telefono">Telefono del Propietario</label>
+        <input type="number" name="propietario_telefono" value="{{ inmueble.propietario_id.usuarios_id.telefono }}" readonly><br>
+
+        <h3>Datos del Inquilino</h3>
+        <label for="arrendatario">Arrendatario: </label>
+        {% if inmueble.arrendatario_id_id %}
+        <input type="text" name="arrendatario" value="{{ inmueble.arrendatario_id.usuarios_id.nombre |add:' '|add:inmueble.arrendatario_id.usuarios_id.apellido }}" readonly><br>
+        {% else %}
+        <p>No tiene ningún arrendatario</p>
+        {% endif %}
+        
+        <label for="addArrendatario" id="arrendatarioTitle" style="display:none;">Añadir o cambiar arrendatario:</label>
+        <select name="addArrendatario" id="addArrendatario" style="display:none;">
+            <option value="{{ inmueble.arrendatario_id.usuarios_id.id}}">{{ inmueble.arrendatario_id.usuarios_id.nombre }} {{ inmueble.arrendatario_id.usuarios_id.apellido }}</option>
+            <option value="">Aún no tiene arrendatario</option>
+            {% for info in arrendatario %}
+            <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
+            {% endfor %}
+        </select>
+
+        <h3>Datos del Inmueble</h3>
+        <label for="direccion">Dirección</label>
+        <input type="text" name="direccion" value="{{ inmueble.direccion}}" readonly><br>
+
+        <label for="tipo_inmueble">Tipo de Inmueble</label>
+          <select name="tipo_inmueble" id="tipo_inmueble" disabled>
+              <option value="{{ inmueble.tipo }}">{{ tipo }}</option>
+              <option value="1">Casa</option>
+              <option value="2">Apartamento</option>
+              <option value="3">Local</option>
+              <option value="4">Aparta-estudio</option>
+          </select><br>
+
+        <label for="tipo_estado">Tipo de Estado:</label><br>
+        <label ><input type="checkbox" name="tipo_estado" value="3" disabled>En proceso</label><br><br>
+
+        <label for="ref">Ref</label>
+        <input type="text" name="ref" value="{{ inmueble.ref }}" readonly><br>
+        <label for="canon">Valor del inmueble</label>
+        <input type="number" name="canon" value="{{inmueble.canon}}" readonly><br>
+        
+        <label for="porcentaje_descuento">Porcentaje de descuento:</label>
+          <select name="porcentaje_descuento" id="porcentaje_descuento" disabled>
+              <option value="{{ inmueble.porcentaje }}">{{ porcentaje }}%</option>
+              <option value="1">13%</option>
+              <option value="2">12%</option>
+              <option value="3">12.5%</option>
+              <option value="4">10%</option>
+              <option value="5">9%</option>
+              <option value="6">8%</option>
+          </select><br>
+
+        <label for="servicios">Servicios incluidos:</label>
+        <div>
+          <label><input type="checkbox" name="opciones" value="Agua" {% if 'Agua' in servicios %} checked disabled {% endif %}> Agua</label><input type="number" name="agua" placeholder="{{ matricula.0 }}"  value="{{ matricula.0 }}" readonly><br>
+          <label><input type="checkbox" name="opciones" value="Electricidad" {% if 'Electricidad' in servicios %} checked disabled {% endif %}> Electricidad</label><input type="number" name="electric" placeholder="{{ matricula.1 }}" value="{{ matricula.1 }}" readonly><br>
+          <label><input type="checkbox" name="opciones" value="Gas" {% if 'Gas' in servicios %} checked disabled {% endif %}> Gas</label><input type="number" name="gas" placeholder="{{ matricula.2 }}" value="{{ matricula.2 }}" readonly><br>
+          <label><input type="checkbox" name="opciones" value="Internet" {% if 'Internet' in servicios %} checked disabled {% endif %}> Internet</label><input type="number" name="internet" placeholder="{{ matricula.3 }}" value="{{ matricula.3 }}" readonly><br><br>
+        </div>
+        <label for="descrip">Descripción</label>
+        <input type="text" name="descrip" value="{{ inmueble.descripcion }}" readonly><br>
+        <label for="documento">Documentos: </label>
+
+        {% if documentos %}
+          <h3>Documentos existentes:</h3>
+          <ul>
+            {% for doc in documentos %}
+              <li>
+                <a href="{{ doc.documento.url }}" target="_blank">{{ doc.documento.name }}</a>
+                <input type="checkbox" name="eliminar_documentos" value="{{ doc.id }}" disabled> Eliminar
+              </li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <label for="documentos_nuevos">Cargar nuevos documentos:</label>
+        <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled>
+
+        {% if imagenes %}
+          <h3>Imágenes existentes:</h3>
+          <ul id="lista-imagenes">
+          {% for img in imagenes %}
+              <li>
+                  <label>
+                      <input type="checkbox" name="eliminar_imagenes" value="{{ img.id }}" class="checkbox-imagen" disabled>
+                      <img src="{{ img.imagen.url }}" width="200" height="200">
+                  </label>
+              </li>
           {% endfor %}
-      </select>
-       
-      <label for="propietario_telefono">Telefono del Propietario</label>
-      <input type="number" name="propietario_telefono" value="{{ inmueble.propietario_id.usuarios_id.telefono }}" readonly><br>
+          </ul>
+        {% endif %} 
 
-      <h3>Datos del Inquilino</h3>
-      <label for="arrendatario">Arrendatario: </label>
-      {% if inmueble.arrendatario_id_id %}
-      <input type="text" name="arrendatario" value="{{ inmueble.arrendatario_id.usuarios_id.nombre |add:' '|add:inmueble.arrendatario_id.usuarios_id.apellido }}" readonly><br>
-      {% else %}
-      <p>No tiene ningún arrendatario</p>
-      {% endif %}
-      
-      <label for="addArrendatario" id="arrendatarioTitle" style="display:none;">Añadir o cambiar arrendatario:</label>
-      <select name="addArrendatario" id="addArrendatario" style="display:none;">
-          <option value="{{ inmueble.arrendatario_id.usuarios_id.id}}">{{ inmueble.arrendatario_id.usuarios_id.nombre }} {{ inmueble.arrendatario_id.usuarios_id.apellido }}</option>
-          <option value="">Aún no tiene arrendatario</option>
-          {% for info in arrendatario %}
-          <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
-          {% endfor %}
-      </select>
-
-      <h3>Datos del Inmueble</h3>
-      <label for="direccion">Dirección</label>
-      <input type="text" name="direccion" value="{{ inmueble.direccion}}" readonly><br>
-
-      <label for="tipo_inmueble">Tipo de Inmueble</label>
-        <select name="tipo_inmueble" id="tipo_inmueble" disabled>
-            <option value="{{ inmueble.tipo }}">{{ tipo }}</option>
-            <option value="1">Casa</option>
-            <option value="2">Apartamento</option>
-            <option value="3">Local</option>
-            <option value="4">Aparta-estudio</option>
-        </select><br>
-
-      <label for="tipo_estado">Tipo de Estado:</label><br>
-      <label ><input type="checkbox" name="tipo_estado" value="3" disabled>En proceso</label><br><br>
-
-      <label for="ref">Ref</label>
-      <input type="text" name="ref" value="{{ inmueble.ref }}" readonly><br>
-      <label for="canon">Valor del inmueble</label>
-      <input type="number" name="canon" value="{{inmueble.canon}}" readonly><br>
-      
-      <label for="porcentaje_descuento">Porcentaje de descuento:</label>
-        <select name="porcentaje_descuento" id="porcentaje_descuento" disabled>
-            <option value="{{ inmueble.porcentaje }}">{{ porcentaje }}%</option>
-            <option value="1">13%</option>
-            <option value="2">12%</option>
-            <option value="3">12.5%</option>
-            <option value="4">10%</option>
-            <option value="5">9%</option>
-            <option value="6">8%</option>
-        </select><br>
-
-      <label for="servicios">Servicios incluidos:</label>
-      <div>
-        <label><input type="checkbox" name="opciones" value="Agua" {% if 'Agua' in servicios %} checked disabled {% endif %}> Agua</label><input type="number" name="agua" placeholder="{{ matricula.0 }}"  value="{{ matricula.0 }}" readonly><br>
-        <label><input type="checkbox" name="opciones" value="Electricidad" {% if 'Electricidad' in servicios %} checked disabled {% endif %}> Electricidad</label><input type="number" name="electric" placeholder="{{ matricula.1 }}" value="{{ matricula.1 }}" readonly><br>
-        <label><input type="checkbox" name="opciones" value="Gas" {% if 'Gas' in servicios %} checked disabled {% endif %}> Gas</label><input type="number" name="gas" placeholder="{{ matricula.2 }}" value="{{ matricula.2 }}" readonly><br>
-        <label><input type="checkbox" name="opciones" value="Internet" {% if 'Internet' in servicios %} checked disabled {% endif %}> Internet</label><input type="number" name="internet" placeholder="{{ matricula.3 }}" value="{{ matricula.3 }}" readonly><br><br>
-      </div>
-      <label for="descrip">Descripción</label>
-      <input type="text" name="descrip" value="{{ inmueble.descripcion }}" readonly><br>
-      <label for="documento">Documentos: </label>
-
-      {% if documentos %}
-        <h3>Documentos existentes:</h3>
-        <ul>
-          {% for doc in documentos %}
-            <li>
-              <a href="{{ doc.documento.url }}" target="_blank">{{ doc.documento.name }}</a>
-              <input type="checkbox" name="eliminar_documentos" value="{{ doc.id }}" disabled> Eliminar
-            </li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-
-      <label for="documentos_nuevos">Cargar nuevos documentos:</label>
-      <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled>
-
-      {% if imagenes %}
+        <!-- Codigo reutilizable
         <h3>Imágenes existentes:</h3>
         <ul id="lista-imagenes">
-        {% for img in imagenes %}
-            <li>
-                <label>
-                    <input type="checkbox" name="eliminar_imagenes" value="{{ img.id }}" class="checkbox-imagen" disabled>
-                    <img src="{{ img.imagen.url }}" width="200" height="200">
-                </label>
-            </li>
-        {% endfor %}
+          {% for img in page_obj %}
+              <li>
+                  <label>
+                      <input type="checkbox" name="eliminar_imagenes" value="{{ img.id }}" class="checkbox-imagen" disabled>
+                      <img src="{{ img.imagen.url }}" width="200" height="200">
+                  </label>
+              </li>
+          {% endfor %}
         </ul>
-      {% endif %} 
 
-      <!-- Codigo reutilizable
-      <h3>Imágenes existentes:</h3>
-      <ul id="lista-imagenes">
-        {% for img in page_obj %}
-            <li>
-                <label>
-                    <input type="checkbox" name="eliminar_imagenes" value="{{ img.id }}" class="checkbox-imagen" disabled>
-                    <img src="{{ img.imagen.url }}" width="200" height="200">
-                </label>
-            </li>
-        {% endfor %}
-      </ul>
+        -------------------------------------------------------Paginación 
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; primero</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">anterior</a>
+                {% endif %}
 
-      -------------------------------------------------------Paginación 
-      <div class="pagination">
-          <span class="step-links">
-              {% if page_obj.has_previous %}
-                  <a href="?page=1">&laquo; primero</a>
-                  <a href="?page={{ page_obj.previous_page_number }}">anterior</a>
-              {% endif %}
+                <span class="current">
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
+                </span>
 
-              <span class="current">
-                  Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
-              </span>
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">siguiente</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">último &raquo;</a>
+                {% endif %}
+            </span>
+        </div> -->
+        
+        <label for="imagenes_nuevas">Cargar nuevas imágenes:</label>
+        <input type="file" name="imagenes_nuevas" accept="image/*" multiple disabled>
 
-              {% if page_obj.has_next %}
-                  <a href="?page={{ page_obj.next_page_number }}">siguiente</a>
-                  <a href="?page={{ page_obj.paginator.num_pages }}">último &raquo;</a>
-              {% endif %}
-          </span>
-      </div> -->
-      
-      <label for="imagenes_nuevas">Cargar nuevas imágenes:</label>
-      <input type="file" name="imagenes_nuevas" accept="image/*" multiple disabled>
-
-      <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button>
-      
-    </form>
-  {% endfor %}
-  
-
+        <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button>
+        
+      </form>
+    {% endfor %}
+  </div>
 {% endblock %}
 

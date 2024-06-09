@@ -1,8 +1,6 @@
-ul {
-    list-style: none;
-   
+.title-add, .contenido {
+    margin-left: 13%;
 }
-
 .checkbox-imagen {
     display: none; /* Ocultar los checkboxes */
 }
