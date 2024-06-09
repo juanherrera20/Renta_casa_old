@@ -104,6 +104,17 @@ def autenticado_required(view_func):
 
 
 #------------Función para actualizar los estados de pago de propietarios e inquilinos automaticamente-----------------------------------
+
+#Calcular por día el atraso de un pago para incrementar el valor (Faltan cosas)
+def calcular_monto_atraso(fecha_pago, porcentaje_penalizacion):
+    fecha_actual = date.today()
+    dias_atraso = (fecha_actual - fecha_pago).days
+    if dias_atraso > 0:
+        monto_atraso = porcentaje_penalizacion * dias_atraso
+    else:
+        monto_atraso = 0
+    return monto_atraso
+
 fecha = date.today()  
 #No uso variable datetime.datetime si no una datetime.date que solo da el día y no las horas y segundos, esto permite poder hacer comparaciones con las fechas de la base de datos
 def  actualizar_estados():
@@ -160,6 +171,16 @@ def  actualizar_estados():
             objetoArrendatario.save()
             
         #print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido)
+        
+    # Calcular monto por atraso y aplicar lógica
+    # porcentaje_penalizacion = 0.05
+    # fecha_pago_arrendatario = objeto.arrendatario_id.fecha_fin_cobro
+    # monto_atraso = calcular_monto_atraso(fecha_pago_arrendatario, porcentaje_penalizacion)
+
+    # if monto_atraso > 0:
+    #     # Aquí se tratara el tema de notificaciones y guardar el canon modificado en la base de datos o algo
+    #     pass
+        
     inicioContrato = objeto.arrendatario_id.inicio_contrato
     finContrato = objeto.arrendatario_id.fin_contrato
     return print(fecha)

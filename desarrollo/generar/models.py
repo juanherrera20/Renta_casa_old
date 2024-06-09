@@ -147,6 +147,15 @@ class Imagenes(models.Model):
         if os.path.isfile(self.imagen.path):
             os.remove(self.imagen.path)
         super().delete(*args, **kwargs)
+    
+    #Aun falta revisar cosas
+    # def delete_if_file_missing(self):
+    #     if not os.path.isfile(self.imagen.path):
+    #         self.delete()
+
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     self.delete_if_file_missing()
         
     class Meta:
         db_table = 'Imagenes'
@@ -176,6 +185,15 @@ class DocsPersonas(models.Model):
         if os.path.isfile(self.documento.path):
             os.remove(self.documento.path)
         super().delete(*args, **kwargs)
+    
+     #Aun falta revisar cosas
+    # def delete_if_file_missing(self):
+    #     if not os.path.isfile(self.documento.path):
+    #         self.delete()
+
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+    #     self.delete_if_file_missing()
         
     class Meta:
         db_table = 'DocsPersonas'
