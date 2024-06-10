@@ -1,6 +1,87 @@
-.title-add, .contenido {
+.contenido {
     margin-left: 13%;
 }
+.contenido h2 {
+    padding: 12px;
+    font-size: 35px;
+    margin-bottom: 30px;
+}
+.firts-block {
+    display: flex;
+    gap: 20px;
+}
+.text-inmu{
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    padding-top: 1px;
+    font-size: 18px;
+    background-color: rgb(250, 163, 163);
+    color: rgb(175, 0, 0);
+    border-radius: 5px;
+    width: 100px;
+    height: 25px;
+    margin-left: 30px;
+}
+#btnEdit img {
+    margin-top: -5px;
+    margin-right: 8px;
+    filter: invert(100%) brightness(180%); 
+}
+#btnCancel {
+    align-content: center;
+    text-align: center;
+    justify-content: center;
+    padding-left: 18px;
+}
+#btnCancel img {
+    margin-top: -5px;
+    margin-left: 5px;
+    filter: invert(100%) brightness(180%); 
+}
+#btnEdit, #btnCancel {
+    position: absolute;
+    left: 84%;
+    width: 190px;
+    height: 45px;
+    border-radius: 10px;
+    background-color: #1677ff;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: -12px;
+    cursor: pointer;
+    border: 2px dashed #1677ff;
+    box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+}
+#btnEdit:hover {
+    background-color: #122ddb;
+    border: 2px dashed #122ddb;
+}
+#btnCancel:hover {
+    background-color: #db1212;
+    border: 2px dashed #db1212;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .checkbox-imagen {
     display: none; /* Ocultar los checkboxes */
 }
