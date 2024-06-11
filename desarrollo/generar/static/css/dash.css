@@ -247,8 +247,15 @@
     margin-top: 15px;
 }
 .debe{
+    font-size: 15px;
     background-color: rgb(248, 248, 138);
-    color: rgb(214, 214, 45);
+    color: rgb(179, 179, 37);
+    border-radius: 5px;
+    width: 100%;
+    margin-top: 15px;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
 }
 .nopago{
     font-size: 15px;

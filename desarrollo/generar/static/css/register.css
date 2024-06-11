@@ -188,14 +188,16 @@ button svg {
     margin: 33px 10px 30px 33px;
 }
 .image{
-    width: 35%; /* Ajusta el ancho según necesites */
+    width: 20%; /* Ajusta el ancho según necesites */
     height: auto; /* Mantiene la proporción de la imagen */
-    margin-left: 80px;
+    margin-left: 225px;
+    box-shadow: 1px 3px 3px 1px #414141;
 }
 .image2{
-    width: 35%; /* Ajusta el ancho según necesites */
+    width: 20%; /* Ajusta el ancho según necesites */
     height: auto; /* Mantiene la proporción de la imagen */
-    margin-left: 80px;
+    margin-left: 225px;
+    box-shadow: 1px 3px 3px 1px #414141;
     margin-top: 10px;
 }
 /* ----------------------------------------Cambios para ser responsive------------------------------------- */
