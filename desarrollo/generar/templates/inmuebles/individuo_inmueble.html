@@ -155,87 +155,161 @@
           <label for="arrendatario" class="else">Arrendatario:</label>
           <p class="else2">No tiene ningún arrendatario</p>
           {% endif %}
-          
-          <label for="addArrendatario" id="arrendatarioTitle" style="display:none;">Añadir o cambiar arrendatario:</label>
-          <select name="addArrendatario" id="addArrendatario" style="display:none;">
-              <option value="{{ inmueble.arrendatario_id.usuarios_id.id}}">{{ inmueble.arrendatario_id.usuarios_id.nombre }} {{ inmueble.arrendatario_id.usuarios_id.apellido }}</option>
-              <option value="">Aún no tiene arrendatario</option>
-              {% for info in arrendatario %}
-              <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
-              {% endfor %}
-          </select>
+          <div class="select2-container">
+            <label for="addArrendatario" class="pre-label" id="arrendatarioTitle" style="display:none;">Añadir o cambiar arrendatario:</label>
+            <select name="addArrendatario" id="addArrendatario" class="select2" style="display:none;">
+                <option value="{{ inmueble.arrendatario_id.usuarios_id.id}}">{{ inmueble.arrendatario_id.usuarios_id.nombre }} {{ inmueble.arrendatario_id.usuarios_id.apellido }}</option>
+                <option value="">Aún no tiene arrendatario</option>
+                {% for info in arrendatario %}
+                <option value="{{ info.id }}">{{ info.nombre |add:' '|add:info.apellido}}</option>
+                {% endfor %}
+            </select>
+          </div>
         </div>
-        <h3>Datos del Inmueble</h3>
-        <label for="direccion">Dirección</label>
-        <input type="text" name="direccion" value="{{ inmueble.direccion}}" readonly><br>
 
-        <label for="tipo_inmueble">Tipo de Inmueble</label>
-          <select name="tipo_inmueble" id="tipo_inmueble" disabled>
-              <option value="{{ inmueble.tipo }}">{{ tipo }}</option>
-              <option value="1">Casa</option>
-              <option value="2">Apartamento</option>
-              <option value="3">Local</option>
-              <option value="4">Aparta-estudio</option>
-          </select><br>
-
-        <label for="tipo_estado">Tipo de Estado:</label><br>
-        <label ><input type="checkbox" name="tipo_estado" value="3" disabled>En proceso</label><br><br>
-
-        <label for="ref">Ref</label>
-        <input type="text" name="ref" value="{{ inmueble.ref }}" readonly><br>
-        <label for="canon">Valor del inmueble</label>
-        <input type="number" name="canon" value="{{inmueble.canon}}" readonly><br>
-        
-        <label for="porcentaje_descuento">Porcentaje de descuento:</label>
-          <select name="porcentaje_descuento" id="porcentaje_descuento" disabled>
-              <option value="{{ inmueble.porcentaje }}">{{ porcentaje }}%</option>
-              <option value="1">13%</option>
-              <option value="2">12%</option>
-              <option value="3">12.5%</option>
-              <option value="4">10%</option>
-              <option value="5">9%</option>
-              <option value="6">8%</option>
-          </select><br>
-
-        <label for="servicios">Servicios incluidos:</label>
-        <div>
-          <label><input type="checkbox" name="opciones" value="Agua" {% if 'Agua' in servicios %} checked disabled {% endif %}> Agua</label><input type="number" name="agua" placeholder="{{ matricula.0 }}"  value="{{ matricula.0 }}" readonly><br>
-          <label><input type="checkbox" name="opciones" value="Electricidad" {% if 'Electricidad' in servicios %} checked disabled {% endif %}> Electricidad</label><input type="number" name="electric" placeholder="{{ matricula.1 }}" value="{{ matricula.1 }}" readonly><br>
-          <label><input type="checkbox" name="opciones" value="Gas" {% if 'Gas' in servicios %} checked disabled {% endif %}> Gas</label><input type="number" name="gas" placeholder="{{ matricula.2 }}" value="{{ matricula.2 }}" readonly><br>
-          <label><input type="checkbox" name="opciones" value="Internet" {% if 'Internet' in servicios %} checked disabled {% endif %}> Internet</label><input type="number" name="internet" placeholder="{{ matricula.3 }}" value="{{ matricula.3 }}" readonly><br><br>
-        </div>
-        <label for="descrip">Descripción</label>
-        <input type="text" name="descrip" value="{{ inmueble.descripcion }}" readonly><br>
-        <label for="documento">Documentos: </label>
-
-        {% if documentos %}
-          <h3>Documentos existentes:</h3>
-          <ul>
-            {% for doc in documentos %}
-              <li>
-                <a href="{{ doc.documento.url }}" target="_blank">{{ doc.documento.name }}</a>
-                <input type="checkbox" name="eliminar_documentos" value="{{ doc.id }}" disabled> Eliminar
-              </li>
-            {% endfor %}
-          </ul>
-        {% endif %}
-
-        <label for="documentos_nuevos">Cargar nuevos documentos:</label>
-        <input type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled> <br>
-
-        {% if imagenes %}
-          <h3>Imágenes existentes:</h3>
-          <ul id="lista-imagenes">
-          {% for img in imagenes %}
-              <li>
+        <h3 id="datos-inmueble">Datos del Inmueble</h3>
+        <div class="third-block">
+          <div class="container container-aux">
+            <input type="text" name="direccion" value="{{ inmueble.direccion}}" readonly class="input">
+            <label class="label" for="direccion">Dirección</label>
+          </div>
+          <div class="select2-container">
+            <label for="tipo_inmueble"class="pre-label" >Tipo de Inmueble</label>
+            <select name="tipo_inmueble" class="select2 container-aux2" id="tipo_inmueble" disabled>
+                <option value="{{ inmueble.tipo }}">{{ tipo }}</option>
+                <option value="1">Casa</option>
+                <option value="2">Apartamento</option>
+                <option value="3">Local</option>
+                <option value="4">Aparta-estudio</option>
+            </select>
+          </div>
+          <div class="checkbox-container checkbox-container-aux">
+            <label for="tipo_estado" class="t_estado">Tipo de Estado:</label>
+            <div class="checkbox-container2">
+              <div class="checkbox-label">
+                <label class="checkbox-label">
+                    <input type="checkbox" class="ui-checkbox ui-checkbox-aux" name="tipo_estado" value="3" disabled>
+                    <p class="container-aux3">En proceso</p>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div><br><br>
+        <div class="fourth-block">
+          <div class="container container-aux">
+            <input type="text" name="ref" value="{{ inmueble.ref }}" readonly class="input">
+            <label class="label" for="ref">Referencia</label>
+          </div>
+          <div class="container">
+            <input type="number" name="canon" value="{{inmueble.canon}}" readonly class="input input-aux">
+            <label class="label" for="canon">Valor del inmueble</label>
+          </div>
+          <div class="select2-container">
+            <label for="porcentaje_descuento" class="pre-label">Porcentaje de descuento:</label>
+            <select name="porcentaje_descuento" id="porcentaje_descuento" class="select2" disabled>
+                <option value="{{ inmueble.porcentaje }}">{{ porcentaje }}%</option>
+                <option value="1">13%</option>
+                <option value="2">12%</option>
+                <option value="3">12.5%</option>
+                <option value="4">10%</option>
+                <option value="5">9%</option>
+                <option value="6">8%</option>
+            </select>
+          </div>
+        </div><br><br>
+        <div class="checkbox-container">
+          <label for="servicios"><h4>Servicios incluidos:</h4></label>
+          <div class="checkbox-container2">
+            <div class="checkbox-container3">
+              <div class="checkbox-label">
+                <label class="checkbox-label">
+                  <input type="checkbox" class="ui-checkbox" name="opciones" value="Agua" {% if 'Agua' in servicios %} checked disabled {% endif %}>
+                  <p>Agua</p>
+                </label>
+                <div class="container">
+                  <input  type="number" name="agua" class="input input-agua" placeholder="{{ matricula.0 }}" value="{{ matricula.0 }}" readonly>
+                  <label class="label label-aux">N° de matricula</label>
+                </div><br><br><br>
+              </div>
+              <div class="checkbox-label">
+                <label class="checkbox-label">
+                  <input type="checkbox" class="ui-checkbox" name="opciones" value="Electricidad" {% if 'Electricidad' in servicios %} checked disabled {% endif %}>
+                  <p>Electricidad</p>
+                </label>
+                <div class="container">
+                  <input type="number" name="electric" class="input input-electric" placeholder="{{ matricula.1 }}" value="{{ matricula.1 }}" readonly>
+                  <label class="label label-aux">N° de matricula</label>
+                </div>
+              </div><br>
+              <div class="checkbox-label">
+                <label class="checkbox-label">
+                  <input type="checkbox" class="ui-checkbox" name="opciones" value="Gas" {% if 'Gas' in servicios %} checked disabled {% endif %}>
+                  <p>Gas</p>
+                </label>
+                <div class="container">
+                  <input type="number" name="gas" class="input input-gas" placeholder="{{ matricula.2 }}" value="{{ matricula.2 }}" readonly>
+                  <label class="label label-aux">N° de matricula</label>
+                </div>
+              </div><br>
+              <div class="checkbox-label">
+                <label class="checkbox-label">
+                  <input type="checkbox" class="ui-checkbox" name="opciones" value="Internet" {% if 'Internet' in servicios %} checked disabled {% endif %}>
+                  <p>Internet</p>
+                </label>
+                <div class="container">
+                  <input type="number" name="internet" class="input input-internet" placeholder="{{ matricula.3 }}" value="{{ matricula.3 }}" readonly>
+                  <label class="label label-aux">N° de matricula</label>
+                </div>
+              </div>
+            </div>
+            <div class="checkbox-container4">
+              <label for="documento"><h3>Documentos:</h3></label>
+              {% if documentos %}
+                <h3>Documentos existentes:</h3>
+                <ul>
+                  {% for doc in documentos %}
+                    <li>
+                      <div class="checkbox-label">
+                        <a href="{{ doc.documento.url }}" target="_blank">{{ doc.documento.name }}</a>
+                        <div class="checkbox-label">
+                          <label class="checkbox-label">
+                              <input type="checkbox" class="ui-checkbox" name="eliminar_documentos" value="{{ doc.id }}" disabled>
+                              <p>Eliminar</p>
+                          </label>
+                        </div>
+                      </div>
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <p class="else">No tiene ningún Documento</p>
+              {% endif %}
+              <div class="grid w-full max-w-xs items-center gap-1.5 documents">
+                <label for="documentos_nuevos" class="pre-label-documentos">Cargar nuevos documentos:</label>
+                <input id="documento" type="file" name="documentos_nuevos" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled class="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium">
+              </div>
+            </div>
+          </div>
+        </div><br><br>
+        <div class="container">
+          <input type="text" name="descrip" id="descrip" class="input input-descrip" value="{{ inmueble.descripcion }}" readonly>
+          <label class="label label-decrip">Descripción</label>
+        </div><br>
+        <div class="container-image">
+          {% if imagenes %}
+            <h3>Imágenes existentes:</h3>
+            <ul id="lista-imagenes">
+              {% for img in imagenes %}
+                <li>
                   <label>
-                      <input type="checkbox" name="eliminar_imagenes" value="{{ img.id }}" class="checkbox-imagen" disabled>
-                      <img src="{{ img.imagen.url }}" width="200" height="200">
+                    <input type="checkbox" name="eliminar_imagenes" value="{{ img.id }}" class="checkbox-imagen" disabled>
+                    <img src="{{ img.imagen.url }}">
                   </label>
-              </li>
-          {% endfor %}
-          </ul>
-        {% endif %} 
+                </li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        </div>
         <!-- Codigo reutilizable
         <h3>Imágenes existentes:</h3>
         <ul id="lista-imagenes">
@@ -248,7 +322,6 @@
               </li>
           {% endfor %}
         </ul>
-
         -------------------------------------------------------Paginación 
         <div class="pagination">
             <span class="step-links">
@@ -256,23 +329,22 @@
                     <a href="?page=1">&laquo; primero</a>
                     <a href="?page={{ page_obj.previous_page_number }}">anterior</a>
                 {% endif %}
-
                 <span class="current">
                     Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}.
                 </span>
-
                 {% if page_obj.has_next %}
                     <a href="?page={{ page_obj.next_page_number }}">siguiente</a>
                     <a href="?page={{ page_obj.paginator.num_pages }}">último &raquo;</a>
                 {% endif %}
             </span>
         </div> -->
-        
-        <label for="imagenes_nuevas">Cargar nuevas imágenes:</label>
-        <input type="file" name="imagenes_nuevas" accept="image/*" multiple disabled> <br><br>
-
-        <button type="submit" id="btnActualizar" style="display:none;">Actualizar</button><br><br>
-        
+        <div class="fiveth-block">
+          <div class="grid w-full max-w-xs items-center gap-1.5 documents image-container">
+            <label for="imagenes_nuevas" class="pre-label-documentos">Cargar nuevas imágenes:</label>
+            <input id="imagenes" type="file" name="imagenes_nuevas" accept="image/*" multiple disabled class="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium">
+          </div>
+          <button type="submit" id="btnActualizar" style="display:none;"><img width="24" height="24" src="https://img.icons8.com/ios-glyphs/24/000000/checkmark--v1.png" alt="checkmark--v1"/>Actualizar</button>
+        </div>
       </form>
     {% endfor %}
   </div>

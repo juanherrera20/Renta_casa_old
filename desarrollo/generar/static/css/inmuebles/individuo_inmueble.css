@@ -6,7 +6,7 @@
     font-size: 35px;
     margin-bottom: 30px;
 }
-.firts-block {
+.firts-block, .second-block, .third-block, .fourth-block, .fiveth-block {
     display: flex;
     gap: 20px;
 }
@@ -54,6 +54,29 @@
     border: 2px dashed #1677ff;
     box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
 }
+#btnActualizar {
+    position: absolute;
+    left: 57%;
+    align-content: center;
+    text-align: center;
+    justify-content: center;
+    width: 220px;
+    height: 45px;
+    border-radius: 10px;
+    background-color: #1677ff;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 60px;
+    cursor: pointer;
+    border: 2px dashed #1677ff;
+    box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+}
+#btnActualizar img {
+    margin-top: -5px;
+    margin-left: 8px;
+    filter: invert(100%) brightness(180%); 
+}
 #btnEdit:hover {
     background-color: #122ddb;
     border: 2px dashed #122ddb;
@@ -62,18 +85,21 @@
     background-color: #db1212;
     border: 2px dashed #db1212;
 }
+#btnActualizar:hover {
+    background-color: #30db12;
+    border: 2px dashed #30db12;
+}
 #datos-propietarios{
     margin-top: 20px;
     margin-bottom: 40px;
 }
 #datos-inquilino{
     margin-top: 40px;
-    margin-bottom: 35px;
+    margin-bottom: 25px;
 }
-
-.second-block {
-    display: flex;
-    gap: 20px;
+#datos-inmueble {
+    margin-top: 40px;
+    margin-bottom: 40px;
 }
 /* ---------------------------------------------------------Inicio de select------------------------------------------------------------------------------ */
 .pre-label {
@@ -83,12 +109,12 @@
     margin-left: 10px;
     margin-top: -12px;
 }
-.select1-container {
+.select1-container, .select2-container {
     margin-left: 8px;
     margin-top: -11.5px;
     position: relative;
 }
-.select1-container select{
+.select1-container select, .select2-container select{
     width: 300px; /* Ancho de los selectores */
     height: 36px;
     padding: 5px 0px; /* Padding interno de los selectores */
@@ -106,7 +132,7 @@
     inset 3px 3px 10px rgba(255, 255, 255, 0.4),
     inset -1px -1px 6px rgba(255, 255, 255, 0.4);
 }
-.select1::after {
+.select1::after, .select2::after {
     content: '\f0da'; /* Icono de flecha hacia abajo (Font Awesome) */
     font-family: 'FontAwesome'; /* Icono de Font Awesome */
     position: absolute;
@@ -115,8 +141,7 @@
     transform: translateY(-50%);
     pointer-events: none; /* Evitar que el icono se pueda hacer clic */
 }
-
-.select1-container select:focus {
+.select1-container select:focus, .select2-container select:focus {
     outline: none; /* Eliminar el contorno al enfocar */
     border: 2px solid transparent;
     box-shadow: 3px 3px 10px rgb(103, 128, 253),
@@ -124,7 +149,7 @@
     inset 3px 3px 10px rgba(255, 255, 255, 0.4),
     inset -1px -1px 6px rgb(103, 128, 253);
 }
-.select1-container select.form-select option{
+.select1-container select.form-select option, .select2-container select.form-select option{
     color: rgb(0, 0, 0)!important; /* Cambiar el color del texto a blanco */
     background-color: white!important;
 }
@@ -176,6 +201,9 @@
     box-shadow: 3px 3px 10px rgb(103, 128, 253),
     -1px -1px 6px rgba(255, 255, 255, 0.4);
 }
+.input-aux{
+    width: 303px;
+}
 .input:focus {
     border: 2px solid transparent;
     color: #000000;
@@ -184,14 +212,226 @@
     inset 3px 3px 10px rgba(0,0,0,1),
     inset -1px -1px 6px rgba(255, 255, 255, 0.4);
 }
-
 .container .input:valid, .container .input:focus {
     box-shadow: 3px 3px 10px rgb(103, 128, 253);
 }
-
-
-
-
+.container-aux{
+    margin-right: -2px;
+}
+.container-aux2{
+    margin-right: 5px;
+}
+.container-aux3{
+    margin-right: 10px;
+    margin-top: -17px !important;
+}
+/* ----------------------------------------Fin de input --------------------Inicio de Checkbox-------------------------------------------- */
+.ui-checkbox, 
+.ui-checkbox *, 
+.ui-checkbox *::before, 
+.ui-checkbox *::after {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.ui-checkbox {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: white;
+    border: 1px solid #d9d9d9;
+    -webkit-transition: all 0.3s;
+    -o-transition: all 0.3s;
+    transition: all 0.3s;
+    cursor: pointer;
+    position: relative;
+    margin-left: 15px;
+    margin-top: 5px;
+}
+.ui-checkbox-aux {
+    margin-left: 6px;
+    margin-top: -13px;
+}
+.ui-checkbox::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-box-shadow: 0 0 0 calc(20px / 2.5) #1677ff;
+    box-shadow: 0 0 0 calc(20px / 2.5) #1677ff;
+    border-radius: inherit;
+    opacity: 0;
+    -webkit-transition: all 0.5s cubic-bezier(0.12, 0.4, 0.29, 1.46);
+    -o-transition: all 0.5s cubic-bezier(0.12, 0.4, 0.29, 1.46);
+    transition: all 0.5s cubic-bezier(0.12, 0.4, 0.29, 1.46);
+}
+.ui-checkbox::before {
+    top: 40%;
+    left: 50%;
+    content: "";
+    position: absolute;
+    width: 4px;
+    height: 7px;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    -webkit-transform: translate(-50%, -50%) rotate(45deg) scale(0);
+    -ms-transform: translate(-50%, -50%) rotate(45deg) scale(0);
+    transform: translate(-50%, -50%) rotate(45deg) scale(0);
+    opacity: 0;
+    -webkit-transition: all 0.1s cubic-bezier(0.71, -0.46, 0.88, 0.6),opacity 0.1s;
+    -o-transition: all 0.1s cubic-bezier(0.71, -0.46, 0.88, 0.6),opacity 0.1s;
+    transition: all 0.1s cubic-bezier(0.71, -0.46, 0.88, 0.6),opacity 0.1s;
+}
+.ui-checkbox:hover {
+    border-color: #1677ff;
+}
+.ui-checkbox:checked {
+    background: #1677ff;
+    border-color: transparent;
+}
+.ui-checkbox:checked::before {
+    opacity: 1;
+    -webkit-transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
+    -ms-transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
+    transform: translate(-50%, -50%) rotate(45deg) scale(1.2);
+    -webkit-transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) 0.1s;
+    -o-transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) 0.1s;
+    transition: all 0.2s cubic-bezier(0.12, 0.4, 0.29, 1.46) 0.1s;
+}
+.ui-checkbox:active:not(:checked)::after {
+    -webkit-transition: none;
+    -o-transition: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    transition: none;
+    opacity: 1;
+}
+.checkbox-container h4{
+    font-weight: bold;
+    font-size: 25px;
+}
+.checkbox-label {
+    display: flex;
+    gap: 12px;
+}
+.checkbox-container-aux{
+    display: flex;
+    gap: 12px;
+}
+.checkbox-label p {
+    font-size: 18px;
+    margin-top: 3px;
+}
+.checkbox-container .t_estado{
+    font-weight: bold;
+    font-size: 18px;
+}
+.checkbox-label {
+    display: flex;
+    gap: 12px;
+}
+.checkbox-label p {
+    font-size: 18px;
+    margin-top: 1px;
+}
+.checkbox-container2 {
+    margin-top: 18px;
+}
+.input-electric { 
+    width: 250px;
+}
+.input-gas {
+    width: 313px;
+}
+.input-internet {
+    width: 279.5px;
+}
+.label-aux {
+    width: 200px;
+    font-size: 10px;
+    margin-right: 0px;
+}
+.input-agua{
+    width: 300px;
+}
+.checkbox-container2 {
+    display: flex;
+    gap: 150px;
+}
+.checkbox-container4 {
+    margin-top: -20px;
+}
+.checkbox-container4 ul {
+    list-style-type: none;
+    margin-left: -20px;
+}
+/* ---------------------------------------------------Fin de checkbox----------------Documentos ---------------------------------------------------------------------------- */
+.pre-label-documentos{
+    display: flex;
+    font-weight: bold;
+    font-size: 18px;
+    padding-top: 4px;
+}
+.pre-label-documentos p {
+    color:red
+}
+.documents {
+    margin-top: 30px;
+}
+.documents input[type="file"]::-webkit-file-upload-button {
+    background-color: rgb(85, 113, 255); /* Change to your desired blue shade */
+    color: white; /* Adjust text color for better contrast */
+    border: none;
+    padding: 8px 10px; /* Adjust padding as needed */
+    border-radius: 4px; /* Add a subtle border radius */
+    cursor: pointer;
+}
+.documents input[type="file"]:hover::file-selector-button {
+    background-color: rgb(22, 111, 255); /* Blue color on hover */
+    color: white;
+}
+.documents input[type="file"]:focus::file-selector-button {
+    background-color: #1677ff; /* Blue color on focus (file selected) */
+}
+/* -----------------------------------------------fin de Documentos---------------------------------inicio de descripción----------------------- */
+.input-descrip {
+    margin-left: 20px;
+    width: 1007px;
+    height: 50px;
+    margin-bottom: 25px;
+}
+.label-decrip {
+    margin-left: 20px;
+}
+/* -----------------------------------------------fin de documentos---------------------------------inicio de iamgenes----------------------- */
+.container-image ul {
+    list-style-type: none;
+    display: flex; /* Asegura que los elementos hijos se comporten como flex items */
+    flex-wrap: wrap; /* Permite que los elementos se envuelvan en nuevas líneas si no hay suficiente espacio */
+    justify-content: center;
+    gap: 12px;
+    margin-left: -25px;
+}
+.container-image h3 {
+    margin-bottom: 25px;
+}
+#lista-imagenes li {
+    flex-basis: calc(20% - 10px); /* Cada elemento ocupa aproximadamente el 20% del ancho total, menos el espacio de margen */
+    margin-bottom: 10px; /* Agrega un poco de espacio debajo de cada imagen para separarlas */
+}
+#lista-imagenes img {
+    box-shadow: 0 0 0 calc(8px / 2.5) #000000;
+    width: 100%; 
+    height: auto;
+}
+.image-container {
+    margin-left: 60px;
+    margin-bottom: 50px;
+}
 
 
 
