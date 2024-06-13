@@ -30,5 +30,53 @@ document.addEventListener('DOMContentLoaded', function() {
           // Submit the form programmatically if clicked
           document.getElementById('form_modal').submit();
         }
+    });
+    const buttons = document.querySelectorAll(".tarea-btn");
+
+    buttons.forEach(button => {
+      button.draggable = true;
+      button.addEventListener("dragstart", () => {
+        button.classList.add("dragging"); // Add visual indicator
       });
+      button.addEventListener("dragend", () => {
+        button.classList.remove("dragging"); // Remove visual indicator
+      });
+    });
+    function updateTaskStatus(taskId, newStatus) {
+        fetch('Estados/', { // Reemplaza '/update-task-status/' con la URL de tu endpoint
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ taskId, newStatus }),
+        })
+       .then(response => response.json())
+       .then(data => {
+          if (data.success) {
+            console.log('Estado de la tarea actualizado exitosamente');
+          } else {
+            console.error('Error al actualizar el estado de la tarea');
+          }
+        })
+       .catch((error) => {
+          console.error('Error:', error);
+        });
+      }
+
+    const completasList = document.querySelector("#second-block ul");
+
+    completasList.addEventListener("dragover", event => {
+        event.preventDefault(); // Allow dropping
+    });
+
+    completasList.addEventListener("drop", event => {
+        const button = event.dataTransfer.getData("text/plain"); // Get dragged button ID
+        const draggedButton = document.getElementById(button);
+        
+        updateTaskStatus(draggedButton.dataset.id, 'completa');
+        // Update task status to "completa" here (using AJAX or form submission)
+        completasList.appendChild(draggedButton); // Move button to "completas" list
+        // Update task visually (optional):
+        draggedButton.classList.remove("btn-primary").addClass("btn-success"); // Change button color
+    });
 });

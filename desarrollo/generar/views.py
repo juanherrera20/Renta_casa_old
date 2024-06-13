@@ -2,7 +2,7 @@ from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
-from django.http import HttpResponse
+from django.http import JsonResponse, HttpResponse
 import re, uuid
 from django.db.models import Max, Count, Q
 from django.shortcuts import render, redirect
@@ -11,6 +11,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .functions import autenticado_required, actualizar_estados, extract_numbers, convert_time, jerarquia_estadoPago_propietario #Importo las funciones desde functions.py
 from .functions import diccionarioContrato, diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
 from django.core.paginator import Paginator
+import json
 
 #Librerias y paquetes posbilemente utiles
 # from cryptography.fernet import Fernet
@@ -746,6 +747,22 @@ def modal_ver_tarea(request, id): #Modal para ver más información de cada tare
     idSuperuser = superuser.objects.values_list('id', flat=True)
     nombres_usuario = list(zip(nombre, apellido, idSuperuser))
     return render(request, template_path, {'nombres_usuario': nombres_usuario, 'objetoTarea': objetoTarea})
+
+def actualizar_estado(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            task_id = data.get('taskId')
+            new_status = data.get('newStatus')
+            # Busca la tarea por ID y actualiza su estado
+            task = tareas.objects.get(id=task_id)
+            task.estado = new_status
+            task.save()
+            # Redirige al usuario a la página de tareas
+            return redirect('tareas')
+        except Exception as e:
+            # Si algo sale mal, devuelve un mensaje de error
+            return JsonResponse({'success': False, 'message': str(e)}, status=400)
 
 def actualizar_modal(request): #Logica para actualizar cada modal o tarea
     id = request.POST.get('idTarea')

@@ -1,3 +1,154 @@
-ul {
+.title-tareas, .contenido-tareas {
+    margin-left: 13%;
+}
+.title-tareas {
+    display: flex;
+    gap: 20px;
+}
+.title-tareas h1 {
+    padding-left: 5px;
+    padding-top: 20px;
+    font-size: 50px;
+}
+.title-tareas h5{
+    margin-top: 45px;
+    margin-left: 30px;
+}
+.tareas-hover{
+    position: absolute;
+    left: 75%;
+    margin-top: 45px;
+    border: 2px solid #ababab;
+    border-radius: 5px; /* Rounded corners for input fields */
+    width: 20%;
+    height: 40px;
+    margin-left: 20px;
+}
+#add-tarea {
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    font-size: 20px;
+}
+#add-tarea p {
+    margin-top: -34px;
+    text-align: center;
+}
+.tareas-hover:hover{
+    background-color: rgb(60, 135, 255);
+}
+.contenido-tareas{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.firts-block, .second-block, .third-block {
+    margin-top: 24px;
+}
+.firts-block, .second-block, .third-block {
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #ccc;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.516);
+    border-radius: 10px;
+}
+.firts-block {
+    padding-right: -30px !important;
+}
+.pendientes{
+    margin: 10px 15px 10px 15px;
+    padding-top: 5px;
+    padding-left: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+}
+.pendientes img{
+    margin-top: -5px;
+    margin-right: -7px;
+}
+/* ----------------------------------------------------------------Inicio de botones -------------------------------------------------- */
+#lista-tareas {
     list-style: none;
+}
+#lista-tareas button {
+    margin-bottom: 10px;
+    margin-left: -16px;
+}
+.tarea-btn {
+    margin-right: 15px;
+    width: 370px;
+    background-color: white;
+    color: black;
+    border:solid #ababab;
+}
+.ciclo li{
+    text-align: left;
+    align-items: left;
+}
+.presentar{
+    width: 20%;
+    background-color: rgb(150, 255, 142); /* Color para "Pendiente" */
+    color: rgb(67, 156, 59);
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px rgb(67, 156, 59);
+}
+.presentar p{
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+.presentar p:hover{
+    color: rgb(67, 156, 59);
+}
+.visitar{
+    width: 20%;
+    background-color: rgb(255, 253, 142); /* Color para "Pendiente" */
+    color: rgb(135, 128, 51);
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px rgb(135, 128, 51);;
+}
+.visitar p{
+    margin-top: 0px;
+    margin-bottom: 10px;
+    padding-left: 14px;
+}
+.visitar p:hover{
+    color: rgb(135, 128, 51);;
+}
+.mantenimiento{
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    padding-left: 5px;
+    width: 35%;
+    background-color: rgb(142, 165, 255); /* Color para "Pendiente" */
+    color: rgb(59, 62, 156);
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px rgb(59, 62, 156);
+}
+.mantenimiento p{
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+.mantenimiento p:hover{
+    color: rgb(59, 62, 156);
+}
+.urgente{
+    width: 22%;
+    background-color: rgb(255, 142, 142); /* Color para "Pendiente" */
+    color: rgb(156, 59, 59);
+    border-radius: 10px;
+    box-shadow: 2px 2px 2px rgb(156, 59, 59);
+}
+.urgente p{
+    padding-left: 9px;
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+.urgente p:hover{
+    color: rgb(156, 59, 59);
+}
+.ciclo-name{
+    margin-top: 10px;
+    margin-bottom: 15px;
 }
