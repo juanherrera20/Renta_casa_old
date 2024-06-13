@@ -80,9 +80,10 @@ class propietario(models.Model): #Tabla usuarios
     usuarios_id = models.ForeignKey('usuarios', related_name='propietario', on_delete=models.PROTECT) #Declaracion de FK
     direccion = models.CharField(max_length = 200)
     fecha_pago = models.DateField(max_length = 20)
-    #habilitarPago = models.IntegerField(default=4)
     bancos = models.CharField(max_length = 200)
+    #num_banco = models.CharField(max_length = 200) #(habilitar) Numero de cuenta bancaria
     obs = models.CharField(max_length = 400)
+    #habilitarPago = models.IntegerField(default=4)
     
     
     class Meta:

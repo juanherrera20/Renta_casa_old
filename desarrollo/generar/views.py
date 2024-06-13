@@ -906,6 +906,10 @@ def redireccion_pro(request): #Redirección solo para los propietarios
         return redirect('analisis_propietarios')
     return redirect('analisis_propietarios') #Este return se puede cambiar para el control de errores.
 
+def confirmar_pago (request):
+    #jdfkjdkfj
+    return render(request, 'noti.html')
+
 def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     actualizar_estados() #Llamamos a la función
     

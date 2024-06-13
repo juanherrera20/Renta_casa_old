@@ -14,10 +14,12 @@
 {% endblock title %}
 
 {% block contenido %}
-    <!-- Inicio de individuo propietario -->
-    
+  <!-- Inicio de individuo propietario -->
+  <button class="btn btn-primary tarea-btn"  data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Pagar</button><br><br>
+
   <form action="{% url 'redirecPro' %}" id="miFormulario" method="post" enctype="multipart/form-data">
     {% csrf_token %}
+    <!--  No va a ir aquí si no en el modal
     <button type="button" id="btnDescuento" name="btnDescuento">+ descuento</button>
     <button type="button" id="btnCancelar" name="btnCancelar" style="display:none;">Cancelar descuento</button>
     <label for="descuento">Descuento: </label>
@@ -29,8 +31,9 @@
     <label for="docRespaldo">Documento de respaldo:</label>
     <input type="file" name="docRespaldo" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled><br><br>
 
-    <button type="submit" id="btnConfirmar" name="btnConfirmar" style="display:none;" value="5">Confirmar</button><br><br>
-    <button type="submit" id="btnPagar" name="btnPagar" value="4">Pagar</button><br><br>
+    <button type="submit" id="btnConfirmar" name="btnConfirmar" style="display:none;" value="5">Confirmar</button><br><br> 
+    -->
+    
 
     <h3>Propietario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h3><button type="submit" id="btn"name="btn" value="1">Editar Propietario</button><br><br><br>
 
@@ -282,4 +285,46 @@
     <input type="text" name="obs" value="{{ arrendatario.obs }}" readonly><br>
 
   </form>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Seleccionar Inmuebles para Pago</h5>
+          <button type="button" class="btn-close closeModal" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form action="{% url 'confirmarPago' %}" method="post" id="ModalPago">
+              {% csrf_token %}
+              <input type="hidden" name="idPropietario" id="modalPropietario" value="">
+              <input type="hidden" name="idInmueble" id="modalInmuebleId" value="">
+              
+              <div class="form-group">
+                  <label for="modalInmuebleDireccion">Dirección del Inmueble:</label>
+                  <p id="modalInmuebleDireccion"></p>
+              </div>
+              
+              <div class="form-group">
+                  <label for="modalInmuebleCanon">Canon del Inmueble:</label>
+                  <p id="modalInmuebleCanon"></p>
+              </div>
+              
+              <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="checkInmueble" name="inmuebles[]" value="">
+                  <label class="form-check-label" for="checkInmueble">
+                      Seleccionar este inmueble
+                  </label>
+              </div>
+                
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary closeModal" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary actualizarM">Pagar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 {% endblock %}
+

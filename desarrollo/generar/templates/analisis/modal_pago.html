@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modal</title>
+</head>
+<body>
+
+  <form action="{% url 'confirmarPago' %}" method="post" id="ModalPago">
+      {% csrf_token %}
+      <input type="hidden" name="idPropietario" id="modalPropietario" value="">
+      <input type="hidden" name="idInmueble" id="modalInmuebleId" value="">
+      
+      <div class="form-group">
+          <label for="modalInmuebleDireccion">Dirección del Inmueble:</label>
+          <p id="modalInmuebleDireccion"></p>
+      </div>
+      
+      <div class="form-group">
+          <label for="modalInmuebleCanon">Canon del Inmueble:</label>
+          <p id="modalInmuebleCanon"></p>
+      </div>
+      
+      <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="checkInmueble" name="inmuebles[]" value="">
+          <label class="form-check-label" for="checkInmueble">
+              Seleccionar este inmueble
+          </label>
+      </div>
+        
+  </form>
+
+</body>
+</html>
