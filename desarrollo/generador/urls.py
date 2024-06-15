@@ -46,7 +46,7 @@ urlpatterns = [
     path('CloseSession/', close, name="close_session"), #URL para cerrar sesión
     path('Tareas/', tarea, name="tareas"),
     #Ver modales de tareas y de dashboard
-    path('Tareas/Estados', actualizar_estado, name="actualizar_estado"),
+    path('Tareas/Estados/', actualizar_estado, name="actualizar_estado"),
     path('Tareas/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
     path('Inicio/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
     path('Dashboard/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),

@@ -32,51 +32,65 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     const buttons = document.querySelectorAll(".tarea-btn");
-
     buttons.forEach(button => {
       button.draggable = true;
-      button.addEventListener("dragstart", () => {
+      button.addEventListener("dragstart", (event) => {
+        event.dataTransfer.setData('text/plain', button.dataset.id);
         button.classList.add("dragging"); // Add visual indicator
       });
       button.addEventListener("dragend", () => {
         button.classList.remove("dragging"); // Remove visual indicator
       });
     });
-    function updateTaskStatus(taskId, newStatus) {
-        fetch('Estados/', { // Reemplaza '/update-task-status/' con la URL de tu endpoint
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ taskId, newStatus }),
-        })
-       .then(response => response.json())
-       .then(data => {
-          if (data.success) {
-            console.log('Estado de la tarea actualizado exitosamente');
-          } else {
-            console.error('Error al actualizar el estado de la tarea');
-          }
-        })
-       .catch((error) => {
-          console.error('Error:', error);
-        });
-      }
+    const listaPendientes = document.querySelector('#lista-pendientes');
+    const listaCompletas = document.querySelector('#lista-completas');
+    const listaIncompletas = document.querySelector('#lista-incompletas');
 
-    const completasList = document.querySelector("#second-block ul");
-
-    completasList.addEventListener("dragover", event => {
-        event.preventDefault(); // Allow dropping
-    });
-
-    completasList.addEventListener("drop", event => {
-        const button = event.dataTransfer.getData("text/plain"); // Get dragged button ID
-        const draggedButton = document.getElementById(button);
+    document.querySelectorAll('.lista-tareas').forEach(function(lista) {
+      lista.addEventListener('dragover', event => {
+        event.preventDefault(); // Permite la operación de soltar
+        console.log('Elemento soltado en la lista');
+      });
+      lista.addEventListener('drop', event => {
         
-        updateTaskStatus(draggedButton.dataset.id, 'completa');
-        // Update task status to "completa" here (using AJAX or form submission)
-        completasList.appendChild(draggedButton); // Move button to "completas" list
-        // Update task visually (optional):
-        draggedButton.classList.remove("btn-primary").addClass("btn-success"); // Change button color
+        const taskId = event.dataTransfer.getData('text/plain');
+        const tarea = document.querySelector(`[data-tarea-id="${taskId}"]`);
+  
+        if (lista === listaPendientes) {
+          updateTaskStatus(taskId, 'Pendiente');
+        } else if (lista === listaCompletas) {
+          updateTaskStatus(taskId, 'Completa');
+        } else if (lista === listaIncompletas) {
+          updateTaskStatus(taskId, 'Incompleta');
+        }
+        lista.appendChild(tarea);
+      });
     });
-});
+  });
+  function updateTaskStatus(taskId, newStatus) {
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch('Estados/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken,
+      },
+      body: JSON.stringify({ taskId, newStatus }),
+    })
+   .then(response => {
+      if (!response.ok) {
+        throw new Error('Server responded with an error status: ' + response.status);
+      }
+      return response.json();
+    })
+   .then(data => {
+      if (data.success) {
+        console.log('Estado de la tarea actualizado exitosamente');
+      } else {
+        console.error('Error al actualizar el estado de la tarea');
+      }
+    })
+   .catch(error => {
+      console.error('Error:', error);
+    });
+  }

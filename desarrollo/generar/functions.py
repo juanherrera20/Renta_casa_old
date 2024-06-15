@@ -121,6 +121,7 @@ def  actualizar_estados():
     global fecha
     ObjetoPago = inmueble.objects.filter(arrendatario_id__isnull=False)
     days = 365
+    fechaObjeto1 = fecha  #Fecha actual
     for objeto in ObjetoPago:
         #-----------------------Propietario-----------------------
         propietario = objeto.propietario_id
@@ -130,9 +131,7 @@ def  actualizar_estados():
         print(f"Estado propietario: {EstadoPago1}")
         fechaPago = objeto.propietario_id.fecha_pago
 
-        fechaObjeto1 = fecha  #Fecha actual
         fechaObjeto2 = fechaPago
-
         fechaResta = (fechaObjeto2 - fechaObjeto1).days
 
         if fechaObjeto2 >= fechaObjeto1: 
@@ -183,6 +182,12 @@ def  actualizar_estados():
         
     inicioContrato = objeto.arrendatario_id.inicio_contrato
     finContrato = objeto.arrendatario_id.fin_contrato
+    #-----------------------Tareas-----------------------
+    tareas_pendientes = tareas.objects.filter(estado='Pendiente', fecha_fin__lte=fechaObjeto1)
+    updates = [(obj.id, 'Incompleta') for obj in tareas_pendientes]
+    if updates:
+        instances_to_update = [tareas(id=id, estado=new_state) for id, new_state in updates]
+        tareas.objects.bulk_update(instances_to_update, ['estado'])
     return print(fecha)
 #---------------------------------------------------------------------------------------------------------------------------------------
 
