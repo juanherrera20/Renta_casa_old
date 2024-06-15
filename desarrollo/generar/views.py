@@ -923,9 +923,26 @@ def redireccion_pro(request): #Redirección solo para los propietarios
         return redirect('analisis_propietarios')
     return redirect('analisis_propietarios') #Este return se puede cambiar para el control de errores.
 
-def confirmar_pago (request):
-    #jdfkjdkfj
-    return render(request, 'noti.html')
+def confirmar_pago (request, id):
+    template_path = "analisis/modal_pago.html"
+    if request.method == 'GET':
+        obj_propietario = propietario.objects.get(id = id)
+        objs_inmuebles = obj_propietario.inmueble.all()
+        
+        total_pago = []
+        for inmueble in objs_inmuebles:
+            descuento = diccionarioPorcentajeDescuento[str(inmueble.porcentaje)]
+            print(descuento)
+            total_pago.append( inmueble.canon * (100 - descuento)/100)
+            
+        inmuebles = zip(objs_inmuebles, total_pago)
+        print(total_pago)
+        print(objs_inmuebles)
+        return render(request, template_path, {"propietario": obj_propietario, "inmuebles": inmuebles})
+    
+    else: 
+        print("Este mensaje melo")
+        return redirect("analisis_propietarios")
 
 def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     actualizar_estados() #Llamamos a la función

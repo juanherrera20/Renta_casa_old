@@ -15,7 +15,7 @@
 
 {% block contenido %}
   <!-- Inicio de individuo propietario -->
-  <button class="btn btn-primary tarea-btn"  data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Pagar</button><br><br>
+  <button class="btn btn-primary tarea-btn"  data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap" data-id="{{propietario.id}}">Pagar</button><br><br>
 
   <form action="{% url 'redirecPro' %}" id="miFormulario" method="post" enctype="multipart/form-data">
     {% csrf_token %}
@@ -34,7 +34,6 @@
     <button type="submit" id="btnConfirmar" name="btnConfirmar" style="display:none;" value="5">Confirmar</button><br><br> 
     -->
     
-
     <h3>Propietario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h3><button type="submit" id="btn"name="btn" value="1">Editar Propietario</button><br><br><br>
 
     <input type="hidden" name="idUser" id="idUser" value="{{ usuario.id }}">
@@ -294,29 +293,6 @@
           <button type="button" class="btn-close closeModal" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form action="{% url 'confirmarPago' %}" method="post" id="ModalPago">
-              {% csrf_token %}
-              <input type="hidden" name="idPropietario" id="modalPropietario" value="">
-              <input type="hidden" name="idInmueble" id="modalInmuebleId" value="">
-              
-              <div class="form-group">
-                  <label for="modalInmuebleDireccion">Dirección del Inmueble:</label>
-                  <p id="modalInmuebleDireccion"></p>
-              </div>
-              
-              <div class="form-group">
-                  <label for="modalInmuebleCanon">Canon del Inmueble:</label>
-                  <p id="modalInmuebleCanon"></p>
-              </div>
-              
-              <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="checkInmueble" name="inmuebles[]" value="">
-                  <label class="form-check-label" for="checkInmueble">
-                      Seleccionar este inmueble
-                  </label>
-              </div>
-                
-          </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary closeModal" data-bs-dismiss="modal">Cancelar</button>

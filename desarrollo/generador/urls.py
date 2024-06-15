@@ -70,7 +70,7 @@ urlpatterns = [
     #---------Propietarios-----------------
     path('Analisis/All/ValuesPro/<int:id>', all_values_pro, name="AllValuesPro"),
     path('Analisis/RedireccionPro/',redireccion_pro, name="redirecPro"),
-    path('ConfirmarPago/', confirmar_pago, name = "confirmarPago"),
+    path('Analisis/All/ValuesPro/ConfirmarPago/<int:id>/', confirmar_pago, name = "confirmarPago"),
     #---------Arrendatarios-----------------
     path('Analisis/All/ValuesArr/<int:id>', all_values_arr, name="AllValuesArr"),
     path('Analisis/RedireccionArr/',redireccion_arr, name="redirecArr")
