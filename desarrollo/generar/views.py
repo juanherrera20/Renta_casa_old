@@ -324,6 +324,7 @@ def actualizar_inmueble(request):
 @autenticado_required
 def personas_propietarios(request): #Tabla en vista de personas propietarios
     objetoUsuario = usuarios.objects.filter(propie_client=1) #Se filtra para saber si son propietarios o clientes
+    num_inmueble = objetoUsuario.count()
     habilitar = usuarios.objects.filter(propie_client=1).values_list('habilitar', flat=True) #Se filtra solo el campo de 'habilitar'
     estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diciconarioHabilitar
     
@@ -333,7 +334,7 @@ def personas_propietarios(request): #Tabla en vista de personas propietarios
         bancoLink = [diccionarioBancos[str(banco)]] 
         usuarios_con_estados.append((usuario, estado, banco, bancoLink))
 
-    return render(request, 'personas/propietarios/personas_propietarios.html',{'datosUsuario':usuarios_con_estados})
+    return render(request, 'personas/propietarios/personas_propietarios.html',{'datosUsuario':usuarios_con_estados, 'contador':num_inmueble})
 
 def add_propietario(request): #Vista para añadir un propietario
     return render(request, 'personas/propietarios/add_propietario.html')

@@ -11,52 +11,75 @@
 {% endblock encabezado %}
 
 {% block title %}
-
+  <div class="tittle">
+    Tabla de propietarios
+  </div>
 {% endblock title %}
 
-
 {% block contenido %}
-  <h3>Seguimiento de Propietarios</h3>
-  <h5>Todos los propietarios Registrados en la plataforma</h5>
-  <p>Total de propietarios: {{ contador }}</p> 
-  <input type="search" id="buscar" name="buscar" placeholder="Buscar..."> <button name="filtro" id="filtro" value="3">Filtrar</button> <a href="{% url 'addPropietario' %}"> + Añadir Propietario</a>
-  <br>
-  <p>Tabla donde se muestran a todos los propietarios.</p><br>
-  <table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Tipo de documento</th>
-            <th>Documento</th>
-            <th>Expedida</th>
-            <th>Email Principal</th>
-            <th>Email Secundario</th>
-            <th>Telefono Principal</th>
-            <th>Telefono Secundario</th>
-            <th>Banco</th>
-            <th>Estado</th>
-        </tr>
-    </thead>
-    <tbody id="propietarios">
-      {% for usuario, estado, banco, bancolink in datosUsuario %}
-      <tr>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ forloop.counter }}</button></td>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.nombre }}</button></td>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.apellido }}</button></td>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.tipo_documento }}</button></td>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.documento }}</button></td>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.expedida }}</button></td>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email }}</button></td>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email2 }}</button></td>
-        <td><a href=" https://wa.me/+57{{ usuario.telefono }}">{{ usuario.telefono }}</a></td>
-        <td><a href=" https://wa.me/+57{{ usuario.telefono2 }}">{{ usuario.telefono2 }}</a></td>
-        <td><a href="{{ bancolink.0 }}">{{ banco }}</a></td>
-        <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ estado }}</button></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
+  <div class="contenido">
+    <h3>Seguimiento de Propietarios</h3>
+    <div class="encabezado">
+      <p class="encabezado-total">{{ contador }} Propietarios</p>
+      <div class="search">
+        <div class="search-box">
+          <div class="search-field">
+            <input type="search" id="buscar" name="buscar" class="input" placeholder="Buscar...">
+            <div class="search-box-icon">
+              <button class="btn-icon-content">
+                <i class="search-icon">
+                  <svg xmlns="://www.w3.org/2000/svg" version="1.1" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" fill="#000000"></path></svg>
+                </i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="encabezado-add-hover">
+        <a href="{% url 'addPropietario' %}" class="encabezado-add"> <p>+ Añadir Propietario</p></a>
+      </div>
+    </div>
+    <div class="table-container">
+      <div class="scrollable-table-container">
+        <div class="table-inmuebles">
+          <table>
+            <thead>
+                <tr>
+                    <th id="id">ID</th>
+                    <th id="name">Nombre</th>
+                    <th id="apell">Apellido</th>
+                    <th id="t_document">Tipo de documento</th>
+                    <th id="document">Documento</th>
+                    <th id="exp">Expedida</th>
+                    <th id="email_p">Email Principal</th>
+                    <th id="email_s">Email Secundario</th>
+                    <th id="tel_p">Telefono Principal</th>
+                    <th id="tel_s">Telefono Secundario</th>
+                    <th id="banc">Banco</th>
+                    <th id="estado">Estado</th>
+                </tr>
+            </thead>
+            <tbody id="propietarios">
+              {% for usuario, estado, banco, bancolink in datosUsuario %}
+              <tr>
+                <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ forloop.counter }}</button></td>
+                <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.nombre }}</button></td>
+                <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.apellido }}</button></td>
+                <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.tipo_documento }}</button></td>
+                <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.documento }}</button></td>
+                <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.expedida }}</button></td>
+                <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email }}</button></td>
+                <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email2 }}</button></td>
+                <td><a href=" https://wa.me/+57{{ usuario.telefono }}">{{ usuario.telefono }}</a></td>
+                <td><a href=" https://wa.me/+57{{ usuario.telefono2 }}">{{ usuario.telefono2 }}</a></td>
+                <td><a href="{{ bancolink.0 }}">{{ banco }}</a></td>
+                <td><button class="especialI" onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}"><p class="{{ estado }}">{{ estado }}</p></button></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}

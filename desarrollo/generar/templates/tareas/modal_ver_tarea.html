@@ -51,27 +51,27 @@
             <input required="" type="text" name="descrip" id="descrip" value="{{ objetoTarea.descrip }}" class="input">
             <label class="label-fecha-inicio"><p>*</p>Descripción:</label>
         </div>
-        <br><br>
-
-        <h4>Etiqueta:</h4>
-        <select name="etiqueta" id="etiqueta">
-            <option value="{{ objetoTarea.etiqueta }}">{{ objetoTarea.etiqueta }}</option>
-            <option value="Presentar">Presentar</option>
-            <option value="Visitar">Visitar</option>
-            <option value="Mantenimiento">Mantenimiento</option>
-            <option value="Urgente">Urgente</option>
-        </select>
-        <br><br><br>
-
-
-        <h4>Responsable:</h4>
-        <select name="usuario">
-            <option value="{{ objetoTarea.superuser_id_id }}">Cambiar a</option>
-            {% for nombre, apellido, id in nombres_usuario %}
-            <option value="{{ id }}">{{ nombre |add:" "|add:apellido }}</option>
-            {% endfor %}
-        </select><br>
+        <br>
+        <div class="form-add">
+            <label for="etiqueta" class="pre-label"><p> * </p>Etiqueta:</label>
+            <select name="etiqueta" id="etiqueta" class="form-select" >
+                <option value="{{ objetoTarea.etiqueta }}">{{ objetoTarea.etiqueta }}</option>
+                <option value="Presentar">Presentar</option>
+                <option value="Visitar">Visitar</option>
+                <option value="Mantenimiento">Mantenimiento</option>
+                <option value="Urgente">Urgente</option>
+            </select>
+        </div>
+        <br>
+        <div class="form-add">
+            <label for="usuario" class="pre-label"><p> * </p>Responsable:</label>
+            <select name="usuario" id="usuario" class="form-select" >
+                <option value="{{ objetoTarea.superuser_id_id }}">Cambiar a</option>
+                {% for nombre, apellido, id in nombres_usuario %}
+                <option value="{{ id }}">{{ nombre |add:" "|add:apellido }}</option>
+                {% endfor %}
+            </select>
+        </div><br>
     </form>
-    <br><br>
 </body>
 </html>

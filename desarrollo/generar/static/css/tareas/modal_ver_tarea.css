@@ -111,4 +111,38 @@
     transition: 0.3s;
     pointer-events: none;
 }
-
+/* ------------------------Fin de inputs----------------Inicio de select ---------------------------------------------------------------- */
+.form-add select {
+    width: 300px; /* Ancho de los selectores */
+    height: 35px;
+    padding: 5px 0px; /* Padding interno de los selectores */
+    padding-left: 5px;
+    border: 1px solid rgb(103, 128, 253); /* Borde de los selectores */
+    font-weight: bold;
+    background-color: rgb(255, 255, 255); /* Color de fondo de los selectores */
+    color: #000000; /* Color del texto de los selectores */
+    appearance: none; /* Eliminar el estilo por defecto de los selectores */
+    margin-bottom: 8px; /* Margen inferior de los selectores */
+    border-radius: 8px;
+}
+.form-add select:focus {
+    outline: none; /* Eliminar el contorno al enfocar */
+    border-color: #000000; /* Color del borde al enfocar */
+}
+.form-add select.form-select option {
+    color: rgb(0, 0, 0)!important; /* Cambiar el color del texto a blanco */
+    background-color: white!important;
+}
+.pre-label {
+    display: flex;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: -21px;
+    padding-left: 10px;
+}
+.pre-label p {
+    color:red
+}
+.aux {
+    margin-right: 35px;
+}
