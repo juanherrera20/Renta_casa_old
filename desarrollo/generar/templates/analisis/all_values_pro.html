@@ -14,26 +14,11 @@
 {% endblock title %}
 
 {% block contenido %}
-  <!-- Inicio de individuo propietario -->
   <button class="btn btn-primary tarea-btn"  data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap" data-id="{{propietario.id}}">Pagar</button><br><br>
 
   <form action="{% url 'redirecPro' %}" id="miFormulario" method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <!--  No va a ir aquí si no en el modal
-    <button type="button" id="btnDescuento" name="btnDescuento">+ descuento</button>
-    <button type="button" id="btnCancelar" name="btnCancelar" style="display:none;">Cancelar descuento</button>
-    <label for="descuento">Descuento: </label>
-    <input type="number" name="descuento" placeholder="$$$$" readonly>
-
-    <label for="descrip">Descripción del descuento:</label>
-    <input type="text" name="descripcionDescuento" placeholder="Justificación" readonly>
-
-    <label for="docRespaldo">Documento de respaldo:</label>
-    <input type="file" name="docRespaldo" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled><br><br>
-
-    <button type="submit" id="btnConfirmar" name="btnConfirmar" style="display:none;" value="5">Confirmar</button><br><br> 
-    -->
-    
+    <!-- Inicio de individuo propietario -->
     <h3>Propietario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h3><button type="submit" id="btn"name="btn" value="1">Editar Propietario</button><br><br><br>
 
     <input type="hidden" name="idUser" id="idUser" value="{{ usuario.id }}">

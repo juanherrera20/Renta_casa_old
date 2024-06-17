@@ -456,7 +456,7 @@ def analisis_propietarios(request):
     #Logica para la tabla de propietarios
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Aquí filtro para que solo aparezcan los inmuebles con arrendatario
 
-    print(f"Inmuebles: {objetoInmuebles}")
+    #print(f"Inmuebles: {objetoInmuebles}")
     objetoTipo = inmueble.objects.values_list('tipo', flat=True).filter(arrendatario_id__isnull=False)
     tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
 
@@ -907,21 +907,7 @@ def redireccion_pro(request): #Redirección solo para los propietarios
             
         resultado = analisis_propietarios(request)
         return HttpResponse(resultado)
-    elif btnConfirmar == '5':
-        documento = request.FILES.getlist('docRespaldo')
-        valor = request.POST.get('descuento')
-        descrip = request.POST.get('descripcionDescuento')
-        today = str(date.today())
-        fs = FileSystemStorage(location='media/documents/'+ today)
-
-        urls=[]
-        for doc in documento:
-            filename = fs.save(doc.name, doc)
-            url = fs.url(filename)
-            urls.append(url)
-        guardar = Docdescuentos(inmueble_id =idInmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
-        guardar.save()
-        return redirect('analisis_propietarios')
+    
     return redirect('analisis_propietarios') #Este return se puede cambiar para el control de errores.
 
 def confirmar_pago (request, id):
@@ -943,7 +929,27 @@ def confirmar_pago (request, id):
     
     else: 
         print("Este mensaje melo")
-        return redirect("analisis_propietarios")
+        #Guardar los documentos de descuento y toda su información
+        id_inmuebles = request.POST.getlist('inmueblesId') #Hay varios inmuebles en el formulario
+        
+        for id_inmueble in id_inmuebles:
+            documento = request.FILES.getlist(f'docRespaldo_{id_inmueble}') #Los imputs estan en relación al inmueble
+            valor = request.POST.get(f'descuento_{id_inmueble}')
+            descrip = request.POST.get(f'descripcionDescuento_{id_inmueble}')
+            today = str(date.today())
+            fs = FileSystemStorage(location='../media/documents/'+ today) #Guardo una carpeta afuera de la carpeta principal
+
+            urls=[]
+            for doc in documento:
+                filename = fs.save(doc.name, doc)
+                url = fs.url(filename)
+                urls.append(url)
+            guardar = Docdescuentos(inmueble_id =id_inmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
+            guardar.save() 
+            
+        #Logica de
+        
+        return redirect("analisis_propietarios") #Aquí se puede redireccionar al html de la factura, creo
 
 def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     actualizar_estados() #Llamamos a la función

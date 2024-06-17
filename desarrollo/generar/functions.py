@@ -127,8 +127,8 @@ def  actualizar_estados():
         propietario = objeto.propietario_id
         EstadoPago1 = jerarquia_estadoPago_propietario(propietario) #Equivalente al obtenido a la jerarquia
         EstadoPago2 = objeto.estadoPago
-        print(f"Estado propietario: {EstadoPago1}")
-        print(f"Estado propietario: {EstadoPago1}")
+        # print(f"Estado propietario: {EstadoPago1}")
+        # print(f"Estado propietario: {EstadoPago1}")
         fechaPago = objeto.propietario_id.fecha_pago
 
         fechaObjeto2 = fechaPago

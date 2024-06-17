@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models.fields import CharField, IntegerField
 import os
+from dateutil.relativedelta import relativedelta
 
 #------------------Función para guardar los documentos e imagenes en carpetas separadas y personalizadas----------------------------s
 def Crear_carpetas(instance, filename): #Inmuebles
@@ -81,7 +82,7 @@ class propietario(models.Model): #Tabla usuarios
     direccion = models.CharField(max_length = 200)
     fecha_pago = models.DateField(max_length = 20)
     bancos = models.CharField(max_length = 200)
-    #num_banco = models.CharField(max_length = 200) #(habilitar) Numero de cuenta bancaria
+    num_banco = models.CharField(max_length = 200) #Numero de cuenta bancaria
     obs = models.CharField(max_length = 400)
     #habilitarPago = models.IntegerField(default=4)
     
@@ -103,6 +104,8 @@ class inmueble(models.Model): #Tabla usuarios
     habilitada = models.CharField(max_length = 3) #Saber si esta ocupada o no. 
     historial = models.IntegerField(default=0)
     estadoPago = models.IntegerField(default=4)  #Estado de pago para el propietario (Pagado, debe, ...)
+    fechaPago = models.DateField(max_length = 20, null=True) #fecha de pago para inmueble
+    
     
     def save(self, *args, **kwargs): #pk igual a id
         if self.pk: #Verificó si es actualización o creación de una instacia
