@@ -66,12 +66,12 @@
                 <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.nombre }}</button></td>
                 <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.apellido }}</button></td>
                 <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.tipo_documento }}</button></td>
-                <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.documento }}</button></td>
+                <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}"><img class="image-icon" width="20" height="20" src="https://img.icons8.com/fluency-systems-filled/48/fingerprint.png" alt="fingerprint"/>{{ usuario.documento }}</button></td>
                 <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.expedida }}</button></td>
                 <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email }}</button></td>
                 <td><button onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}">{{ usuario.email2 }}</button></td>
-                <td><a href=" https://wa.me/+57{{ usuario.telefono }}">{{ usuario.telefono }}</a></td>
-                <td><a href=" https://wa.me/+57{{ usuario.telefono2 }}">{{ usuario.telefono2 }}</a></td>
+                <td><a href=" https://wa.me/+57{{ usuario.telefono }}"><img class="image-icon-tel" width="19" height="19" src="https://img.icons8.com/forma-regular-filled/19/cell-phone.png" alt="cell-phone"/> {{ usuario.telefono }}</a></td>
+                <td><a href=" https://wa.me/+57{{ usuario.telefono2 }}"><img class="image-icon-tel" width="19" height="19" src="https://img.icons8.com/forma-regular-filled/19/cell-phone.png" alt="cell-phone"/> {{ usuario.telefono2 }}</a></td>
                 <td><a href="{{ bancolink.0 }}">{{ banco }}</a></td>
                 <td><button class="especialI" onclick="enviarValor('{{ usuario.id }}', '{% url 'IndividuoPropietario' id=usuario.id %}')" value="{{ usuario.id }}"><p class="{{ estado }}">{{ estado }}</p></button></td>
               </tr>

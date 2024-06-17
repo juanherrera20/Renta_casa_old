@@ -3,7 +3,7 @@
 
 {% block static %}
     <script type="text/javascript"  src='{% static "js/all.js" %}'></script>
-    <link rel="stylesheet" href='{% static "css/personas/propietarios/addPropietario.css" %}' type="text/css">
+    <link rel="stylesheet" href='{% static "css/personas/propietarios/add_propietario.css" %}' type="text/css">
     <script type="text/javascript"  src='{% static "js/personas/add_propietario.js" %}'></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock static %}
@@ -13,96 +13,135 @@
 {% endblock encabezado %}
 
 {% block title %}
-    Añadir Propietario
+<div class="title-add">
+    <h2>Añadir Propietario</h2>
+</div>
 {% endblock title %}
 
 {% block contenido %}
-    <h4>Lo marcado con "*" es un campo obligatorio</h4><br><br>
-    <form action="{% url 'guardar' %}" method="post" id="addPropietario" enctype="multipart/form-data">
-        {% csrf_token %}
-        <h3>Información general</h3>
-        <label for="nombre1">Primer Nombre *</label>
-        <input type="text" name="nombre1" id="nombre1" placeholder="Escribir" required><br>
-
-        <label for="nombre2">Segundo Nombre *</label>
-        <input type="text" name="nombre2" id="nombre2" placeholder="Escribir" required><br>
-
-        <label for="apellido1">Primer Apellido *</label>
-        <input type="text" name="apellido1" id="apellido1" placeholder="Escribir" required><br>
-
-        <label for="apellido2">Segundo Apellido *</label>
-        <input type="text" name="apellido2" id="apellido2" placeholder="Escribir" required><br>
-
-        <label for="tipo_documento">Tipo de Documento *</label>
-        <select name="tipo_documento" id="tipo_documento" required>
-            <option value="">Seleccione el tipo de documento</option>
-            <option value="Cedula">Cedula de Ciudadania</option>
-            <option value="Pasaporte">Pasaporte</option>
-        </select><br>
-
-        <label for="documento1">Documento *</label>
-        <input type="number" name="documento1" id="documento1" placeholder="10002545785" required><br>
-
-        <label for="expedida">Expedida en *</label>
-        <input type="text" name="expedida" id="expedida" placeholder="Ciudad" required><br>
-
-        <label for="email">Correo Electronico *</label>
-        <input type="email" name="email" id="email" placeholder="Persona de contacto" required><br>
-
-        <label for="email2">Correo Electronico 2 *</label>
-        <input type="email" name="email2" id="email2" placeholder="Persona de contacto"><br>
-
-        <label for="email3">Correo Electronico 3 *</label>
-        <input type="email" name="email3" id="email3" placeholder="Persona de contacto"><br>
-
-        <label for="phone">Telefono *</label>
-        <input type="number" name="phone" id="phone" placeholder="3333333335" required><br>
-
-        <label for="phone2">Telefono 2 *</label>
-        <input type="number" name="phone2" id="phone2" placeholder="3333333335"><br>
-
-        <label for="phone3">Telefono 3 *</label>
-        <input type="number" name="phone3" id="phone3" placeholder="3333333335"><br>
-
-        <input type="hidden" name="propie_client" id="propie_client" value="1" ><br><br>
-
-        <!-- Guardado del usuario. -->
-
-        <label for="direc">Direccion *</label>
-        <input type="text" name="direc" id="direc" placeholder="Escribir" required><br>
-         <h3>Información de Pagos</h3>
-        <label for="fecha_pagar">Fecha del pago *</label>
-        <input type="date" name="fecha_pagar" id="fecha_pagar" placeholder="dd/mm/YYYY" required><br>
-
-        <label for="tipo_banco">Tipo de Banco *</label>
-        <select name="tipo_banco" id="tipo_banco" required>
-            <option value="">Seleccione el tipo de banco</option>
-            <option value="Bancolombia">Bancolombia</option>
-            <option value="Davivienda">Banco Davivienda</option>
-            <option value="Bogotá">Banco de Bogotá</option>
-            <option value="Popular">Banco Popular</option>
-            <option value="Colpatria">Banco Colpatria</option>
-            <option value="Agrario">Banco Agrario</option>
-            <option value="Social">Banco Caja Social</option>
-            <option value="Falabella">Banco Falabella</option>
-            <option value="BBVA">Banco BBVA</option>
-            <option value="Nequi">Nequi</option>
-            <option value="Daviplata">Daviplata</option>
-            <option value="Movii">Movii</option>
-            <option value="Tpaga">Tpaga</option>
-            <option value="Nubank">Nubank</option>
-            <option value="PayPal">PayPal</option>
-            <option value="Efectivo">Efectivo</option>
-        </select><br>
-
-        <label for="documento">Documentación</label> <!-- Se debe definir si se agrega la columna de documentación o se vincula con la que esta actual -->
-        <input type="file" name="documento" id="documento" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple><br>
-
-        <label for="obs">Espacio para Observaciones</label>
-        <input type="text" name="obs" id="obs" placeholder="Detalles a tener en cuenta"><br><br><br>
-
-        <button type="submit" name="add" id="add" value="1">Guardar</button>
-    </form>
-    <button  name="borrar" id="borrar" value="2" onclick="resetForm()">Eliminar</button> <label for="cancelar">Eliminar, limpiara todos los campos</label><br><br><br> <!-- Se debe aplicar JS para limpiar los campos del Form -->
+    <div class="contenido">
+        <h4>Lo marcado con "<p> * </p>" es un campo obligatorio</h4><br><br>
+        <div class="form-add">
+            <form action="{% url 'guardar' %}" method="post" id="addPropietario" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h3>Información general</h3>
+                <div class="firts-block-form">
+                    <div class="container">
+                        <input required="" type="text" name="nombre1" id="nombre1" class="input" required>
+                        <label class="label"><p>*</p>Primer Nombre</label>
+                    </div>
+                    <div class="container">
+                        <input required="" type="text" name="nombre2" id="nombre2" class="input">
+                        <label class="label">Segundo Nombre</label>
+                    </div>
+                    <div class="container">
+                        <input required="" type="text" name="apellido1" id="apellido1" class="input" required>
+                        <label class="label"><p>*</p>Primer Apellido</label>
+                    </div>
+                    <div class="container">
+                        <input required="" type="text" name="apellido2" id="apellido2" class="input" required>
+                        <label class="label"><p>*</p>Segundo Apellido</label>
+                    </div>
+                </div>
+                <br><br>
+                <div class="second-block-form">
+                    <label for="tipo_documento" class="pre-label"><p> * </p>Tipo de Documento</label>
+                    <select name="tipo_documento" id="tipo_documento" class="form-select form-select-aux" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Cedula">Cedula de Ciudadania</option>
+                        <option value="Pasaporte">Pasaporte</option>
+                    </select>
+                    <div class="container">
+                        <input required="" type="number" name="documento1" id="documento1" class="input" required>
+                        <label class="label"><p>*</p>Documento</label>
+                    </div>
+                    <div class="container">
+                        <input required="" type="text" name="expedida" id="expedida" class="input" required>
+                        <label class="label"><p>*</p>Expedida en</label>
+                    </div>
+                </div>
+                <br><br>
+                <div class="third-block-form">
+                    <div class="container">
+                        <input required="" type="email" name="email" id="email" class="input" required>
+                        <label class="label"><p>*</p>Correo Electronico</label>
+                    </div>
+                    <div class="container">
+                        <input required="" type="email" name="email2" id="email2" class="input">
+                        <label class="label">Correo Electronico 2</label>
+                    </div>
+                    <div class="container">
+                        <input required="" type="email" name="email3" id="email3" class="input">
+                        <label class="label">Correo Electronico 3</label>
+                    </div>
+                </div>
+                <br><br>
+                <div class="fourth-block-form">
+                    <div class="container">
+                        <input required="" type="number" name="phone" id="phone" class="input" required>
+                        <label class="label"><p>*</p>Telefono</label>
+                    </div>
+                    <div class="container">
+                        <input required="" type="number" name="phone2" id="phone2" class="input">
+                        <label class="label">Telefono 2</label>
+                    </div>
+                    <div class="container">
+                        <input required="" type="number" name="phone3" id="phone3" class="input">
+                        <label class="label">Telefono 3</label>
+                    </div>
+                    <input type="hidden" name="propie_client" id="propie_client" value="1" ><br><br>
+                </div>
+                <br><br>
+                 <!-- Guardado del usuario. -->
+                <h3 id="title-info-p">Información de Pagos</h3>
+                <div class="fiveth-block-form">
+                    <div class="container">
+                        <input required="" type="text" name="direc" id="direc" class="input" required>
+                        <label class="label"><p>*</p>Dirección</label>
+                    </div>
+                    <div class="container">
+                        <input  type="date" name="fecha_pagar" id="fecha_pagar" class="input" required>
+                        <label class="label-fecha-pago"><p>*</p>Fecha del pago</label>
+                    </div>
+                </div>
+                <br><br>
+                <div class="sixth-block-form">
+                    <label for="tipo_banco" class="pre-label"><p> * </p>Tipo de Banco</label>
+                    <select name="tipo_banco" id="tipo_banco" class="form-select" required>
+                        <option value="">Seleccionar</option>
+                        <option value="Bancolombia">Bancolombia</option>
+                        <option value="Davivienda">Banco Davivienda</option>
+                        <option value="Bogotá">Banco de Bogotá</option>
+                        <option value="Popular">Banco Popular</option>
+                        <option value="Colpatria">Banco Colpatria</option>
+                        <option value="Agrario">Banco Agrario</option>
+                        <option value="Social">Banco Caja Social</option>
+                        <option value="Falabella">Banco Falabella</option>
+                        <option value="BBVA">Banco BBVA</option>
+                        <option value="Nequi">Nequi</option>
+                        <option value="Daviplata">Daviplata</option>
+                        <option value="Movii">Movii</option>
+                        <option value="Tpaga">Tpaga</option>
+                        <option value="Nubank">Nubank</option>
+                        <option value="PayPal">PayPal</option>
+                        <option value="Efectivo">Efectivo</option>
+                    </select><br>
+                    <div class="grid w-full max-w-xs items-center gap-1.5 documents">
+                        <label class="pre-label-documentos"><p>*</p>Documentos</label>
+                        <input id="documento" type="file" name="documento" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple class="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium">
+                    </div>
+                </div>
+                <br><br>
+                <div class="container">
+                    <input required="" type="text" name="obs" id="obs" class="input input-descrip">
+                    <label class="label label-decrip">Observaciones</label>
+                </div>
+                <div class="seventh-block-form">
+                    <button class="btn-guardar" type="submit" name="add" id="add" value="1">Guardar</button>
+                    <button  class="btn-eliminar" name="borrar" id="borrar" value="2" onclick="resetForm()">Eliminar</button>
+                    <label for="cancelar" class="label-eliminar">Nota: Eliminar, limpiara todos los campos</label> 
+                </div><br><br>
+            </form>              
+        </div>
+    </div>
 {% endblock %}
-
