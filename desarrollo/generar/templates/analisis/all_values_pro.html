@@ -66,6 +66,12 @@
     <label for="valor_pago">Valor a Pagar</label>
     <input type="number" name="valor_pago" value="{{ total }}" readonly><br>
 
+    <label for="banco" >Banco</label>
+    <input type="text" name="banco" id="banco" value="{{ propietario.bancos }}" readonly><br>
+
+    <label for="numero_banco">Numero Cuenta Bancaria</label>
+    <input type="text" name="numero_banco" id="numero_banco" value="{{ propietario.num_banco }}" readonly><br>
+
     <label for="fecha_pago">Fecha de Pago</label>
     <input type="datetime" name="fecha_pago" value="{{ propietario.fecha_pago }}" readonly><br>
     <input type="hidden" name="respaldo_fecha" value="{{ propietario.fecha_pago }}">

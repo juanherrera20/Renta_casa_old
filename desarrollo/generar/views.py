@@ -161,7 +161,7 @@ def inmu(request): #Visualizar los inmuebles (Tabla)
 @autenticado_required
 def add_inmueble(request): #ayuda a la Vista para añadir inmueble
     objetoUsuarioPropietarios = propietario.objects.select_related('usuarios_id').all()
-    objetoUsuarioArrendatarios = arrendatario.objects.select_related('usuarios_id').all()
+    objetoUsuarioArrendatarios = arrendatario.objects.select_related('usuarios_id').exclude(Q(inmueble__isnull=False))
     return render(request, 'inmuebles/add_inmueble.html', {'UsuarioPropietarios': objetoUsuarioPropietarios, 'UsuariosArrendatarios':objetoUsuarioArrendatarios})
 
 @autenticado_required
@@ -188,12 +188,23 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
             """
             servicios = ",".join(opciones_seleccionadas) #Las combino en una sola cadena de texto seguidas por ","
             
-            ultimo_ref = inmueble.objects.all().aggregate(Max('ref'))['ref__max']
-            if ultimo_ref is None:
-                nuevo_ref = "1"
+            #----------------------REvisar esta parte--------------------------s
+            ultimo_inmueble = inmueble.objects.order_by('-id').first()
+            ultimo_ref = ultimo_inmueble.ref if ultimo_inmueble else 'Inmueble0'
+            
+            # Extraer la parte numérica de la referencia
+            match = re.search(r'\d+', ultimo_ref)
+            if match:
+                ultimo_numero = int(match.group())
             else:
-                nuevo_ref = str(int(ultimo_ref) + 1)
-
+                ultimo_numero = 0
+            
+            # Incrementar el número
+            nuevo_numero = ultimo_numero + 1
+            nuevo_ref = f"Inmueble{nuevo_numero}"
+            #-------------------------------------------------------------------s
+            
+            
             id_arrendatario = request.POST.get('arrendatario', None)
             
             if id_arrendatario == '':
@@ -367,9 +378,10 @@ def guardar(request): #Logica para guardar propietarios en dB
         fecha_pagar = request.POST.get('fecha_pagar', None)
         #print(f"Fecha: {fecha_pagar}")
         tipo_banco = request.POST.get('tipo_banco', None)
+        num_banco = request.POST.get('num_cuenta', None)
         observ = request.POST.get('obs', None)
         
-        modelo = propietario(direccion = direc, fecha_pago = fecha_pagar, bancos = tipo_banco, obs = observ, usuarios_id_id = usuarios_id)
+        modelo = propietario(direccion = direc, fecha_pago = fecha_pagar, bancos = tipo_banco, num_banco = num_banco, obs = observ, usuarios_id_id = usuarios_id)
         modelo.save()
         
         IdObjetoPropietario = modelo.id
@@ -410,6 +422,8 @@ def actualizar_propietario(request): #Actualizar propietario.
 
     idPropietario = request.POST.get('idP')
     direccion = request.POST.get('direccion')
+    banco = request.POST.get('banco')
+    numero_banco = request.POST.get('num_banco')
     fecha_pago = request.POST.get('fecha_pago')
     respaldo_fecha = request.POST.get('respaldo_fecha') 
     # print(f"Fecha cambiada: {fecha_pago}")
@@ -426,6 +440,8 @@ def actualizar_propietario(request): #Actualizar propietario.
 
     guardar2 = propietario.objects.get(id=idPropietario)
     guardar2.direccion = direccion
+    guardar2.bancos = banco
+    guardar2.num_banco = numero_banco
     guardar2.fecha_pago = fechaPago
     guardar2.obs = obs
     guardar2.save()
@@ -914,7 +930,7 @@ def confirmar_pago (request, id):
     template_path = "analisis/modal_pago.html"
     if request.method == 'GET':
         obj_propietario = propietario.objects.get(id = id)
-        objs_inmuebles = obj_propietario.inmueble.all()
+        objs_inmuebles = obj_propietario.inmueble.exclude(estadoPago = 1) #filtrar los que no se han pagado
         
         total_pago = []
         for inmueble in objs_inmuebles:

@@ -86,6 +86,7 @@ diccionarioBancos = {
     'Tpaga':'https://tpaga.co',
     'Nubank':'https://nu.com.co/cf/cuenta/',
     'PayPal':'https://www.paypal.com/co/home',
+    'Efectivo':'Pago en efectivo'
 }
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 

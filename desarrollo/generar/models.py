@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.fields import CharField, IntegerField
 import os
 from dateutil.relativedelta import relativedelta
+from django.db.models import Max
 
 #------------------Función para guardar los documentos e imagenes en carpetas separadas y personalizadas----------------------------s
 def Crear_carpetas(instance, filename): #Inmuebles
@@ -113,15 +114,30 @@ class inmueble(models.Model): #Tabla usuarios
             if original.arrendatario_id:
                 if self.arrendatario_id and original.arrendatario_id != self.arrendatario_id:
                     self.historial += 1
+                    fecha_arrendatario = self.arrendatario_id.fecha_fin_cobro
+                    print(f"Fecha arrendatario fin primer: {fecha_arrendatario}")
+                    self.fechaPago = fecha_arrendatario + relativedelta(days=7)
             else:
                 if self.arrendatario_id:
                     self.historial += 1
+                    fecha_arrendatario = self.arrendatario_id.fecha_fin_cobro
+                    print(f"Fecha arrendatario fin segundo: {fecha_arrendatario}")
+                    self.fechaPago = fecha_arrendatario + relativedelta(days=7)
                 
         else:
             if self.arrendatario_id:# Si es una nueva instancia y el arrendatario_id no es nulo, incrementar el historial
                 self.historial += 1
+                fecha_arrendatario = self.arrendatario_id.fecha_fin_cobro
+                print(f"Fecha arrendatario fin tercero: {fecha_arrendatario}")
+                self.fechaPago = fecha_arrendatario + relativedelta(days=7)
         
         super().save(*args, **kwargs) # Llamar al método save de la superclase para guardar todo lo demas que se solicita en la vista
+        
+        # Actualizar la fecha de pago del propietario
+        propietario_instance = self.propietario_id
+        max_fecha_pago = propietario_instance.inmueble.aggregate(Max('fechaPago'))['fechaPago__max']
+        propietario_instance.fecha_pago = max_fecha_pago
+        propietario_instance.save()
         
     class Meta:
         db_table = 'inmueble'
