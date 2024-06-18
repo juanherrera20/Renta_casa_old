@@ -3,14 +3,13 @@ from dateutil.relativedelta import relativedelta
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, HttpResponse
-import re, uuid
-from django.db.models import Max, Count, Q
+import uuid
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
 from .functions import autenticado_required, actualizar_estados, extract_numbers, convert_time, jerarquia_estadoPago_propietario #Importo las funciones desde functions.py
-from .functions import diccionarioContrato, diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
-from django.core.paginator import Paginator
+from .functions import diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
 import json
 
 #Librerias y paquetes posbilemente utiles
@@ -190,21 +189,11 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
             
             #----------------------REvisar esta parte--------------------------s
             ultimo_inmueble = inmueble.objects.order_by('-id').first()
-            ultimo_ref = ultimo_inmueble.ref if ultimo_inmueble else 'Inmueble0'
-            
-            # Extraer la parte numérica de la referencia
-            match = re.search(r'\d+', ultimo_ref)
-            if match:
-                ultimo_numero = int(match.group())
-            else:
-                ultimo_numero = 0
+            ultimo_ref = ultimo_inmueble.ref
             
             # Incrementar el número
-            nuevo_numero = ultimo_numero + 1
-            nuevo_ref = f"Inmueble{nuevo_numero}"
+            nuevo_ref = ultimo_ref + 1
             #-------------------------------------------------------------------s
-            
-            
             id_arrendatario = request.POST.get('arrendatario', None)
             
             if id_arrendatario == '':
@@ -928,10 +917,10 @@ def redireccion_pro(request): #Redirección solo para los propietarios
 
 def confirmar_pago (request, id):
     template_path = "analisis/modal_pago.html"
+    obj_propietario = propietario.objects.get(id = id)
+    objs_inmuebles = obj_propietario.inmueble.exclude(estadoPago = 1) #filtrar los que no se han pagado
+    objeto_usuario = usuarios.objects.filter(id = obj_propietario.id)
     if request.method == 'GET':
-        obj_propietario = propietario.objects.get(id = id)
-        objs_inmuebles = obj_propietario.inmueble.exclude(estadoPago = 1) #filtrar los que no se han pagado
-        
         total_pago = []
         for inmueble in objs_inmuebles:
             descuento = diccionarioPorcentajeDescuento[str(inmueble.porcentaje)]
@@ -943,15 +932,20 @@ def confirmar_pago (request, id):
         print(objs_inmuebles)
         return render(request, template_path, {"propietario": obj_propietario, "inmuebles": inmuebles})
     
-    else: 
-        print("Este mensaje melo")
+    else:
+       
         #Guardar los documentos de descuento y toda su información
         id_inmuebles = request.POST.getlist('inmueblesId') #Hay varios inmuebles en el formulario
-        
+        descuento=[]
+        descripcion=[]
+        ids_inmuebles=[]
         for id_inmueble in id_inmuebles:
             documento = request.FILES.getlist(f'docRespaldo_{id_inmueble}') #Los imputs estan en relación al inmueble
             valor = request.POST.get(f'descuento_{id_inmueble}')
             descrip = request.POST.get(f'descripcionDescuento_{id_inmueble}')
+            descuento.append(valor)
+            descripcion.append(descrip)
+            ids_inmuebles.append(id_inmueble)
             today = str(date.today())
             fs = FileSystemStorage(location='../media/documents/'+ today) #Guardo una carpeta afuera de la carpeta principal
 
@@ -961,11 +955,46 @@ def confirmar_pago (request, id):
                 url = fs.url(filename)
                 urls.append(url)
             guardar = Docdescuentos(inmueble_id =id_inmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
-            guardar.save() 
-            
-        #Logica de
-        
-        return redirect("analisis_propietarios") #Aquí se puede redireccionar al html de la factura, creo
+            """ guardar.save()  """
+        propietarios = {
+            'id': obj_propietario.id,
+            'banco': obj_propietario.bancos,
+            'num_cuenta': obj_propietario.num_banco,
+        }
+        propietario_user = {
+            'id': objeto_usuario[0].id,
+            'nombre': objeto_usuario[0].nombre,
+            'apellido': objeto_usuario[0].apellido,
+            'documento': objeto_usuario[0].documento,
+        }
+        request.session['descuentos'] = descuento
+        request.session['descripcion'] = descripcion
+        request.session['ids_inmuebles'] = ids_inmuebles
+        request.session['obj_propietario'] = propietarios
+        request.session['obj_usuario'] = propietario_user
+
+        return redirect("factura") #Aquí se puede redireccionar al html de la factura, creo
+    
+#logica para facturación:
+def factura(request):
+    descuentos = request.session.get('descuentos', [])
+    descripcion = request.session.get('descripcion', [])
+    ids_inmuebles = request.session.get('ids_inmuebles', [])
+    objeto_inmueblef = inmueble.objects.filter(id__in=ids_inmuebles)
+
+    obj_propietario = request.session.get('obj_propietario')
+    obj_usuario = request.session.get('obj_usuario')
+    values_inmueble =[]
+    for data in objeto_inmueblef:
+
+        direccion = data.direccion
+        valor_inicial = data.canon
+        values_inmueble.append([direccion, valor_inicial])
+    
+    values = list(zip(values_inmueble, descuentos, descripcion))
+
+    print(values)
+    return render(request, 'factura.html')
 
 def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     actualizar_estados() #Llamamos a la función

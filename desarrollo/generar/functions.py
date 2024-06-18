@@ -131,8 +131,13 @@ def  actualizar_estados():
         # print(f"Estado propietario: {EstadoPago1}")
         # print(f"Estado propietario: {EstadoPago1}")
         fechaPago = objeto.propietario_id.fecha_pago
+        
+        if isinstance(fechaPago, date):
+            fechaObjeto2 = fechaPago
+        else:
+            fecha_str = datetime.strptime(fechaPago, '%Y-%m-%d').date()
+            fechaObjeto2 = fecha_str
 
-        fechaObjeto2 = fechaPago
         fechaResta = (fechaObjeto2 - fechaObjeto1).days
 
         if fechaObjeto2 >= fechaObjeto1: 

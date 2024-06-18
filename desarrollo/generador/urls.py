@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
 from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino,  add_tarea, guardar_tarea, modal_ver_tarea
 from generar.views import individuo_propietario, individuo_inquilino,all_values_pro, add_inmueble, guardar_inmueble, individuo_inmueble, actualizar_propietario, actualizar_inquilino
-from generar.views import actualizar_modal, actualizar_inmueble, redireccion_pro, redireccion_arr, all_values_arr, nav, confirmar_pago, actualizar_estado
+from generar.views import actualizar_modal, actualizar_inmueble, redireccion_pro, redireccion_arr, all_values_arr, nav, confirmar_pago, actualizar_estado, factura
 
 urlpatterns = [
 
@@ -73,7 +73,8 @@ urlpatterns = [
     path('Analisis/All/ValuesPro/ConfirmarPago/<int:id>/', confirmar_pago, name = "confirmarPago"),
     #---------Arrendatarios-----------------
     path('Analisis/All/ValuesArr/<int:id>', all_values_arr, name="AllValuesArr"),
-    path('Analisis/RedireccionArr/',redireccion_arr, name="redirecArr")
+    path('Analisis/RedireccionArr/',redireccion_arr, name="redirecArr"),
+    path('Factura/', factura, name='factura'),
 ]
 
 if settings.DEBUG:
