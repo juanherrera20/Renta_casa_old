@@ -192,7 +192,7 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
             
             #----------------------REvisar esta parte--------------------------s
             ultimo_inmueble = inmueble.objects.order_by('-id').first()
-            ultimo_ref = ultimo_inmueble.ref
+            ultimo_ref = int(ultimo_inmueble.ref)
             
             # Incrementar el número
             nuevo_ref = ultimo_ref + 1
@@ -878,7 +878,7 @@ def redireccion_pro(request): #Redirección solo para los propietarios
     idp = request.POST.get('idP')
     idUsuario = request.POST.get('idUser')
     idArrendatario = request.POST.get('idArrendatario')
-    btnConfirmar = request.POST.get('btnRespaldoConfirmar')
+
     if btn == '1':
         resultado = individuo_propietario(request, idUsuario)
         return HttpResponse(resultado)
@@ -922,21 +922,23 @@ def confirmar_pago (request, id):
     template_path = "analisis/modal_pago.html"
     obj_propietario = propietario.objects.get(id = id)
     objs_inmuebles = obj_propietario.inmueble.exclude(estadoPago = 1) #filtrar los que no se han pagado
-    objeto_usuario = usuarios.objects.filter(id = obj_propietario.id)
+    objeto_usuario = obj_propietario.usuarios_id
+    print(f"Id del usuario: {objeto_usuario.id}")
+    
     if request.method == 'GET':
         total_pago = []
         for inmueble in objs_inmuebles:
             descuento = diccionarioPorcentajeDescuento[str(inmueble.porcentaje)]
-            print(descuento)
+            #print(descuento)
             total_pago.append( inmueble.canon * (100 - descuento)/100)
             
         inmuebles = zip(objs_inmuebles, total_pago)
-        print(total_pago)
-        print(objs_inmuebles)
+        # print(total_pago)
+        # print(objs_inmuebles)
         return render(request, template_path, {"propietario": obj_propietario, "inmuebles": inmuebles})
     
     else:
-       
+        print(f"obejto usuario: {objeto_usuario}")
         #Guardar los documentos de descuento y toda su información
         id_inmuebles = request.POST.getlist('inmueblesId') #Hay varios inmuebles en el formulario
         descuento=[]
@@ -958,17 +960,18 @@ def confirmar_pago (request, id):
                 url = fs.url(filename)
                 urls.append(url)
             guardar = Docdescuentos(inmueble_id =id_inmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
-            """ guardar.save()  """
+            guardar.save()
+            
         propietarios = {
             'id': obj_propietario.id,
             'banco': obj_propietario.bancos,
             'num_cuenta': obj_propietario.num_banco,
         }
         propietario_user = {
-            'id': objeto_usuario[0].id,
-            'nombre': objeto_usuario[0].nombre,
-            'apellido': objeto_usuario[0].apellido,
-            'documento': objeto_usuario[0].documento,
+            'id': objeto_usuario.id,
+            'nombre': objeto_usuario.nombre,
+            'apellido': objeto_usuario.apellido,
+            'documento': objeto_usuario.documento,
         }
         request.session['descuentos'] = descuento
         request.session['descripcion'] = descripcion

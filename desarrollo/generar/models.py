@@ -109,26 +109,31 @@ class inmueble(models.Model): #Tabla usuarios
     
     
     def save(self, *args, **kwargs): #pk igual a id
+        print("Siempre se vera")
         if self.pk: #Verificó si es actualización o creación de una instacia
+            print("existe?")
             original = inmueble.objects.get(pk=self.pk)# Obtener la instancia original del inmueble
             if original.arrendatario_id:
+                print("primer filtro")
                 if self.arrendatario_id and original.arrendatario_id != self.arrendatario_id:
                     self.historial += 1
                     fecha_arrendatario = self.arrendatario_id.fecha_fin_cobro
-                    print(f"Fecha arrendatario fin primer: {fecha_arrendatario}")
+                    print("primer filtro primero")
                     self.fechaPago = fecha_arrendatario + relativedelta(days=7)
             else:
+                print("segundo filtro")
                 if self.arrendatario_id:
+                    print("segundo filtro primero")
                     self.historial += 1
                     fecha_arrendatario = self.arrendatario_id.fecha_fin_cobro
-                    print(f"Fecha arrendatario fin segundo: {fecha_arrendatario}")
                     self.fechaPago = fecha_arrendatario + relativedelta(days=7)
                 
         else:
+            print("Tercer filtro")
             if self.arrendatario_id:# Si es una nueva instancia y el arrendatario_id no es nulo, incrementar el historial
                 self.historial += 1
+                print("tercer filtro primero")
                 fecha_arrendatario = self.arrendatario_id.fecha_fin_cobro
-                print(f"Fecha arrendatario fin tercero: {fecha_arrendatario}")
                 self.fechaPago = fecha_arrendatario + relativedelta(days=7)
         
         super().save(*args, **kwargs) # Llamar al método save de la superclase para guardar todo lo demas que se solicita en la vista
