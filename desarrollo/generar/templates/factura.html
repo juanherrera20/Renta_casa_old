@@ -1,11 +1,170 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Factura</title>
+    <style>
+        .container{
+            padding: 30px;
+        }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+    
+        th, td {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: left;
+        }
+    
+        th {
+          background-color: #f2f2f2;
+        }
+        .text{
+            text-align: center;
+            align-items: center;
+            justify-content: center;
+        }
+        .image{
+            width: 130px;
+            height: 130px;
+            align-items: center;
+            margin-left: 10px;
+            justify-content: center;
+            margin-top: -17px;
+        }
+        .image-left {
+            position: relative;
+            float: left;
+            right: 23%;
+        }
+        .image-aux{
+            position: relative;
+            float: right;
+            left: 23%;
+        }
+        .content{
+            display: flex;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+        h4 {
+            margin-bottom: 0px;
+            margin-top: 0px;
+        }
+        h5 {
+            font-size: 17px;
+            margin-bottom: 25px;
+            margin-top: 0px;
+        }
+        p {
+            text-align: justify;
+        }
+      </style>
 </head>
 <body>
-    Esta es una prueba de facturación:
-</body>
+    {% for value in values %}
+    <div class="container">
+        <div class="content">
+            <img class="image image-left" src='{% static "image/Logo RENTACASA.png" %}'>
+            <div class="text">
+                <h1>Estado de Cuenta - Renta Casa</h1>
+                <h4>Carrera CRA 23 BIS #72-43 LOCAL # 1 CUBA PEREIRA RISARALDA</h4>
+                <h4>NIT: 1.088.261.920-1</h4>
+                <h5>Celular: 3215865975</h5>
+            </div>
+            <img class="image image-aux" src='{% static "image/Logo-Datacredito.png" %}'>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>FECHA (d/m/a)</th>
+              <th>INMOBILIARIA</th>
+              <th>NIT INMOBILIARIA</th>
+              <th>RESULTADO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ fecha }}</td>
+              <td>RENTA CASA</td>
+              <td>1.088.261.920-1</td>
+              <td>APROBADO</td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>PROPIETARIO</th>
+              <th>DIRECCION INMUEBLE</th>
+            </tr>
+          </thead>
+          
+          <tbody>
+            <tr>
+              <td>{{ usuario.nombre|upper  }}  {{ usuario.apellido|upper  }}</td>
+              <td> {{ value.0.0 |upper }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>DOCUMENTO ARRENDATARIO</th>
+              <th>CANON</th>
+              <th>DESCUENTO</th>
+              <th>PAGAR NETO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ usuario.documento }}</td>
+              <td>$ {{ value.0.1 }}</td>
+              <td>$ {{ value.0.2 }}</td>
+              <td>$ {{ value.0.3 }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+            <tbody>
+              <tr>
+                <td><strong>MODO DE PAGO</strong></td>
+                <td><strong>BANCO:</strong> {{ propietario.banco|upper }}</td>
+                <td><strong>NUM. CUENTA:</strong> {{ propietario.num_cuenta }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table>
+            <thead>
+              <tr>
+                <th>OBSERVACIONES</th>
+                <th>FIRMA RECEPCION PAGO</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ value.0.4 }}</td>
+                <td>MARISELVA VELEZ</td>
+              </tr>
+            </tbody>
+            
+          </table>
+            <p>Con la aceptación de la presente factura autorizo a (nombre de la empresa <strong>RENTA CASA</strong>), identificada con <strong>(NIT 1.088.261.920-1)</strong>, a)
+            Consultar, en cualquier tiempo, en <strong>DATACRÉDITO</strong> o en cualquier otra base de datos manejada por un operador de información
+            financiera y crediticia, toda la información relevante para conocer mi desempeño como deudor y mi capacidad de pago, la viabilidad
+            para entablar o mantener una relación contractual y demás finalidades establecidas en el Artículo 15 de la Ley 1266 de 2008. b) Reportar
+            a <strong>DATACRÉDITO</strong> o a cualquier otra base de datos manejada por un operador de información financiera y crediticia, datos, tratados o sin
+            tratar, sobre el cumplimiento o incumplimiento de mis obligaciones crediticias, mis deberes legales de contenido patrimonial, mis datos
+            de ubicación y contacto (número de teléfono fijo, número de teléfono celular, dirección del domicilio, dirección laboral y correo
+            electrónico), mis solicitudes de crédito así como otros atinentes a mis relaciones comerciales, financieras y en general socioeconómicas
+            que haya entregado o que consten en registros públicos, bases de datos públicas o documentos públicos.
+            </p>
+    </div>
+    {% endfor %}
+  </body>
 </html>

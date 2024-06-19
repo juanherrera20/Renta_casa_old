@@ -11,6 +11,9 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .functions import autenticado_required, actualizar_estados, extract_numbers, convert_time, jerarquia_estadoPago_propietario #Importo las funciones desde functions.py
 from .functions import diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
 import json
+from django.template.loader import get_template
+from xhtml2pdf import pisa
+from io import BytesIO
 
 #Librerias y paquetes posbilemente utiles
 # from cryptography.fernet import Fernet
@@ -985,16 +988,36 @@ def factura(request):
     obj_propietario = request.session.get('obj_propietario')
     obj_usuario = request.session.get('obj_usuario')
     values_inmueble =[]
+    i = 0
     for data in objeto_inmueblef:
-
+        descuento = descuentos[i]
+        descrip = descripcion[i]
         direccion = data.direccion
         valor_inicial = data.canon
-        values_inmueble.append([direccion, valor_inicial])
-    
-    values = list(zip(values_inmueble, descuentos, descripcion))
+        total = valor_inicial - int(descuento)
+        values_inmueble.append([direccion, valor_inicial, descuento, total, descrip])
+        i += 1
+    values = list(zip(values_inmueble))
+    fecha = date.today()
+    fecha_actual= fecha.strftime("%d/%m/%Y")
+    data = {
+        'values': values,
+        'propietario': obj_propietario, 
+        'usuario': obj_usuario, 
+        'fecha': fecha_actual
+    }
+    pdf = render_pdf('factura.html', data)
+    return HttpResponse(pdf, content_type='application/pdf')
 
-    print(values)
-    return render(request, 'factura.html')
+def render_pdf(template_src, context_dict={}): #Cuando funcione bien, toca moverla al archivo de funciones
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), dest=result)
+    if not pdf.err:
+        result.seek(0)
+        return HttpResponse(result.getvalue(), content_type="application/pdf")
+    return None
 
 def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     actualizar_estados() #Llamamos a la función
