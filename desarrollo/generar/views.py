@@ -1,5 +1,7 @@
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
+from django.templatetags.static import static
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, HttpResponse
@@ -8,12 +10,9 @@ from django.db.models import Q
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
-from .functions import autenticado_required, actualizar_estados, extract_numbers, convert_time, jerarquia_estadoPago_propietario #Importo las funciones desde functions.py
+from .functions import autenticado_required, actualizar_estados, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf #Importo las funciones desde functions.py
 from .functions import diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
 import json
-from django.template.loader import get_template
-from xhtml2pdf import pisa
-from io import BytesIO
 
 #Librerias y paquetes posbilemente utiles
 # from cryptography.fernet import Fernet
@@ -923,7 +922,6 @@ def confirmar_pago (request, id):
     obj_propietario = propietario.objects.get(id = id)
     objs_inmuebles = obj_propietario.inmueble.exclude(estadoPago = 1) #filtrar los que no se han pagado
     objeto_usuario = obj_propietario.usuarios_id
-    print(f"Id del usuario: {objeto_usuario.id}")
     
     if request.method == 'GET':
         total_pago = []
@@ -938,16 +936,18 @@ def confirmar_pago (request, id):
         return render(request, template_path, {"propietario": obj_propietario, "inmuebles": inmuebles})
     
     else:
-        print(f"obejto usuario: {objeto_usuario}")
         #Guardar los documentos de descuento y toda su información
         id_inmuebles = request.POST.getlist('inmueblesId') #Hay varios inmuebles en el formulario
         descuento=[]
         descripcion=[]
         ids_inmuebles=[]
+        totalPagar = []
         for id_inmueble in id_inmuebles:
             documento = request.FILES.getlist(f'docRespaldo_{id_inmueble}') #Los imputs estan en relación al inmueble
             valor = request.POST.get(f'descuento_{id_inmueble}')
             descrip = request.POST.get(f'descripcionDescuento_{id_inmueble}')
+            total = request.POST.get(f'totalPagar_{id_inmueble}')
+            totalPagar.append(total)
             descuento.append(valor)
             descripcion.append(descrip)
             ids_inmuebles.append(id_inmueble)
@@ -960,7 +960,7 @@ def confirmar_pago (request, id):
                 url = fs.url(filename)
                 urls.append(url)
             guardar = Docdescuentos(inmueble_id =id_inmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
-            guardar.save()
+            """ guardar.save() """
             
         propietarios = {
             'id': obj_propietario.id,
@@ -973,6 +973,7 @@ def confirmar_pago (request, id):
             'apellido': objeto_usuario.apellido,
             'documento': objeto_usuario.documento,
         }
+        request.session['totalPagar'] = totalPagar
         request.session['descuentos'] = descuento
         request.session['descripcion'] = descripcion
         request.session['ids_inmuebles'] = ids_inmuebles
@@ -983,11 +984,11 @@ def confirmar_pago (request, id):
     
 #logica para facturación:
 def factura(request):
+    totalPagar = request.session.get('totalPagar', [])
     descuentos = request.session.get('descuentos', [])
     descripcion = request.session.get('descripcion', [])
     ids_inmuebles = request.session.get('ids_inmuebles', [])
     objeto_inmueblef = inmueble.objects.filter(id__in=ids_inmuebles)
-
     obj_propietario = request.session.get('obj_propietario')
     obj_usuario = request.session.get('obj_usuario')
     values_inmueble =[]
@@ -996,31 +997,25 @@ def factura(request):
         descuento = descuentos[i]
         descrip = descripcion[i]
         direccion = data.direccion
-        valor_inicial = data.canon
+        valor_inicial = int(float(totalPagar[i]))
         total = valor_inicial - int(descuento)
         values_inmueble.append([direccion, valor_inicial, descuento, total, descrip])
         i += 1
     values = list(zip(values_inmueble))
     fecha = date.today()
     fecha_actual= fecha.strftime("%d/%m/%Y")
+    logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))
+    logo_datacredito_url = request.build_absolute_uri(static('image/Logo-Datacredito.png'))
     data = {
         'values': values,
         'propietario': obj_propietario, 
         'usuario': obj_usuario, 
-        'fecha': fecha_actual
+        'fecha': fecha_actual,
+        'logo_rentacasa_url': logo_rentacasa_url,
+        'logo_datacredito_url': logo_datacredito_url,
     }
     pdf = render_pdf('factura.html', data)
     return HttpResponse(pdf, content_type='application/pdf')
-
-def render_pdf(template_src, context_dict={}): #Cuando funcione bien, toca moverla al archivo de funciones
-    template = get_template(template_src)
-    html = template.render(context_dict)
-    result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), dest=result)
-    if not pdf.err:
-        result.seek(0)
-        return HttpResponse(result.getvalue(), content_type="application/pdf")
-    return None
 
 def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     actualizar_estados() #Llamamos a la función

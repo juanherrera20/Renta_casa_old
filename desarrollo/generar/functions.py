@@ -3,11 +3,14 @@
 #--------------------------------------------------------------------------------------------------------------------------------s
 
 from datetime import date,timedelta, datetime
-from dateutil.relativedelta import relativedelta
 import re
 from django.shortcuts import redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
+from xhtml2pdf import pisa
+from io import BytesIO
+from django.http import HttpResponse
+from django.template.loader import get_template
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #Creación de diccionarios que se van a utilizar en la app.
@@ -236,5 +239,14 @@ def convert_time(horaRes):
         hour = datetime.strptime(horaRes, "%I:%M %p.")
     hora = hour.strftime("%H:%M")
     return hora
-#---------------------------------------------------------------------------------------------------------------------------------------s
-
+#--------------------------------------------Función para renderizar un pdf-------------------------------------------------------------------------------------------s
+def render_pdf( template_src, context_dict={}):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("utf-8")), dest=result)
+    if not pdf.err:
+        result.seek(0)
+        return HttpResponse(result.getvalue(), content_type="application/pdf")
+    return None
+#--------------------------------------------------------------------------------------------------------------------------------

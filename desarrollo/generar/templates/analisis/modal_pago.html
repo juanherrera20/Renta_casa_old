@@ -17,7 +17,7 @@
                     <p>{{ inmueble.direccion }}</p>
                     <p>{{ valor_pagar }}</p>
                 </label>
-
+                <input type="hidden" id="totalPagar" name="totalPagar_{{ inmueble.id }}" value="{{ valor_pagar }}">
                 <!-- Sección de descuento por inmueble -->
                 <div class="descuentoSection" style="display: none;" data-inmueble-id="{{ inmueble.id }}">
                     <label for="descuento_{{ inmueble.id }}">Descuento:</label>
