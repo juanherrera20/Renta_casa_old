@@ -1015,7 +1015,8 @@ def factura(request):
         'logo_datacredito_url': logo_datacredito_url,
     }
     pdf = render_pdf('factura.html', data)
-    return HttpResponse(pdf, content_type='application/pdf')
+
+    return pdf
 
 def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     actualizar_estados() #Llamamos a la función
@@ -1038,10 +1039,9 @@ def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     #------------------------------------------------------Individuo_Propietario----------------------------------------------------
 
     objetoPropietario = propietario.objects.filter(id=objetoInmueble.propietario_id_id).first()
-    pago = diccionarioPago[str(objetoPropietario.inmueble.estadoPago)]
+    pago = diccionarioPago[str(objetoInmueble.estadoPago)]
     objetoUser = usuarios.objects.get( id = objetoPropietario.usuarios_id_id)
     documentos = objetoPropietario.DocsPersona.all()
-
     canon = objetoInmueble.canon
     objetoPorcentaje = objetoInmueble.porcentaje
 

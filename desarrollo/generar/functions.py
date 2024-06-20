@@ -9,7 +9,7 @@ from .models import superuser, usuarios, arrendatario, propietario, tareas, inmu
 from werkzeug.security import generate_password_hash, check_password_hash
 from xhtml2pdf import pisa
 from io import BytesIO
-from django.http import HttpResponse
+from django.http import FileResponse
 from django.template.loader import get_template
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -241,12 +241,13 @@ def convert_time(horaRes):
     return hora
 #--------------------------------------------Función para renderizar un pdf-------------------------------------------------------------------------------------------s
 def render_pdf( template_src, context_dict={}):
+    print(context_dict)
     template = get_template(template_src)
     html = template.render(context_dict)
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("utf-8")), dest=result)
     if not pdf.err:
         result.seek(0)
-        return HttpResponse(result.getvalue(), content_type="application/pdf")
+        return FileResponse(result, as_attachment=True, filename='nombre.pdf')
     return None
 #--------------------------------------------------------------------------------------------------------------------------------
