@@ -12,6 +12,7 @@ from io import BytesIO
 from django.http import FileResponse
 from django.template.loader import get_template
 
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #Creación de diccionarios que se van a utilizar en la app.
 diccionarioContrato = { #Mapeo para guardar el tipo de contrato
@@ -239,6 +240,9 @@ def convert_time(horaRes):
         hour = datetime.strptime(horaRes, "%I:%M %p.")
     hora = hour.strftime("%H:%M")
     return hora
+#---------------------------------------------------------------------------------------------------------------------------------------s
+
+
 #--------------------------------------------Función para renderizar un pdf-------------------------------------------------------------------------------------------s
 def render_pdf( template_src, context_dict={}):
     print(context_dict)

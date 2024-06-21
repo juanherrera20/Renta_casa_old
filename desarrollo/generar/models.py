@@ -22,11 +22,22 @@ def Crear_carpetas(instance, filename): #Inmuebles
         subfolder = "Arrendatarios"
         tipo = ""
 
-    folder_direct = os.path.join('media', subfolder, folder_name, tipo)
+    folder_direct = os.path.join('../media', subfolder, folder_name, tipo) 
     if not os.path.exists(folder_direct):
         os.makedirs(folder_direct)
     return os.path.join(subfolder, folder_name, tipo, filename)
- 
+#---------------------------------------------------------------------------------------------------------------------------------------s
+
+#------------Función para automatizar la actulización de fechas de inmuebles y propietarios respecto a la de arrendatarios--------------s
+def fechas_pago_automaticas(obj_inmueble): 
+    print("Entro a la función")
+    # Actualizar la fecha de pago del propietario
+    propietario_instance = obj_inmueble.propietario_id
+    max_fecha_pago = propietario_instance.inmueble.aggregate(Max('fechaPago'))['fechaPago__max']
+    propietario_instance.fecha_pago = max_fecha_pago
+    propietario_instance.save()
+    return obj_inmueble.fechaPago
+#---------------------------------------------------------------------------------------------------------------------------------------s
 
 # Creations the models.
 class superuser(models.Model): #Tabla usuarios
@@ -73,7 +84,21 @@ class arrendatario(models.Model): #Tabla usuarios
     inicio = models.DateField(auto_now_add=True)
     habilitarPago = models.IntegerField(default=4) 
     obs = models.CharField(max_length = 400) 
-       
+    
+    def save(self, *args, **kwargs): #pk igual a id
+        print(f"Self: {self.id}")
+        super().save(*args, **kwargs) # Llamar al método save de la superclase para guardar todo lo demas que se solicita en la vista
+
+        if self.inmueble.exists():  #Verificar si tiene un inmueble asociado
+            print("entro al coso")
+            obj_inmueble = self.inmueble.first()
+            print(f"el inmueble: {obj_inmueble}")
+            obj_inmueble.fechaPago = self.fecha_fin_cobro + relativedelta(days=7)
+            obj_inmueble.save()
+            print("Se ve despues de guardar inmueble")
+            fechas_pago_automaticas(obj_inmueble)
+            
+            
     class Meta:
         db_table = 'arrendatario'
     
@@ -110,6 +135,7 @@ class inmueble(models.Model): #Tabla usuarios
     
     def save(self, *args, **kwargs): #pk igual a id
         print("Siempre se vera")
+        permitir = False
         if self.pk: #Verificó si es actualización o creación de una instacia
             print("existe?")
             original = inmueble.objects.get(pk=self.pk)# Obtener la instancia original del inmueble
@@ -117,33 +143,30 @@ class inmueble(models.Model): #Tabla usuarios
                 print("primer filtro")
                 if self.arrendatario_id and original.arrendatario_id != self.arrendatario_id:
                     self.historial += 1
-                    fecha_arrendatario = self.arrendatario_id.fecha_fin_cobro
                     print("primer filtro primero")
-                    self.fechaPago = fecha_arrendatario + relativedelta(days=7)
+                    self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=7)
+                    permitir = True
             else:
                 print("segundo filtro")
                 if self.arrendatario_id:
                     print("segundo filtro primero")
                     self.historial += 1
-                    fecha_arrendatario = self.arrendatario_id.fecha_fin_cobro
-                    self.fechaPago = fecha_arrendatario + relativedelta(days=7)
-                
+                    self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=7)
+                    permitir = True
         else:
             print("Tercer filtro")
             if self.arrendatario_id:# Si es una nueva instancia y el arrendatario_id no es nulo, incrementar el historial
                 self.historial += 1
-                print("tercer filtro primero")
-                fecha_arrendatario = self.arrendatario_id.fecha_fin_cobro
-                self.fechaPago = fecha_arrendatario + relativedelta(days=7)
-        
+                print("Tercer filtro")
+                self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=7)
+                permitir = True
+
         super().save(*args, **kwargs) # Llamar al método save de la superclase para guardar todo lo demas que se solicita en la vista
         
-        # Actualizar la fecha de pago del propietario
-        propietario_instance = self.propietario_id
-        max_fecha_pago = propietario_instance.inmueble.aggregate(Max('fechaPago'))['fechaPago__max']
-        propietario_instance.fecha_pago = max_fecha_pago
-        propietario_instance.save()
-        
+        if permitir == True:
+            print(f"paso el permitir: {self.fechaPago}")
+            fechas_pago_automaticas(self)
+            
     class Meta:
         db_table = 'inmueble'
 

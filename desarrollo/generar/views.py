@@ -586,7 +586,6 @@ def individuo_inquilino(request, id):
     objetoArrendatario= arrendatario.objects.get(usuarios_id_id = id)
     objetoUser = usuarios.objects.get( id = objetoArrendatario.usuarios_id_id)
     documentos = objetoArrendatario.DocsPersona.all()
-    print(documentos)
     
     estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
     return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'arrendatario':objetoArrendatario, 'estado':estados, 'documentos':documentos})
