@@ -83,7 +83,7 @@
           </thead>
           <tbody>
             <tr>
-              <td>{{ fecha }}</td>
+              <td>{{ fecha_actual }}</td>
               <td>RENTA CASA</td>
               <td>1.088.261.920-1</td>
               <td>APROBADO</td>
@@ -93,54 +93,43 @@
         <table>
           <thead>
             <tr>
-              <th>PROPIETARIO</th>
-              <th>DIRECCION INMUEBLE</th>
+              <th>ARRENDATARIO</th>
+              <th>DIRECCION</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>{{ usuario.nombre|upper  }}  {{ usuario.apellido|upper  }}</td>
-              <td> {{ direccion |upper }}</td>
+              <td> {{ inmueble.direccion |upper }}</td>
             </tr>
           </tbody>
         </table>
         <table>
           <thead>
             <tr>
-              <th>DOCUMENTO PROPIETARIO</th>
+              <th>DOCUMENTO ARRENDATARIO</th>
               <th>CANON</th>
-              <th>DESCUENTO</th>
-              <th>PAGAR NETO</th>
+              <th>MONTO POR MORA</th>
+              <th>PAGO NETO</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>{{ usuario.documento }}</td>
-              <td>$ {{ valor_inicial }}</td>
+              <td>$ {{ inmueble.canon }}</td>
               <td>$ {{ descuento }}</td>
-              <td>$ {{ total }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <table>
-          <tbody>
-            <tr>
-              <td><strong>MODO DE PAGO</strong></td>
-              <td><strong>BANCO:</strong> {{ propietario.banco|upper }}</td>
-              <td><strong>NUM. CUENTA:</strong> {{ propietario.num_cuenta }}</td>
+              <td>$ {{ totalPagar }}</td>
             </tr>
           </tbody>
         </table>
         <table>
           <thead>
             <tr>
-              <th>OBSERVACIONES</th>
               <th>FIRMA RECEPCION PAGO</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>{{ descripcion }}</td>
               <td>MARISELVA VELEZ</td>
             </tr>
           </tbody>

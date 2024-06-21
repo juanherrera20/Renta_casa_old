@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta
+from io import BytesIO
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.templatetags.static import static
@@ -10,9 +11,10 @@ from django.db.models import Q
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
-from .functions import autenticado_required, actualizar_estados, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf #Importo las funciones desde functions.py
+from .functions import autenticado_required, actualizar_estados, actualizar_tareas, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf, render_pdf_arr #Importo las funciones desde functions.py
 from .functions import diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
 import json
+import zipfile
 
 #Librerias y paquetes posbilemente utiles
 # from cryptography.fernet import Fernet
@@ -20,27 +22,19 @@ import json
 # from django.contrib.auth import authenticate
 
 # Creations the views.
-def nav(request):
-    return render(request,'barra_navegacion.html') #Esta vista es solo una prueba "ayuda" para el diseño de la barra de navegación
 def index(request):
     if request.method == 'GET':
         return render(request, 'index.html')
-    else: 
-        # Obtengo los valores del formulario de inicio de sesión
+    else: # Obtengo los valores del formulario de inicio de sesión
         username_form = request.POST.get('documento')
         password_form = request.POST.get('password')
-        
-        # Busco el usuario en la base de datos
-        user = superuser.objects.filter(documento=username_form).first()
-        if user is not None:
-            # Verifico si la contraseña coincide con la almacenada en la base de datos
+        user = superuser.objects.filter(documento=username_form).first() # Busco el usuario en la base de datos
+        if user is not None: # Verifico si la contraseña coincide con la almacenada en la base de datos
             if check_password_hash(user.password, password_form): #Permite autenticar la contraseña del usuario encontrado
                 #Estas son variables de sesión
                 request.session["estado_sesion"] = True
                 request.session["id_usuario"] = user.id
                 request.session["email"] = user.email
-                #----- poner mas variables de sesión en base a lo que necesitemos
-                
                 datos = { 'nombre' : user.nombre, 'apellido' : user.apellido} #Usar los datos a nivel de template
                 return redirect('dash')
             else:
@@ -49,7 +43,6 @@ def index(request):
             messages.error(request, "Usuario no encontrado en la base de datos")
 
         return redirect('index')
-
 def close(request):
     try: #Elimino las variables de sesion
         del request.session["estado_sesion"] 
@@ -58,36 +51,31 @@ def close(request):
         return redirect('index') 
     except: #En caso de que lo anterior no se pueda, redirige a index directamente
         return redirect('index')
-
+#----------------------------------------------------------------Función para registrar los usuarios administrativos---------------------------------------------------------
 def register(request):
-    if request.method == 'POST':
-        # Procesar el formulario cuando se envíe
+    if request.method == 'POST':# Procesar el formulario cuando se envíe
         name = request.POST.get('nombre', None)
         lastname = request.POST.get('apellido', None)
         phone = request.POST.get('telefono', None)
         email = request.POST.get('email', None)
         ide = request.POST.get('documento', None)
         passw = request.POST.get('pass', None)
-        
-        # Encriptar el documento y contraseña
-        encrypt_ide = generate_password_hash(ide)
-        encrypt_passw = generate_password_hash(passw)
+
+        encrypt_passw = generate_password_hash(passw)# Encriptar la contraseña
         
         # Crear y guardar el objeto superuser
         model = superuser(nombre=name, apellido=lastname, documento=ide, password=encrypt_passw, telefono=phone, email=email)
         model.save()
-        
-        # Redireccionar a la página de inicio de sesión después del registro
-        return redirect('index')
+
+        return redirect('index')# Redireccionar a la página de inicio de sesión después del registro
     
     else:
-        # Renderizar el formulario vacío cuando la solicitud es GET
-        return render(request, 'register.html')
-#-------------------------------------------------------------------------Logica del Dashboard------------------------------------------------------------------------------------------------s
-
+        return render(request, 'register.html')# Renderizar el formulario vacío cuando la solicitud es GET
+#-------------------------------------------------------------------------Logica del Dashboard------------------------------------------------------------------------------------------------
 @autenticado_required #Decorador personalizado 
 def dash(request):
     actualizar_estados() #Llamamos a la función
+    actualizar_tareas()
     
     objetoPropietario = usuarios.objects.filter(propie_client=1).order_by('-id')[:5] #Propietarios
     contadorPropietario = usuarios.objects.filter(propie_client=1)
@@ -114,9 +102,7 @@ def dash(request):
     for propietario in objetoPropietario:
         direccion = propietario.propietario.first().direccion if propietario.propietario.exists() else None
         for objeto in propietario.propietario.all():
-            print(f"Propietario: {objeto}")
             estadosDiccionario = jerarquia_estadoPago_propietario(objeto)
-            print(f"estado pago: {estadosDiccionario}")
             estados = diccionarioPago[str(estadosDiccionario)]
             estados_espacio = estados.lower().replace(' ', '')
             usuarios_propietarios.append((propietario, direccion, estados, estados_espacio))
@@ -141,8 +127,6 @@ def dash(request):
     actualizar_estados()
 
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
-
-
 #------------------------------------------------------------------------------Vistas para inmuebles-----------------------------------------------------------------------------
 @autenticado_required
 def inmu(request): #Visualizar los inmuebles (Tabla)
@@ -188,14 +172,13 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
             Donde se guardarán de la siguiente manera [agua, electric, gas, internet] y así mismo se pueden rescatar.
             """
             servicios = ",".join(opciones_seleccionadas) #Las combino en una sola cadena de texto seguidas por ","
-            
-            #----------------------REvisar esta parte--------------------------s
+
             ultimo_inmueble = inmueble.objects.order_by('-id').first()
             ultimo_ref = int(ultimo_inmueble.ref)
             
             # Incrementar el número
             nuevo_ref = ultimo_ref + 1
-            #-------------------------------------------------------------------s
+            #-------------------------------------------------------------------
             id_arrendatario = request.POST.get('arrendatario', None)
             
             if id_arrendatario == '':
@@ -205,7 +188,6 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
             else:
                 estado = 2
             
-
             model=inmueble(propietario_id_id = id_propietario, arrendatario_id_id = id_arrendatario, ref= nuevo_ref, tipo = tipo_inmueble, canon= canon, descripcion= descrip, habilitada = estado, servicios = servicios, porcentaje = porcentaje, direccion= direc)
             model.save()
 
@@ -213,7 +195,7 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
             #Una vez guardado el modelo, obtengo una lista del formulario para guardar las imagenes y documentos en su respectiva tabla
             imagenes = request.FILES.getlist('imagen',None)
             for imagen in imagenes :
-                #El siguiente codigo es para darle un nombre aleatorio a cada imagen (Es opcional, revisar si lo implementamos o no)
+                #El siguiente codigo es para darle un nombre aleatorio a cada imagen
                 original_filename = imagen.name
                 filename_unico = str(uuid.uuid4()) + "_" + original_filename
                 imagen.name = filename_unico
@@ -243,21 +225,13 @@ def individuo_inmueble(request, id):
     objetoArrendatario = usuarios.objects.filter(propie_client=2).exclude(Q(arrendatario__inmueble__isnull=False)) #El Q permite anidar condiciones para el filtro
     objetoPropietario = usuarios.objects.filter(propie_client=1)
     
-    # Crear Paginacion para las imagenes y no mostrarlas todas
-    # paginator = Paginator(imagenes, 8)  # Mostrar 5 imágenes por página
-    # page_number = request.GET.get('page')
-    # page_obj = paginator.get_page(page_number)
-    
     return render(request, 'inmuebles/individuo_inmueble.html', {'inmueble': All, 'arrendatario':objetoArrendatario, 'propietario':objetoPropietario, 'matricula':matriculas, 
-                                                                 'documentos':documentos, 'imagenes':imagenes}) #Si se usa Añadir esto para paginacion 'page_obj': page_obj
-
+                                                                 'documentos':documentos, 'imagenes':imagenes})
 @autenticado_required
 def actualizar_inmueble(request):
     id_inmueble = request.POST.get('id',None)
-    
     id_propietario = int(request.POST.get('addPropietario', None))
     propietario_obj = propietario.objects.get(usuarios_id = id_propietario)
-    
     id_arrendatario = request.POST.get('addArrendatario', None)
     estado = request.POST.get('tipo_estado', None)
 
@@ -298,9 +272,8 @@ def actualizar_inmueble(request):
     guardar.habilitada = estado
     guardar.ref = ref
     guardar.save()
-
-    #Logica para guardar y/o eliminar imagenes y documentos
-    documentos_delet = request.POST.getlist("eliminar_documentos", None)
+    
+    documentos_delet = request.POST.getlist("eliminar_documentos", None)#Logica para guardar y/o eliminar imagenes y documentos
     for doc_id in documentos_delet :
         document = Documentos.objects.get(id = doc_id)
         document.delete()
@@ -318,10 +291,7 @@ def actualizar_inmueble(request):
     for imag in imagenes_nuevas:
         Imagenes.objects.create( imagen = imag, inmueble_id = id_inmueble)
         
-        
     return redirect('inmu')
-    #Recordar en el tipo de inmueble, invertir el valor que tenga por determinado, utilizando un diccionario inverso.
-
 #----------------------------------------------------------------Logica para Propietarios----------------------------------------------------------
 @autenticado_required
 def personas_propietarios(request): #Tabla en vista de personas propietarios
@@ -367,7 +337,6 @@ def guardar(request): #Logica para guardar propietarios en dB
         
         direc = request.POST.get('direc', None)
         fecha_pagar = request.POST.get('fecha_pagar', None)
-        #print(f"Fecha: {fecha_pagar}")
         tipo_banco = request.POST.get('tipo_banco', None)
         num_banco = request.POST.get('num_cuenta', None)
         observ = request.POST.get('obs', None)
@@ -417,8 +386,6 @@ def actualizar_propietario(request): #Actualizar propietario.
     numero_banco = request.POST.get('num_banco')
     fecha_pago = request.POST.get('fecha_pago')
     respaldo_fecha = request.POST.get('respaldo_fecha') 
-    # print(f"Fecha cambiada: {fecha_pago}")
-    # print(f"Fecha respaldo: {respaldo_fecha}")
 
     if fecha_pago:
         fechaPago = fecha_pago
@@ -437,8 +404,7 @@ def actualizar_propietario(request): #Actualizar propietario.
     guardar2.obs = obs
     guardar2.save()
     
-    #Logica para guardar y/o eliminar documentos
-    documentos_delet = request.POST.getlist("eliminar_documentos", None)
+    documentos_delet = request.POST.getlist("eliminar_documentos", None)#Logica para guardar y/o eliminar documentos
     for doc_id in documentos_delet :
         document = DocsPersonas.objects.get(id = doc_id)
         document.delete()
@@ -462,11 +428,8 @@ def analisis_propietarios(request):
     
     #Logica para la tabla de propietarios
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Aquí filtro para que solo aparezcan los inmuebles con arrendatario
-
-    #print(f"Inmuebles: {objetoInmuebles}")
     objetoTipo = inmueble.objects.values_list('tipo', flat=True).filter(arrendatario_id__isnull=False)
     tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
-
     objetoPorcentaje = inmueble.objects.values_list('porcentaje', flat=True).filter(arrendatario_id__isnull=False)
     descuento = [diccionarioPorcentajeDescuento[str(values)]for values in objetoPorcentaje ]
 
@@ -480,8 +443,6 @@ def analisis_propietarios(request):
     for objeto in objetoInmuebles: #De esta manera obtengo los valores especificos para cada inmueble directamente desde el
         estadoPropietario.append(diccionarioPago[str(objeto.estadoPago)])
         bancoLink.append(diccionarioBancos[str(objeto.propietario_id.bancos)])                                                                               
-    # print(f"habilitar: {estadoPropietario}")
-    # print(f"Bancos: {bancoLink}")
     
     objetoCanon = inmueble.objects.values_list('canon', flat=True).filter(arrendatario_id__isnull=False)
     totales = []
@@ -493,7 +454,6 @@ def analisis_propietarios(request):
 
     All = list(zip(objetoInmuebles, tipoInmueble, habilitada, estadoPropietario, descuento, totales, bancoLink))
 
-    #Es necesario hacer la logica para saber cuantos inmuebles tiene el propietario?
     return render(request, 'analisis/propietarios/analisis_propietarios.html',{ 'all': All})
 
 #-------------------------------------------------------------------Logica para inquilinos/Arrendatarios----------------------------------------------------------------
@@ -501,13 +461,14 @@ def analisis_propietarios(request):
 def personas_inquilinos(request): #Logica para la tabla de Inquilinos-Personas
     objetoArrendatario = arrendatario.objects.values_list('usuarios_id_id')
     objetoUsuario = usuarios.objects.filter(id__in = objetoArrendatario) # Se filtra para saber si son propietarios o clientes
+    num_inmueble = objetoUsuario.count()
     habilitar = usuarios.objects.filter(propie_client=2).values_list('habilitar', flat=True) # Se filtra solo el campo de 'habilitar'
     estados = [diccionarioHabilitar[str(habilitar_value)] for habilitar_value in habilitar] # Se implementa el diccionarioHabilitar
     usuarios_con_estados = []
     for usuario, estado in zip(objetoUsuario, estados): #Enpaquetando variables para que quede en una sola y poder iteraralas
         direccion = usuario.arrendatario.first().direccion if usuario.arrendatario.exists() else None
         usuarios_con_estados.append((usuario, estado, direccion))
-    return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados})
+    return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados, 'contador': num_inmueble})
 
 def add_inquilino(request): #Vista para añadir inquilinos
     objetoInmueble = inmueble.objects.filter(arrendatario_id_id = None)
@@ -626,7 +587,6 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     if fecha_cobro: #Compruebo si se modifico la fecha
         date_cobro = fecha_cobro
         fechaCobro = datetime.strptime(date_cobro, '%Y-%m-%d')
-    
     else:
         try:
             fechaCobro =  datetime.strptime(fecha_cobroRes, "%B %d, %Y")
@@ -648,8 +608,8 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
             inicioContrato =  datetime.strptime(inicio_contratoRes, "%b. %d, %Y")
 
     tipo_contrato = request.POST.get('tipo_contrato')
-
     finalContrato =""
+
     if tipo_contrato == "Trimestral":
         fechaSuma = inicioContrato
         finalContrato = fechaSuma + relativedelta(months=3, days=-1)
@@ -698,10 +658,6 @@ def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
     for objeto in objetoInmuebles:  #De esta manera obtengo los valores especificos para cada inmueble directamente desde el
         tipoInmueble.append(diccionarioTipoInmueble[str(objeto.tipo)])
         estadoArrendatario.append(diccionarioPago[str(objeto.arrendatario_id.habilitarPago)])
-        print(f"id inmueble: {objeto.id}")
-        print(f"id arendatario: {objeto.arrendatario_id}")
-   
-    print(f"ESto es los habilitar: {estadoArrendatario}")
     
     All = list(zip(objetoInmuebles, tipoInmueble, estadoArrendatario))
     
@@ -710,7 +666,7 @@ def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
 #----------------------------------------------------------------Logica para las tareas--------------------------------------------------------------------------------
 
 def tarea(request): #Visualizar las tareas
-    actualizar_estados() #Llamamos a la función
+    actualizar_tareas()
     
     tareas_completas = tareas.objects.filter(estado='Completa').select_related('superuser_id')#Filtrar tareas Completas
     tareas_incompletas = tareas.objects.filter(estado='Incompleta').select_related('superuser_id')#Filtrar tareas incompletas
@@ -761,22 +717,19 @@ def actualizar_estado(request):
             data = json.loads(request.body)
             task_id = data.get('taskId')
             new_status = data.get('newStatus')
-            # Busca la tarea por ID y actualiza su estado
-            task = tareas.objects.get(id=task_id)
+            task = tareas.objects.get(id=task_id)# Busca la tarea por ID y actualiza su estado
             task.estado = new_status
             task.save()
-            # Redirige al usuario a la página de tareas
-            return redirect('tareas')
+            return redirect('tareas')# Redirige al usuario a la página de tareas
         except Exception as e:
-            # Si algo sale mal, devuelve un mensaje de error
-            return JsonResponse({'success': False, 'message': str(e)}, status=400)
+            return JsonResponse({'success': False, 'message': str(e)}, status=400)# Si algo sale mal, devuelve un mensaje de error
 
 def actualizar_modal(request): #Logica para actualizar cada modal o tarea
     id = request.POST.get('idTarea')
     titulo = request.POST.get('titulo')
-
     fechaInicio = request.POST.get('fechaInicio')
     inicioRes = request.POST.get('inicioRes')
+
     if fechaInicio:
         fecha_inicio = fechaInicio
     else:
@@ -785,6 +738,7 @@ def actualizar_modal(request): #Logica para actualizar cada modal o tarea
 
     fechaFin = request.POST.get('fechaFin')
     finRes = request.POST.get('finRes')
+
     if fechaFin:
         fecha_fin = fechaFin
     else:
@@ -794,6 +748,7 @@ def actualizar_modal(request): #Logica para actualizar cada modal o tarea
     hora_inicio = request.POST.get('hora_inicio')
     horaRes = request.POST.get('horaRes')
     hora =None
+
     if hora_inicio:
         hora = hora_inicio
     else:
@@ -828,35 +783,29 @@ def all_values_pro(request, id): #Vista exclusivamente para los propietarios
     
     #------------------------------------------------------Individuo_inmueble----------------------------------------------------
     objetoInmueble = inmueble.objects.filter(id=id).first()
-
     documentos = objetoInmueble.documentos.all()
     imagenes = objetoInmueble.imagenes.all()
-    
     clave_tipo = diccionarioTipoInmueble.get(str(objetoInmueble.tipo))
     clave_estado = diccionarioInmueble.get(str(objetoInmueble.habilitada))
     clave_porcentaje = diccionarioPorcentajeDescuento.get(str(objetoInmueble.porcentaje))
-    
     servicios = [servicio.strip() for servicio in objetoInmueble.servicios.split(',')] if objetoInmueble.servicios else []
     newServicios = extract_numbers(servicios)
     matriculas = [numero if numero!= 0 else 'No existe' for numero in newServicios]
-
     All = [(objetoInmueble, clave_tipo,clave_estado,clave_porcentaje,servicios)]
-    #------------------------------------------------------Individuo_Propietario----------------------------------------------------
 
+    #------------------------------------------------------Individuo_Propietario----------------------------------------------------
     objetoPropietario = propietario.objects.filter(id=objetoInmueble.propietario_id_id).first()
     pago = diccionarioPago[str(objetoInmueble.estadoPago)]
     objetoUser = usuarios.objects.get( id = objetoPropietario.usuarios_id_id)
     documentos = objetoPropietario.DocsPersona.all()
-
     canon = objetoInmueble.canon
     objetoPorcentaje = objetoInmueble.porcentaje
-
     descuento_porcentaje = diccionarioPorcentajeDescuento[str(objetoPorcentaje)]
     descuento = float(descuento_porcentaje)
     totalDescuento = ((canon * descuento)/ 100)
     totalPago = (canon - totalDescuento)
-
     #------------------------------------------------------Individuo_Arrendatario----------------------------------------------------
+    
     if objetoInmueble.arrendatario_id_id:
         respaldo = 1
         objetoArrendatario = arrendatario.objects.filter(id=objetoInmueble.arrendatario_id_id).first()
@@ -864,7 +813,6 @@ def all_values_pro(request, id): #Vista exclusivamente para los propietarios
         estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
     else: 
         respaldo = 2
-        
     return render(request, 'analisis/all_values_pro.html', {'inmueble': All, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
                                                         'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos, 'total':totalPago,
                                                         'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})
@@ -891,7 +839,6 @@ def redireccion_pro(request): #Redirección solo para los propietarios
         saveinmueble = inmueble.objects.get(id = idInmueble)  #Obtengo el inmueble
         fechaPago = savepropietario.fecha_pago
         antespagado = jerarquia_estadoPago_propietario(savepropietario)
-        print(f"estado antes: {antespagado}")
         estadoPago = 1
        
         #Guardo el inmueble
@@ -899,15 +846,12 @@ def redireccion_pro(request): #Redirección solo para los propietarios
         saveinmueble.save()
         
         pagado = jerarquia_estadoPago_propietario(savepropietario)
-        print(f"jerarquia despues: {pagado}")
         if pagado == 1: #Comprobar que todos los estados esten en "Pagado" para aumentar la fecha
             nuevaFecha = fechaPago + relativedelta(months = 1)
-            print("paso el filtro")
             #Guardo el propietario
             savepropietario.fecha_pago = nuevaFecha
             savepropietario.save()
             
-        print("siempre se ve")
         for inmueblex in savepropietario.inmueble.all():
             print(f"estados inmuebles despues:{inmueblex.estadoPago} ")
             
@@ -926,12 +870,9 @@ def confirmar_pago (request, id):
         total_pago = []
         for inmueble in objs_inmuebles:
             descuento = diccionarioPorcentajeDescuento[str(inmueble.porcentaje)]
-            #print(descuento)
             total_pago.append( inmueble.canon * (100 - descuento)/100)
             
         inmuebles = zip(objs_inmuebles, total_pago)
-        # print(total_pago)
-        # print(objs_inmuebles)
         return render(request, template_path, {"propietario": obj_propietario, "inmuebles": inmuebles})
     
     else:
@@ -942,7 +883,7 @@ def confirmar_pago (request, id):
         ids_inmuebles=[]
         totalPagar = []
         for id_inmueble in id_inmuebles:
-            documento = request.FILES.getlist(f'docRespaldo_{id_inmueble}') #Los imputs estan en relación al inmueble
+            documento = request.FILES.getlist(f'docRespaldo_{id_inmueble}') #Los inputs estan en relación al inmueble
             valor = request.POST.get(f'descuento_{id_inmueble}')
             descrip = request.POST.get(f'descripcionDescuento_{id_inmueble}')
             total = request.POST.get(f'totalPagar_{id_inmueble}')
@@ -959,7 +900,7 @@ def confirmar_pago (request, id):
                 url = fs.url(filename)
                 urls.append(url)
             guardar = Docdescuentos(inmueble_id =id_inmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
-            """ guardar.save() """
+            guardar.save()
             
         propietarios = {
             'id': obj_propietario.id,
@@ -979,9 +920,9 @@ def confirmar_pago (request, id):
         request.session['obj_propietario'] = propietarios
         request.session['obj_usuario'] = propietario_user
 
-        return redirect("factura") #Aquí se puede redireccionar al html de la factura, creo
+        return redirect("factura") #Aquí se redirecciona al html de la factura
     
-#logica para facturación:
+#------------------------------------------------------------------ Función para las facturas de Propietarios ----------------------------------------------------------
 def factura(request):
     totalPagar = request.session.get('totalPagar', [])
     descuentos = request.session.get('descuentos', [])
@@ -990,66 +931,69 @@ def factura(request):
     objeto_inmueblef = inmueble.objects.filter(id__in=ids_inmuebles)
     obj_propietario = request.session.get('obj_propietario')
     obj_usuario = request.session.get('obj_usuario')
-    values_inmueble =[]
-    i = 0
-    for data in objeto_inmueblef:
-        descuento = descuentos[i]
-        descrip = descripcion[i]
-        direccion = data.direccion
-        valor_inicial = int(float(totalPagar[i]))
-        total = valor_inicial - int(descuento)
-        values_inmueble.append([direccion, valor_inicial, descuento, total, descrip])
-        i += 1
-    values = list(zip(values_inmueble))
     fecha = date.today()
     fecha_actual= fecha.strftime("%d/%m/%Y")
     logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))
     logo_datacredito_url = request.build_absolute_uri(static('image/Logo-Datacredito.png'))
-    data = {
-        'values': values,
-        'propietario': obj_propietario, 
-        'usuario': obj_usuario, 
-        'fecha': fecha_actual,
-        'logo_rentacasa_url': logo_rentacasa_url,
-        'logo_datacredito_url': logo_datacredito_url,
-    }
-    pdf = render_pdf('factura.html', data)
+    pdf_files = []
+    for i, data in enumerate(objeto_inmueblef):
+        descuento = descuentos[i] if descuentos[i] is not None else 0
+        descrip = descripcion[i] if descripcion[i] is not None else "No hay observaciones."
+        direccion = data.direccion
+        valor_inicial = int(float(totalPagar[i]))
+        total = valor_inicial - int(descuento)
+        value ={
+            'direccion': direccion,
+            'valor_inicial': valor_inicial,
+            'descuento': descuento,
+            'total': total,
+            'descripcion': descrip,
+            'propietario': obj_propietario, 
+            'usuario': obj_usuario, 
+            'fecha': fecha_actual,
+            'logo_rentacasa_url': logo_rentacasa_url,
+            'logo_datacredito_url': logo_datacredito_url,
+        }
+        pdf = render_pdf('factura.html', value)
+        pdf_files.append((f'factura_{i+1}.pdf', pdf))
 
-    return pdf
+    zip_buffer = BytesIO() #Empaqueta cada pdf para luego descargar solo un .ZIP
+    with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
+        for filename, pdf in pdf_files:
+            zip_file.writestr(filename, pdf.getvalue())
+    zip_buffer.seek(0)
+    response = HttpResponse(zip_buffer, content_type='application/zip')
+    response['Content-Disposition'] = 'attachment; filename="facturas.zip"'
+    return response
 
 def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     actualizar_estados() #Llamamos a la función
     
     #------------------------------------------------------Individuo_inmueble----------------------------------------------------
     objetoInmueble = inmueble.objects.filter(id=id).first()
-
     documentos = objetoInmueble.documentos.all()
     imagenes = objetoInmueble.imagenes.all()
-    
     clave_tipo = diccionarioTipoInmueble.get(str(objetoInmueble.tipo))
     clave_estado = diccionarioInmueble.get(str(objetoInmueble.habilitada))
     clave_porcentaje = diccionarioPorcentajeDescuento.get(str(objetoInmueble.porcentaje))
-    
     servicios = [servicio.strip() for servicio in objetoInmueble.servicios.split(',')] if objetoInmueble.servicios else []
     newServicios = extract_numbers(servicios)
     matriculas = [numero if numero!= 0 else 'No existe' for numero in newServicios]
-
     All = [(objetoInmueble, clave_tipo,clave_estado,clave_porcentaje,servicios)]
-    #------------------------------------------------------Individuo_Propietario----------------------------------------------------
 
+    #------------------------------------------------------Individuo_Propietario----------------------------------------------------
     objetoPropietario = propietario.objects.filter(id=objetoInmueble.propietario_id_id).first()
     pago = diccionarioPago[str(objetoInmueble.estadoPago)]
     objetoUser = usuarios.objects.get( id = objetoPropietario.usuarios_id_id)
     documentos = objetoPropietario.DocsPersona.all()
     canon = objetoInmueble.canon
     objetoPorcentaje = objetoInmueble.porcentaje
-
     descuento_porcentaje = diccionarioPorcentajeDescuento[str(objetoPorcentaje)]
     descuento = float(descuento_porcentaje)
     totalDescuento = ((canon * descuento)/ 100)
     totalPago = (canon - totalDescuento)
-
     #------------------------------------------------------Individuo_Arrendatario----------------------------------------------------
+    
     if objetoInmueble.arrendatario_id_id:
         respaldo = 1
         objetoArrendatario = arrendatario.objects.filter(id=objetoInmueble.arrendatario_id_id).first()
@@ -1068,7 +1012,6 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
     idInmueble = request.POST.get('idInmueble')
     idUsuario = request.POST.get('idUser')
     idArrendatario = request.POST.get('idArrendatario')
-    
     idA = request.POST.get('idA')  # Extraigo el id arrendatario para actualizar valores
     
     if btn == '1':
@@ -1083,20 +1026,43 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
     elif btnPago == '4':
         guardar = arrendatario.objects.get(id=idA)
         fechaCobro = guardar.fecha_inicio_cobro
-        
         nuevaFecha = fechaCobro + relativedelta(months=1)
-        
         fecha_limite = nuevaFecha + timedelta(days=5)
-        
         habilitarPago = 1
-        
+
         # Actualizar los campos
         guardar.habilitarPago = habilitarPago
         guardar.fecha_inicio_cobro = nuevaFecha  # Guardar el objeto datetime directamente
         guardar.fecha_fin_cobro = fecha_limite   # Guardar el objeto datetime directamente
         guardar.save()
         
-        resultado = analisis_inquilinos(request)
-        return HttpResponse(resultado)
+        resultado = factura_Arr(request, idInmueble, idUsuario, idArrendatario)
+        return resultado #Aquí se redirecciona al html de la factura para arrendatarios
     
     return redirect('dash')  # Este return se puede cambiar para el control de errores
+
+#------------------------------------------------------------------Función para la factura de Arrendatario----------------------------------------------------------
+def factura_Arr(request, idInmueble, idUsuario, idArrendatario):
+    
+    obj_inmueble = inmueble.objects.filter(id=idInmueble).first()
+    obj_arrendatario = arrendatario.objects.filter(id=idArrendatario).first()
+    obj_usuario = usuarios.objects.filter(id=idUsuario).first()
+    fecha = date.today()
+    fecha_actual= fecha.strftime("%d/%m/%Y")
+    logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))
+    logo_datacredito_url = request.build_absolute_uri(static('image/Logo-Datacredito.png'))
+    #Se supone que aquí se debe implementar la función de calcular_monto_atraso() para el atraso.
+    descuento = 0
+    totalPagar = int(obj_inmueble.canon) + descuento
+    data = {
+        'usuario': obj_usuario,
+        'inmueble': obj_inmueble,
+        'arrendatario': obj_arrendatario,
+        'descuento': descuento,
+        'totalPagar': totalPagar,
+        'fecha_actual': fecha_actual,
+        'logo_rentacasa_url': logo_rentacasa_url,
+        'logo_datacredito_url': logo_datacredito_url,
+    }
+    pdf = render_pdf_arr('factura _arr.html', data)
+    return pdf

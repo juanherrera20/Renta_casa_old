@@ -132,8 +132,6 @@ def  actualizar_estados():
         propietario = objeto.propietario_id
         EstadoPago1 = jerarquia_estadoPago_propietario(propietario) #Equivalente al obtenido a la jerarquia
         EstadoPago2 = objeto.estadoPago
-        # print(f"Estado propietario: {EstadoPago1}")
-        # print(f"Estado propietario: {EstadoPago1}")
         fechaPago = objeto.propietario_id.fecha_pago
         
         if isinstance(fechaPago, date):
@@ -192,15 +190,19 @@ def  actualizar_estados():
         
     inicioContrato = objeto.arrendatario_id.inicio_contrato
     finContrato = objeto.arrendatario_id.fin_contrato
-    #-----------------------Tareas-----------------------
+    return print(fecha)
+#---------------------------------------------------------------------------------------------------------------------------------------
+
+#------------------Actualizar las tareas(Cuando estan en Pendiente y se pasan de la fecha, se pasan a incompletas)--------------------------------------------------------------------------------------------
+def actualizar_tareas():
+    fechaObjeto1 = fecha
     tareas_pendientes = tareas.objects.filter(estado='Pendiente', fecha_fin__lte=fechaObjeto1)
     updates = [(obj.id, 'Incompleta') for obj in tareas_pendientes]
     if updates:
         instances_to_update = [tareas(id=id, estado=new_state) for id, new_state in updates]
         tareas.objects.bulk_update(instances_to_update, ['estado'])
-    return print(fecha)
+    return None
 #---------------------------------------------------------------------------------------------------------------------------------------
-
 
 #-------------------------------------------Función para sacar los números de una lista mixta.------------------------------------------s
 def extract_numbers(lst): #
@@ -231,7 +233,7 @@ def jerarquia_estadoPago_propietario(propietario):
 #---------------------------------------------------------------------------------------------------------------------------------------s
 
 
-#-------------------------------------------Función para transformar la hora (No lo se muy bien)----------------------------------------s
+#-------------------------------------------Función para transformar la hora------------------------------------------------
 def convert_time(horaRes):
     horaRes = horaRes.strip().replace(".","")
     try:
@@ -242,16 +244,26 @@ def convert_time(horaRes):
     return hora
 #---------------------------------------------------------------------------------------------------------------------------------------s
 
-
-#--------------------------------------------Función para renderizar un pdf-------------------------------------------------------------------------------------------s
+#--------------------------------------------Función para renderizar los pdf de propietario-------------------------------------------------------------------------------------------s
 def render_pdf( template_src, context_dict={}):
-    print(context_dict)
     template = get_template(template_src)
     html = template.render(context_dict)
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("utf-8")), dest=result)
     if not pdf.err:
         result.seek(0)
-        return FileResponse(result, as_attachment=True, filename='nombre.pdf')
+        return result
     return None
-#--------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------------s
+
+#-----------------------------------------------Función para renderizar el pdf de Arrendatario----------------------------------------------------------------------
+def render_pdf_arr( template_src, context_dict={}):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("utf-8")), dest=result)
+    if not pdf.err:
+        result.seek(0)
+        return FileResponse(result, as_attachment=True, filename='Factura-Arrendatario.pdf')
+    return None
+#---------------------------------------------------------------------------------------------------------------------------------------s

@@ -13,15 +13,22 @@
 {% endblock encabezado %}
 
 {% block title %}
-  
+<div class="title-add">
+    <h2>Añadir Inquilino</h2>
+</div>
 {% endblock title %}
 
 {% block contenido %}
-    <h2>Añadir Inquilino</h2>
-    <h4>Lo marcado con "*" es un campo obligatorio</h4><br><br>
+    <div class="contenido">
+        <h4>Lo marcado con "<p> * </p>" es un campo obligatorio</h4><br><br>
+        <div class="form-add">
+            <form action="{% url 'guardar_inquilino' %}" method="post" id="addInquilino" enctype="multipart/form-data">
+                {% csrf_token %}
+                <h3>Información general</h3>
+        </div>
+    </div>
 
-    <form action="{% url 'guardar_inquilino' %}" method="post" id="addInquilino" enctype="multipart/form-data">
-        {% csrf_token %}
+    
         <label for="inmueble" id="label" style="display:none;">Inmueble:</label>
         <select name="inmueble" id="selectInmu" style="display: none;">
             <option value="">Seleccionar el inmueble a asignar</option>
