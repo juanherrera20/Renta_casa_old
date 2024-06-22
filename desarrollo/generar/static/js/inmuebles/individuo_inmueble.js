@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             // Cambiar el tipo de input de 'fecha_pago' a 'date' y almacenar el valor original
-            var fechaPagoInput = miFormulario.querySelector('input[name="fecha_pago"]');
+            var fechaPagoInput = miFormulario.querySelector('input[name="fechaPago"]');
             if (fechaPagoInput) {
                 fechaPagoInput.dataset.originalValue = fechaPagoInput.value; // Almacenar el valor original
                 fechaPagoInput.type = 'date';

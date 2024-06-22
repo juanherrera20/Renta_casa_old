@@ -428,6 +428,7 @@ def analisis_propietarios(request):
     
     #Logica para la tabla de propietarios
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Aquí filtro para que solo aparezcan los inmuebles con arrendatario
+    num_inmueble = objetoInmuebles.count()
     objetoTipo = inmueble.objects.values_list('tipo', flat=True).filter(arrendatario_id__isnull=False)
     tipoInmueble = [diccionarioTipoInmueble[str(values)]for values in objetoTipo ]
     objetoPorcentaje = inmueble.objects.values_list('porcentaje', flat=True).filter(arrendatario_id__isnull=False)
@@ -444,6 +445,7 @@ def analisis_propietarios(request):
         estadoPropietario.append(diccionarioPago[str(objeto.estadoPago)])
         bancoLink.append(diccionarioBancos[str(objeto.propietario_id.bancos)])                                                                               
     
+    estados_espacio = [valor.lower().replace(' ', '') for valor in estadoPropietario]
     objetoCanon = inmueble.objects.values_list('canon', flat=True).filter(arrendatario_id__isnull=False)
     totales = []
 
@@ -451,10 +453,9 @@ def analisis_propietarios(request):
         totalDescuento = ((canon * des)/ 100)
         totalPago = (canon - totalDescuento)
         totales.append({ 'totalDescuento': totalDescuento, 'totalPago': totalPago})
+    All = list(zip(objetoInmuebles, tipoInmueble, habilitada, estados_espacio, estadoPropietario, descuento, totales, bancoLink))
 
-    All = list(zip(objetoInmuebles, tipoInmueble, habilitada, estadoPropietario, descuento, totales, bancoLink))
-
-    return render(request, 'analisis/propietarios/analisis_propietarios.html',{ 'all': All})
+    return render(request, 'analisis/propietarios/analisis_propietarios.html',{ 'all': All, 'contador':num_inmueble})
 
 #-------------------------------------------------------------------Logica para inquilinos/Arrendatarios----------------------------------------------------------------
 
