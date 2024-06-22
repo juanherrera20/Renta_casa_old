@@ -547,9 +547,10 @@ def individuo_inquilino(request, id):
     objetoArrendatario= arrendatario.objects.get(usuarios_id_id = id)
     objetoUser = usuarios.objects.get( id = objetoArrendatario.usuarios_id_id)
     documentos = objetoArrendatario.DocsPersona.all()
+    obj_inmueble = objetoArrendatario.inmueble.first()
     
     estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
-    return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'arrendatario':objetoArrendatario, 'estado':estados, 'documentos':documentos})
+    return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'arrendatario':objetoArrendatario, 'estado':estados, 'documentos':documentos, 'inmueble':obj_inmueble})
 
 def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     idUsuario = request.POST.get('id')
@@ -819,7 +820,6 @@ def all_values_pro(request, id): #Vista exclusivamente para los propietarios
 
 def redireccion_pro(request): #Redirección solo para los propietarios
     btn = request.POST.get('btn')
-    btnPagar = request.POST.get('btnRespaldoPagar')
     idInmueble = request.POST.get('idInmueble')
     idp = request.POST.get('idP')
     idUsuario = request.POST.get('idUser')
@@ -833,29 +833,6 @@ def redireccion_pro(request): #Redirección solo para los propietarios
         return HttpResponse(resultado)
     elif btn == '3':
         resultado = individuo_inquilino(request, idArrendatario)
-        return HttpResponse(resultado)
-    elif btnPagar == '4':
-        savepropietario = propietario.objects.get(id=idp) #Obtengo el propietario
-        saveinmueble = inmueble.objects.get(id = idInmueble)  #Obtengo el inmueble
-        fechaPago = savepropietario.fecha_pago
-        antespagado = jerarquia_estadoPago_propietario(savepropietario)
-        estadoPago = 1
-       
-        #Guardo el inmueble
-        saveinmueble.estadoPago = estadoPago
-        saveinmueble.save()
-        
-        pagado = jerarquia_estadoPago_propietario(savepropietario)
-        if pagado == 1: #Comprobar que todos los estados esten en "Pagado" para aumentar la fecha
-            nuevaFecha = fechaPago + relativedelta(months = 1)
-            #Guardo el propietario
-            savepropietario.fecha_pago = nuevaFecha
-            savepropietario.save()
-            
-        for inmueblex in savepropietario.inmueble.all():
-            print(f"estados inmuebles despues:{inmueblex.estadoPago} ")
-            
-        resultado = analisis_propietarios(request)
         return HttpResponse(resultado)
     
     return redirect('analisis_propietarios') #Este return se puede cambiar para el control de errores.
@@ -901,6 +878,28 @@ def confirmar_pago (request, id):
                 urls.append(url)
             guardar = Docdescuentos(inmueble_id =id_inmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
             guardar.save()
+            
+            #Actualizar pago de fechas y estados
+            # savepropietario = propietario.objects.get(id=id_inmueble) #Obtengo el propietario
+            # saveinmueble = inmueble.objects.get(id = id_inmueble)  #Obtengo el inmueble
+            # fechaPago = savepropietario.fecha_pago
+            # antespagado = jerarquia_estadoPago_propietario(savepropietario)
+            # estadoPago = 1
+        
+            # #Guardo el inmueble
+            # saveinmueble.estadoPago = estadoPago
+            # saveinmueble.save()
+            
+            # pagado = jerarquia_estadoPago_propietario(savepropietario)
+            # if pagado == 1: #Comprobar que todos los estados esten en "Pagado" para aumentar la fecha
+            #     nuevaFecha = fechaPago + relativedelta(months = 1)
+            #     #Guardo el propietario
+            #     savepropietario.fecha_pago = nuevaFecha
+            #     savepropietario.save()
+                
+            # for inmueblex in savepropietario.inmueble.all():
+            #     print(f"estados inmuebles despues:{inmueblex.estadoPago} ")
+                
             
         propietarios = {
             'id': obj_propietario.id,

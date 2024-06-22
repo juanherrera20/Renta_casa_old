@@ -28,7 +28,8 @@
             <th>ID</th>
             <th>Nombre</th>
             <th>Dirección</th>
-            <th>Fecha de pago</th>
+            <th>Fecha de pago Inmueble</th>
+            <th>Fecha de pago Limite</th>
             <th>Telefono</th>
             <th>Email</th>
             <th>Estado</th>
@@ -45,6 +46,7 @@
           <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'AllValuesPro' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ forloop.counter}}</button></td>
           <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'AllValuesPro' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.propietario_id.usuarios_id.nombre |add:" "|add:inmueble.propietario_id.usuarios_id.apellido }}</button></td>
           <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'AllValuesPro' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.propietario_id.direccion }}</button></td>
+          <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'AllValuesPro' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.fechaPago }}</button></td>
           <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'AllValuesPro' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.propietario_id.fecha_pago }}</button></td>
           <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'AllValuesPro' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.propietario_id.usuarios_id.telefono }}</button></td>
           <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'AllValuesPro' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.propietario_id.usuarios_id.email }}</button></td>

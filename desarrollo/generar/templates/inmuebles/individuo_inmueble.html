@@ -89,16 +89,9 @@
                 <option value="4">Aparta-estudio</option>
             </select>
           </div>
-          <div class="checkbox-container checkbox-container-aux">
-            <label for="tipo_estado" class="t_estado">Tipo de Estado:</label>
-            <div class="checkbox-container2">
-              <div class="checkbox-label">
-                <label class="checkbox-label">
-                    <input type="checkbox" class="ui-checkbox ui-checkbox-aux" name="tipo_estado" value="3" disabled>
-                    <p class="container-aux3">En proceso</p>
-                </label>
-              </div>
-            </div>
+          <div class="container">
+            <input type="text" name="fechaPago" value="{{inmueble.fechaPago}}" readonly class="input input-aux">
+            <label class="label" for="fechapago">Fecha de Pago</label>
           </div>
         </div><br><br>
         <div class="fourth-block">
@@ -123,6 +116,18 @@
             </select>
           </div>
         </div><br><br>
+        <div class="checkbox-container checkbox-container-aux">
+          <label for="tipo_estado" class="t_estado">Tipo de Estado:</label>
+          <div class="checkbox-container2">
+            <div class="checkbox-label">
+              <label class="checkbox-label">
+                  <input type="checkbox" class="ui-checkbox ui-checkbox-aux" name="tipo_estado" value="3" disabled>
+                  <p class="container-aux3">En proceso</p>
+              </label>
+            </div>
+          </div>
+        </div>
+        <br><br>
         <div class="checkbox-container">
           <label for="servicios"><h4>Servicios incluidos:</h4></label>
           <div class="checkbox-container2">
