@@ -846,9 +846,9 @@ def confirmar_pago (request, id):
     
     if request.method == 'GET':
         total_pago = []
-        for inmueble in objs_inmuebles:
-            descuento = diccionarioPorcentajeDescuento[str(inmueble.porcentaje)]
-            total_pago.append( inmueble.canon * (100 - descuento)/100)
+        for obj_inmueble in objs_inmuebles:
+            descuento = diccionarioPorcentajeDescuento[str(obj_inmueble.porcentaje)]
+            total_pago.append( obj_inmueble.canon * (100 - descuento)/100)
             
         inmuebles = zip(objs_inmuebles, total_pago)
         return render(request, template_path, {"propietario": obj_propietario, "inmuebles": inmuebles})
@@ -856,33 +856,56 @@ def confirmar_pago (request, id):
     else:
         #Guardar los documentos de descuento y toda su información
         id_inmuebles = request.POST.getlist('inmueblesId') #Hay varios inmuebles en el formulario
+        objs_inmuebles = inmueble.objects.filter(id__in=id_inmuebles)  #De esta manera traigo todos los objetos con una sola consulta
         descuento=[]
         descripcion=[]
         ids_inmuebles=[]
         totalPagar = []
-        for id_inmueble in id_inmuebles:
-            documento = request.FILES.getlist(f'docRespaldo_{id_inmueble}') #Los inputs estan en relación al inmueble
-            valor = request.POST.get(f'descuento_{id_inmueble}')
-            descrip = request.POST.get(f'descripcionDescuento_{id_inmueble}')
+        for obj_inmueble in objs_inmuebles:
+            id_inmueble = obj_inmueble.id
+            documento = request.FILES.getlist(f'docRespaldo_{id_inmueble}', None) #Los inputs estan en relación al inmueble
+            valor = request.POST.get(f'descuento_{id_inmueble}', None)
+            descrip = request.POST.get(f'descripcionDescuento_{id_inmueble}', None)
             total = request.POST.get(f'totalPagar_{id_inmueble}')
+            urls=[]
+            
+            if valor != None or descrip != None:  #controlar si se apreto el boton descuento o no
+                today = str(date.today())
+                fs = FileSystemStorage(location='../media/documents/'+ today) #Guardo una carpeta afuera de la carpeta principal
+                
+                if documento: #Si se adjuntaron documentos
+                    for doc in documento:
+                        print("Entra al ciclo documentos")
+                        filename = fs.save(doc.name, doc)
+                        url = fs.url(filename)
+                        urls.append(url)
+                guardar = Docdescuentos(inmueble_id =id_inmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
+                guardar.save()
+            else: 
+                valor = 0
+                descrip = "No Aplica Ningun Descuento"
+            
+            #Se actualiza las listas para la generación de facturas
             totalPagar.append(total)
             descuento.append(valor)
             descripcion.append(descrip)
             ids_inmuebles.append(id_inmueble)
-            today = str(date.today())
-            fs = FileSystemStorage(location='../media/documents/'+ today) #Guardo una carpeta afuera de la carpeta principal
-
-            urls=[]
-            for doc in documento:
-                filename = fs.save(doc.name, doc)
-                url = fs.url(filename)
-                urls.append(url)
-            guardar = Docdescuentos(inmueble_id =id_inmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
-            guardar.save()
             
-            #Actualizar pago de fechas y estados
+  
+            #Actualizar Fechas y estados por cada inmueble
+            print(f"comporbación inmuebles: {id_inmueble}")
+            estado_pago = 1
+            fechaPago = obj_inmueble.fechaPago
+            
+            estadoPago = estado_pago 
+            nuevaFecha = fechaPago + relativedelta(months = 1)
+            
+            obj_inmueble.estadoPago = estadoPago
+            obj_inmueble.fechaPago = nuevaFecha
+            obj_inmueble.save()
+            
             # savepropietario = propietario.objects.get(id=id_inmueble) #Obtengo el propietario
-            # saveinmueble = inmueble.objects.get(id = id_inmueble)  #Obtengo el inmueble
+            
             # fechaPago = savepropietario.fecha_pago
             # antespagado = jerarquia_estadoPago_propietario(savepropietario)
             # estadoPago = 1
@@ -920,7 +943,8 @@ def confirmar_pago (request, id):
         request.session['obj_propietario'] = propietarios
         request.session['obj_usuario'] = propietario_user
 
-        return redirect("factura") #Aquí se redirecciona al html de la factura
+        #return redirect("factura") #Aquí se redirecciona al html de la factura
+        return redirect('analisis_propietarios') #Este return se puede cambiar para el control de errores.
     
 #------------------------------------------------------------------ Función para las facturas de Propietarios ----------------------------------------------------------
 def factura(request):
@@ -965,6 +989,7 @@ def factura(request):
     response = HttpResponse(zip_buffer, content_type='application/zip')
     response['Content-Disposition'] = 'attachment; filename="facturas.zip"'
     return response
+
 
 def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     actualizar_estados() #Llamamos a la función

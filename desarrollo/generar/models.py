@@ -86,7 +86,6 @@ class arrendatario(models.Model): #Tabla usuarios
     obs = models.CharField(max_length = 400) 
     
     def save(self, *args, **kwargs): #pk igual a id
-        print(f"Self: {self.id}")
         super().save(*args, **kwargs) # Llamar al método save de la superclase para guardar todo lo demas que se solicita en la vista
 
         if self.inmueble.exists():  #Verificar si tiene un inmueble asociado
