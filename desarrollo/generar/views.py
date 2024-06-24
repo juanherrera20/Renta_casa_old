@@ -652,7 +652,7 @@ def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
     actualizar_estados() #Llamamos a la función
 
     objetoInmuebles = inmueble.objects.select_related('arrendatario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Solo para arrendatarios que estan vinculados a un inmueble
-    
+    num_inmueble = objetoInmuebles.count()
     # Obtener los tipos de inmuebles y estados de habilitación de pago de los arrendatarios
     tipoInmueble = []
     estadoArrendatario = []
@@ -660,10 +660,10 @@ def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
     for objeto in objetoInmuebles:  #De esta manera obtengo los valores especificos para cada inmueble directamente desde el
         tipoInmueble.append(diccionarioTipoInmueble[str(objeto.tipo)])
         estadoArrendatario.append(diccionarioPago[str(objeto.arrendatario_id.habilitarPago)])
+    estados_espacio = [valor.lower().replace(' ', '') for valor in estadoArrendatario]
+    All = list(zip(objetoInmuebles, tipoInmueble, estadoArrendatario, estados_espacio))
     
-    All = list(zip(objetoInmuebles, tipoInmueble, estadoArrendatario))
-    
-    return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': All})
+    return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': All, 'contador':num_inmueble})
 
 #----------------------------------------------------------------Logica para las tareas--------------------------------------------------------------------------------
 
@@ -786,7 +786,7 @@ def all_values_pro(request, id): #Vista exclusivamente para los propietarios
     #------------------------------------------------------Individuo_inmueble----------------------------------------------------
     objetoInmueble = inmueble.objects.filter(id=id).first()
     documentos = objetoInmueble.documentos.all()
-    imagenes = objetoInmueble.imagenes.all()
+    imagenes = objetoInmueble.imagenes.all()[:10]
     clave_tipo = diccionarioTipoInmueble.get(str(objetoInmueble.tipo))
     clave_estado = diccionarioInmueble.get(str(objetoInmueble.habilitada))
     clave_porcentaje = diccionarioPorcentajeDescuento.get(str(objetoInmueble.porcentaje))
