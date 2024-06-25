@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, HttpResponse
 import uuid
-from django.db.models import Q
+from django.db.models import Q, Max
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -863,10 +863,15 @@ def confirmar_pago (request, id):
         totalPagar = []
         for obj_inmueble in objs_inmuebles:
             id_inmueble = obj_inmueble.id
+            print(f"id inmueble {id_inmueble}")
             documento = request.FILES.getlist(f'docRespaldo_{id_inmueble}', None) #Los inputs estan en relación al inmueble
+            print(f"documentos: {documento}")
             valor = request.POST.get(f'descuento_{id_inmueble}', None)
+            print(f"Valor descuento: {valor}")
             descrip = request.POST.get(f'descripcionDescuento_{id_inmueble}', None)
+            print(f"Descripción: {descrip}")
             total = request.POST.get(f'totalPagar_{id_inmueble}')
+            print(f"Total a pagar: {total}")
             urls=[]
             
             if valor != None or descrip != None:  #controlar si se apreto el boton descuento o no
@@ -891,39 +896,24 @@ def confirmar_pago (request, id):
             descripcion.append(descrip)
             ids_inmuebles.append(id_inmueble)
             
-  
-            #Actualizar Fechas y estados por cada inmueble
-            print(f"comporbación inmuebles: {id_inmueble}")
-            estado_pago = 1
-            fechaPago = obj_inmueble.fechaPago
+            # #Actualizar Fechas y estados por cada inmueble
+            # estado_pago = 1
+            # fechaPago = obj_inmueble.fechaPago
             
-            estadoPago = estado_pago 
-            nuevaFecha = fechaPago + relativedelta(months = 1)
+            # estadoPago = estado_pago 
+            # nuevaFecha = fechaPago + relativedelta(months = 1)
             
-            obj_inmueble.estadoPago = estadoPago
-            obj_inmueble.fechaPago = nuevaFecha
-            obj_inmueble.save()
+            # obj_inmueble.estadoPago = estadoPago
+            # obj_inmueble.fechaPago = nuevaFecha
+            # obj_inmueble.save()
             
-            # savepropietario = propietario.objects.get(id=id_inmueble) #Obtengo el propietario
+            # #Actualizar el propietario si todos los inmuebles ya estan pagos
+            # pagado = jerarquia_estadoPago_propietario(obj_propietario) 
             
-            # fechaPago = savepropietario.fecha_pago
-            # antespagado = jerarquia_estadoPago_propietario(savepropietario)
-            # estadoPago = 1
-        
-            # #Guardo el inmueble
-            # saveinmueble.estadoPago = estadoPago
-            # saveinmueble.save()
-            
-            # pagado = jerarquia_estadoPago_propietario(savepropietario)
             # if pagado == 1: #Comprobar que todos los estados esten en "Pagado" para aumentar la fecha
-            #     nuevaFecha = fechaPago + relativedelta(months = 1)
-            #     #Guardo el propietario
-            #     savepropietario.fecha_pago = nuevaFecha
-            #     savepropietario.save()
-                
-            # for inmueblex in savepropietario.inmueble.all():
-            #     print(f"estados inmuebles despues:{inmueblex.estadoPago} ")
-                
+            #     max_fecha_pago = obj_propietario.inmueble.aggregate(Max('fechaPago'))['fechaPago__max']
+            #     obj_propietario.fecha_pago = max_fecha_pago
+            #     obj_propietario.save()                
             
         propietarios = {
             'id': obj_propietario.id,
@@ -1038,7 +1028,8 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
     idUsuario = request.POST.get('idUser')
     idArrendatario = request.POST.get('idArrendatario')
     idA = request.POST.get('idA')  # Extraigo el id arrendatario para actualizar valores
-    
+    print(f"Valor boton editar: {btn}")
+    print(f"Valor boton pago: {btnPago}")
     if btn == '1':
         resultado = individuo_propietario(request, idUsuario)
         return HttpResponse(resultado)
@@ -1059,7 +1050,7 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         guardar.habilitarPago = habilitarPago
         guardar.fecha_inicio_cobro = nuevaFecha  # Guardar el objeto datetime directamente
         guardar.fecha_fin_cobro = fecha_limite   # Guardar el objeto datetime directamente
-        guardar.save()
+        guardar.pagar()
         
         resultado = factura_Arr(request, idInmueble, idUsuario, idArrendatario)
         return resultado #Aquí se redirecciona al html de la factura para arrendatarios

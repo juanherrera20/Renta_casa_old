@@ -16,11 +16,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    //descuentos
+    // descuentos
     function setupCheckboxListeners() {
         var checkboxes = document.querySelectorAll('.checkInmueble');
         checkboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', updateTotal);
+            checkbox.addEventListener('change', function() {
+                updateTotal();
+                toggleDescuentoButton(checkbox);
+            });
         });
     }
 
@@ -35,8 +38,28 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Total actualizado:', total);  // Mensaje de consola para depuración
     }
 
+    function toggleDescuentoButton(checkbox) {
+        var inmuebleId = checkbox.value;
+        var btnDescuento = document.querySelector('.btnDescuento[data-inmueble-id="' + inmuebleId + '"]');
+        if (checkbox.checked) {
+            btnDescuento.style.display = 'inline-block';
+        } else {
+            btnDescuento.style.display = 'none';
+            var descuentoSection = document.querySelector('.descuentoSection[data-inmueble-id="' + inmuebleId + '"]');
+            if (descuentoSection) {
+                descuentoSection.style.display = 'none';
+                resetDescuentoFields(inmuebleId);
+            }
+        }
+    }
+
     function setupDescuentoSections() {
+        // Ocultar todos los botones de añadir descuento al inicio
         var btnDescuento = document.querySelectorAll('.btnDescuento');
+        btnDescuento.forEach(function(btn) {
+            btn.style.display = 'none';
+        });
+
         var btnCancelar = document.querySelectorAll('.btnCancelar');
         var btnConfirmar = document.querySelectorAll('.btnConfirmar');
 
@@ -101,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         alert('Por favor ingresa un descuento válido mayor que cero.');
                         return;
                     }
-                    applyDiscount(descuentoValue); // Aplicar el descuento al total
+                    applyDiscount(inmuebleId, descuentoValue); // Aplicar el descuento al total y bloquear campos
                 } else {
                     console.error('No se encontró el input de descuento para el inmueble con ID:', inmuebleId);
                 }
@@ -121,15 +144,28 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('docRespaldo_' + inmuebleId).setAttribute('disabled', 'true');
     }
 
-    function applyDiscount(descuento) {
+    function resetDescuentoFields(inmuebleId) {
+        document.getElementById('descuento_' + inmuebleId).value = '';
+        document.getElementById('descripcionDescuento_' + inmuebleId).value = '';
+        document.getElementById('docRespaldo_' + inmuebleId).value = '';
+        disableDescuentoFields(inmuebleId);
+    }
+
+    function applyDiscount(inmuebleId, descuento) {
         var total = parseFloat(document.getElementById('totalPago').textContent);
         var totalConDescuento = total - descuento;
         document.getElementById('totalPago').textContent = totalConDescuento.toFixed(2);
         console.log('Total con descuento aplicado:', totalConDescuento);  // Mensaje de consola para depuración
+
+        // Bloquear campos de descuento
+        disableDescuentoFields(inmuebleId);
+
+        // Indicar visualmente que los cambios fueron confirmados
+        document.querySelector('.btnConfirmar[data-inmueble-id="' + inmuebleId + '"]').style.display = 'none';
+        document.querySelector('.btnCancelar[data-inmueble-id="' + inmuebleId + '"]').style.display = 'none';
     }
 
-    
-    //Modal
+    // Modal
     document.querySelectorAll('.modal').forEach(function(modal) {
         modal.addEventListener('hidden.bs.modal', function() {
             document.body.style.overflow = 'auto';
@@ -154,79 +190,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// document.addEventListener('DOMContentLoaded', function() {
-//     var btnDescuento = document.getElementById('btnDescuento');
-//     var btnConfirmar = document.getElementById('btnConfirmar');
-//     var btnCancelar = document.getElementById('btnCancelar');
-//     var miFormulario = document.getElementById('miFormulario');
-//     var btnPagar = document.getElementById('btnPagar')
-    
-    // if(btnDescuento){
-    //     btnDescuento.addEventListener('click', function() {
-    //         var inputs = miFormulario.querySelectorAll('input[name="descuento"], input[name="descripcionDescuento"], input[name="docRespaldo"]');
-    //         inputs.forEach(function(input) {
-    //             input.removeAttribute('readonly');
-    //             input.removeAttribute('disabled');
-    //             input.setAttribute('required', '');
-    //         });
-    //         this.style.display = 'none';
-    //         if (btnConfirmar) {
-    //             btnConfirmar.style.display = 'block';
-    //         }
-    //         if (btnCancelar) {
-    //             btnCancelar.style.display = 'block';
-    //         }
-    // });
-    // };
-    // if (btnCancelar) {
-    //     btnCancelar.addEventListener('click', function() {
-    //         var inputs = miFormulario.querySelectorAll('input[name="descuento"], input[name="descripcionDescuento"], input[name="docRespaldo"]');
-    //         inputs.forEach(function(input) {
-    //             input.setAttribute('readonly', '');
-    //             input.setAttribute('disabled', '');
-    //             input.removeAttribute('required');
-    //         });
-    //         this.style.display = 'none';
-    //         if (btnDescuento) {
-    //             btnDescuento.style.display = 'block';
-    //         }
-    //         if (btnCancelar) {
-    //             btnCancelar.style.display = 'none';
-    //         }
-    //         if (btnConfirmar) {
-    //             btnConfirmar.style.display = 'none';
-    //         }
-    //     });
-    // }
-    // if (btnConfirmar) {
-    //     btnConfirmar.addEventListener('click', function() {
-    //         document.getElementById('miFormulario').addEventListener('submit', function(event) {
-    //             event.preventDefault();
-    //             var descuento = document.querySelector('input[name="descuento"]').value;
-    //             var valorPago = document.querySelector('input[name="valor_pago"]').value;
-                
-    //             descuento = parseFloat(descuento);
-    //             valorPago = parseFloat(valorPago);
-    //             var nuevoTotal = valorPago - descuento;     
 
-    //             var prueba = document.createElement('input');
-    //             prueba.type = 'hidden';
-    //             prueba.name = 'btnRespaldoConfirmar';
-    //             prueba.value = 5;
-    //             document.getElementById('miFormulario').appendChild(prueba);
-    //             Swal.fire({
-    //                 title: "Cambio de pago!",
-    //                 text: "El valor de pago no es $"+valorPago+" sino $"+nuevoTotal,
-    //                 icon: "success",
-    //                 confirmButtonText: 'Ok'
-    //             }).then((result) => {
-    //                 if (result.isConfirmed) {
-    //                     this.submit(); // Envía el formulario si el usuario confirma la acción
-    //                 }
-    //             });
-    //         });
-    //     });
-    // };
+
     // if (btnPagar) {
     //     btnPagar.addEventListener('click', function() {
     //         document.getElementById('miFormulario').addEventListener('submit', function(event) {

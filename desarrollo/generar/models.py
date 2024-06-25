@@ -87,16 +87,16 @@ class arrendatario(models.Model): #Tabla usuarios
     
     def save(self, *args, **kwargs): #pk igual a id
         super().save(*args, **kwargs) # Llamar al método save de la superclase para guardar todo lo demas que se solicita en la vista
-
+        print("--------------este mensaje es del save normal")
         if self.inmueble.exists():  #Verificar si tiene un inmueble asociado
-            print("entro al coso")
             obj_inmueble = self.inmueble.first()
-            print(f"el inmueble: {obj_inmueble}")
             obj_inmueble.fechaPago = self.fecha_fin_cobro + relativedelta(days=7)
-            obj_inmueble.save()
-            print("Se ve despues de guardar inmueble")
+            obj_inmueble.save()  #(Revisar) si es necesario
             fechas_pago_automaticas(obj_inmueble)
             
+    def pagar(self, *args, **kwargs): #Metodo pagar, igual al save pero sin actualizar 
+        print("-------------Este save es de pagar---------")
+        models.Model.save(self, *args, **kwargs)  # Llamar al método save de la clase base sin la lógica adicional
             
     class Meta:
         db_table = 'arrendatario'
@@ -133,36 +133,28 @@ class inmueble(models.Model): #Tabla usuarios
     
     
     def save(self, *args, **kwargs): #pk igual a id
-        print("Siempre se vera")
         permitir = False
         if self.pk: #Verificó si es actualización o creación de una instacia
-            print("existe?")
             original = inmueble.objects.get(pk=self.pk)# Obtener la instancia original del inmueble
             if original.arrendatario_id:
-                print("primer filtro")
                 if self.arrendatario_id and original.arrendatario_id != self.arrendatario_id:
                     self.historial += 1
-                    print("primer filtro primero")
                     self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=7)
                     permitir = True
             else:
-                print("segundo filtro")
                 if self.arrendatario_id:
-                    print("segundo filtro primero")
                     self.historial += 1
                     self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=7)
                     permitir = True
         else:
-            print("Tercer filtro")
             if self.arrendatario_id:# Si es una nueva instancia y el arrendatario_id no es nulo, incrementar el historial
                 self.historial += 1
-                print("Tercer filtro")
                 self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=7)
                 permitir = True
 
         super().save(*args, **kwargs) # Llamar al método save de la superclase para guardar todo lo demas que se solicita en la vista
         
-        if permitir == True:
+        if permitir == True: #(Revisar) si es necesario este condicional o siempre actualizarlo, esto es porque se puede modificar manual la fecha, pero es necesario? o mejor dejarlo automatico
             print(f"paso el permitir: {self.fechaPago}")
             fechas_pago_automaticas(self)
             

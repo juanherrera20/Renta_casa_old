@@ -129,32 +129,31 @@ def  actualizar_estados():
     fechaObjeto1 = fecha  #Fecha actual
     for objeto in ObjetoPago:
         #-----------------------Propietario-----------------------
-        propietario = objeto.propietario_id
-        EstadoPago1 = jerarquia_estadoPago_propietario(propietario) #Equivalente al obtenido a la jerarquia
-        EstadoPago2 = objeto.estadoPago
-        fechaPago = objeto.propietario_id.fecha_pago
+        propietario = objeto.propietario_id  #Obtener los objetos con las relaciones Ahorra busquedas
+        EstadoPago = objeto.estadoPago
+        fecha_propietario = propietario.fecha_pago
+        fecha_inmueble = objeto.fechaPago
         
-        if isinstance(fechaPago, date):
-            fechaObjeto2 = fechaPago
-        else:
-            fecha_str = datetime.strptime(fechaPago, '%Y-%m-%d').date()
-            fechaObjeto2 = fecha_str
+        #En caso de errores, aunque no debería pasar
+        # if isinstance(fechaPago, date):
+        #     fechaObjeto2 = fechaPago
+        # else:
+        #     fecha_str = datetime.strptime(fechaPago, '%Y-%m-%d').date()
+        #     fechaObjeto2 = fecha_str
 
-        fechaResta = (fechaObjeto2 - fechaObjeto1).days
+        fechaResta = (fecha_inmueble - fechaObjeto1).days
 
-        if fechaObjeto2 >= fechaObjeto1: 
-            
-            """ Uso EstadoPago1 para evitar que mi estado de pago se cambie de "Pagado" a "debe" ya que si no se ha pagado todos los inmuebles de un propietario
-                la fecha no aumenta y el siguiente condicional se cumpliría, y nos interesa que se cumpla solo cuando todo este pago"""
-            if (EstadoPago1 == 1 or EstadoPago1 == 4) and fechaResta <=7: #La fecha de pago es el ultimo día habil para pagar
+        if fecha_inmueble >= fechaObjeto1: 
+            if (EstadoPago in [1, 4]) and fechaResta <=7: #La fecha de pago es el ultimo día habil para pagar
+                print("Condicional debe propietario")
                 objeto.estadoPago = 2
                 objeto.save()
                 
-            """Aquí uso el EstadoPago2 ya que si uso el 1 los ya pagados se marcaran como "No pagos" si no se han pagado todos, de esta manera 
-                el programa tomara el estado unico y no el ponderado de varios que siempre tiende a ser el peor"""
-        elif fechaObjeto1 > fechaObjeto2 and EstadoPago2 != 1: #Si el estado es pagado no debería cambiarse a no pago
+        elif fechaObjeto1 > fecha_propietario and EstadoPago not in [1,3]: #Si el estado es pagado no debería cambiarse a no pago
+            print("Condicional no pago propietario")
             objeto.estadoPago = 3
             objeto.save()
+            
             
         #-----------------------Arrendatario-----------------------
         idArrendatario = objeto.arrendatario_id.id
@@ -168,16 +167,18 @@ def  actualizar_estados():
         fechaInicioCobro = objeto.arrendatario_id.fecha_inicio_cobro
         fechaFinCobro = objeto.arrendatario_id.fecha_fin_cobro
 
-        objetoArrendatario = arrendatario.objects.get(id=idArrendatario)  #Obtengo el objeto arrendatario 
-        if fechaObjeto1 >= fechaInicioCobro and fechaObjeto1 <= fechaFinCobro and (EstadoArrendatario == 1 or EstadoArrendatario == 4):
+        objetoArrendatario = objeto.arrendatario_id #Obtener los objetos con las relaciones
+        if fechaObjeto1 >= fechaInicioCobro and fechaObjeto1 <= fechaFinCobro and (EstadoArrendatario in [1, 4]): #De esta manera compruebo que no actualice el estado si es el mismo
+            print("Condicional debe arrendatario")
             objetoArrendatario.habilitarPago = 2
-            objetoArrendatario.save()
-        
-        elif fechaObjeto1 > fechaFinCobro and EstadoArrendatario != 1:
+            objetoArrendatario.pagar()  #Se usa pagar() que no se actualicen las fechas de inmuebles
+
+        elif fechaObjeto1 > fechaFinCobro and (EstadoArrendatario not in [1,3]) : #De esta manera compruebo que no actualice el estado si es el mismo
+            print("Condicional no pago arrendatario")
             objetoArrendatario.habilitarPago = 3
-            objetoArrendatario.save()
+            objetoArrendatario.pagar() 
             
-        #print(objetoArrendatario.usuarios_id.nombre + objetoArrendatario.usuarios_id.apellido)
+       
         
     # Calcular monto por atraso y aplicar lógica
     # porcentaje_penalizacion = 0.05
