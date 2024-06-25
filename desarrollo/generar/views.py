@@ -888,7 +888,7 @@ def confirmar_pago (request, id):
                 guardar.save()
             else: 
                 valor = 0
-                descrip = "No Aplica Ningun Descuento"
+                descrip = "No aplica ningún descuento"
             
             #Se actualiza las listas para la generación de facturas
             totalPagar.append(total)
@@ -933,9 +933,7 @@ def confirmar_pago (request, id):
         request.session['obj_propietario'] = propietarios
         request.session['obj_usuario'] = propietario_user
 
-        #return redirect("factura") #Aquí se redirecciona al html de la factura
-        return redirect('analisis_propietarios') #Este return se puede cambiar para el control de errores.
-    
+        return redirect("factura") #Aquí se redirecciona al html de la factura    
 #------------------------------------------------------------------ Función para las facturas de Propietarios ----------------------------------------------------------
 def factura(request):
     totalPagar = request.session.get('totalPagar', [])

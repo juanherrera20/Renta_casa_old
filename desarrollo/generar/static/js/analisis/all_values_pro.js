@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 toggleDescuentoButton(checkbox);
             });
         });
-    }
+    };
 
     function updateTotal() {
         var checkboxes = document.querySelectorAll('.checkInmueble:checked');
@@ -121,10 +121,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (descuentoInput) {
                     var descuentoValue = parseFloat(descuentoInput.value);
                     if (isNaN(descuentoValue) || descuentoValue <= 0) {
-                        alert('Por favor ingresa un descuento válido mayor que cero.');
+                        Swal.fire({
+                            title: "<strong>El valor de descuento debe ser mayor a 0 </strong>",
+                            icon: "info",
+                            confirmButtonText: `
+                              <i class="fa fa-thumbs-up"></i> De acuerdo!
+                            `,
+                          });
                         return;
                     }
-                    applyDiscount(inmuebleId, descuentoValue); // Aplicar el descuento al total y bloquear campos
+                    applyDiscount(inmuebleId,descuentoValue); // Aplicar el descuento al total y bloquear campos
                 } else {
                     console.error('No se encontró el input de descuento para el inmueble con ID:', inmuebleId);
                 }
@@ -139,9 +145,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function disableDescuentoFields(inmuebleId) {
-        document.getElementById('descuento_' + inmuebleId).setAttribute('disabled', 'true');
-        document.getElementById('descripcionDescuento_' + inmuebleId).setAttribute('disabled', 'true');
-        document.getElementById('docRespaldo_' + inmuebleId).setAttribute('disabled', 'true');
+        document.getElementById('descuento_' + inmuebleId).style.display = 'none';
+        document.getElementById('descripcionDescuento_' + inmuebleId).style.display = 'none';
+        document.getElementById('docRespaldo_' + inmuebleId).style.display = 'none';
+        document.querySelector('label[for="descuento_' + inmuebleId + '"]').style.display = 'none';
+        document.querySelector('label[for="descripcionDescuento_' + inmuebleId + '"]').style.display = 'none';
+        document.querySelector('label[for="docRespaldo_' + inmuebleId + '"]').style.display = 'none';
+        document.getElementById('pConfirmacion_' + inmuebleId).style.display = 'block';
     }
 
     function resetDescuentoFields(inmuebleId) {
@@ -151,14 +161,12 @@ document.addEventListener('DOMContentLoaded', function() {
         disableDescuentoFields(inmuebleId);
     }
 
-    function applyDiscount(inmuebleId, descuento) {
+    function applyDiscount(inmuebleId,descuento) {
         var total = parseFloat(document.getElementById('totalPago').textContent);
         var totalConDescuento = total - descuento;
         document.getElementById('totalPago').textContent = totalConDescuento.toFixed(2);
-        console.log('Total con descuento aplicado:', totalConDescuento);  // Mensaje de consola para depuración
-
         // Bloquear campos de descuento
-        disableDescuentoFields(inmuebleId);
+        disableDescuentoFields(inmuebleId); 
 
         // Indicar visualmente que los cambios fueron confirmados
         document.querySelector('.btnConfirmar[data-inmueble-id="' + inmuebleId + '"]').style.display = 'none';
@@ -179,11 +187,9 @@ document.addEventListener('DOMContentLoaded', function() {
             openModalWithContent(propietarioId);
         });
     });
-
     document.getElementById('exampleModal').addEventListener('click', function(event) {
         if (event.target.classList.contains('actualizarM') && event.target.textContent === 'Pagar') {
-          // Submit the form programmatically if clicked
-          document.getElementById('ModalPago').submit();
+            document.getElementById('ModalPago').submit();
         }
     });
 
