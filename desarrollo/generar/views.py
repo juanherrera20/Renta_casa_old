@@ -896,24 +896,24 @@ def confirmar_pago (request, id):
             descripcion.append(descrip)
             ids_inmuebles.append(id_inmueble)
             
-            # #Actualizar Fechas y estados por cada inmueble
-            # estado_pago = 1
-            # fechaPago = obj_inmueble.fechaPago
+            #Actualizar Fechas y estados por cada inmueble
+            estado_pago = 1
+            fechaPago = obj_inmueble.fechaPago
             
-            # estadoPago = estado_pago 
-            # nuevaFecha = fechaPago + relativedelta(months = 1)
+            estadoPago = estado_pago 
+            nuevaFecha = fechaPago + relativedelta(months = 1)
             
-            # obj_inmueble.estadoPago = estadoPago
-            # obj_inmueble.fechaPago = nuevaFecha
-            # obj_inmueble.save()
+            obj_inmueble.estadoPago = estadoPago
+            obj_inmueble.fechaPago = nuevaFecha
+            obj_inmueble.save()
             
-            # #Actualizar el propietario si todos los inmuebles ya estan pagos
-            # pagado = jerarquia_estadoPago_propietario(obj_propietario) 
+            #Actualizar el propietario si todos los inmuebles ya estan pagos
+            pagado = jerarquia_estadoPago_propietario(obj_propietario) 
             
-            # if pagado == 1: #Comprobar que todos los estados esten en "Pagado" para aumentar la fecha
-            #     max_fecha_pago = obj_propietario.inmueble.aggregate(Max('fechaPago'))['fechaPago__max']
-            #     obj_propietario.fecha_pago = max_fecha_pago
-            #     obj_propietario.save()                
+            if pagado == 1: #Comprobar que todos los estados esten en "Pagado" para aumentar la fecha
+                max_fecha_pago = obj_propietario.inmueble.aggregate(Max('fechaPago'))['fechaPago__max']
+                obj_propietario.fecha_pago = max_fecha_pago
+                obj_propietario.save()                
             
         propietarios = {
             'id': obj_propietario.id,
@@ -933,6 +933,7 @@ def confirmar_pago (request, id):
         request.session['obj_propietario'] = propietarios
         request.session['obj_usuario'] = propietario_user
 
+        #return redirect('analisis_propietarios')
         return redirect("factura") #Aquí se redirecciona al html de la factura    
 #------------------------------------------------------------------ Función para las facturas de Propietarios ----------------------------------------------------------
 def factura(request):

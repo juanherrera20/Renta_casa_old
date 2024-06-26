@@ -21,7 +21,6 @@
                 <input type="hidden" id="totalPagar" name="totalPagar_{{ inmueble.id }}" value="{{ valor_pagar }}">
                 <!-- Sección de descuento por inmueble -->
                 <div class="descuentoSection" style="display: none;" data-inmueble-id="{{ inmueble.id }}">
-                    <p id="pConfirmacion_{{ inmueble.id }}" name="pConfirmacion_{{ inmueble.id }}" style="display:none;">Descuento aplicado con éxito</p>
                     <label for="descuento_{{ inmueble.id }}">Descuento:</label>
                     <input type="number" id="descuento_{{ inmueble.id }}" name="descuento_{{ inmueble.id }}" class="descuento" placeholder="$$$$" disabled>
                     <br>
@@ -37,6 +36,7 @@
                     <button type="button" class="btnConfirmar" data-inmueble-id="{{ inmueble.id }}" style="display:none;">Confirmar</button>
                 </div>
 
+                <p id="pConfirmacion_{{ inmueble.id }}" name="pConfirmacion_{{ inmueble.id }}" style="display:none;">Descuento aplicado con éxito</p>
                 <button type="button" class="btnDescuento" data-inmueble-id="{{ inmueble.id }}">+ Añadir Descuento</button>
             </div>
         {% endfor %}
