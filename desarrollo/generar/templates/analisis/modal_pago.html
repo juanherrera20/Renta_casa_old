@@ -19,7 +19,7 @@
                             <label class="checkbox-label">
                                 <input type="checkbox" class="form-check-input checkInmueble ui-checkbox ui-checkbox-aux" id="checkInmueble_{{ inmueble.id }}" name="inmueblesId" value="{{ inmueble.id }}"  data-canon="{{ valor_pagar }}">
                                 <label class="container-aux3 form-check-label" for="checkInmueble_{{ inmueble.id }}">
-                                    <p>{{ inmueble.id }} - {{ inmueble.direccion }} - ${{ valor_pagar }}</p>
+                                    <p>{{ inmueble.id }} <img width="24" height="24" src="https://img.icons8.com/sci-fi/23/home.png" alt="home"/> - {{ inmueble.direccion }} - ${{ valor_pagar }}</p>
                                 </label> 
                             </label>
                         </div>
@@ -46,7 +46,7 @@
                     <button type="button" class="btnConfirmar" data-inmueble-id="{{ inmueble.id }}" style="display:none;">Confirmar</button>
                 </div>
 
-                <p id="pConfirmacion_{{ inmueble.id }}" name="pConfirmacion_{{ inmueble.id }}" style="display:none;">Descuento aplicado con éxito</p>
+                <p id="pConfirmacion_{{ inmueble.id }}" class="confirma"  name="pConfirmacion_{{ inmueble.id }}" style="display:none;">Descuento aplicado con éxito</p>
                 <button type="button" class="btnDescuento" data-inmueble-id="{{ inmueble.id }}">+ Añadir Descuento</button>
             </div>
         {% endfor %}

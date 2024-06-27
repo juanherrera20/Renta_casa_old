@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 from io import BytesIO
+import re
 from dateutil.relativedelta import relativedelta
 from django.templatetags.static import static
 from django.contrib import messages
@@ -1057,6 +1058,8 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
     idUsuario = request.POST.get('idUser')
     idArrendatario = request.POST.get('idArrendatario')
     idA = request.POST.get('idA')  # Extraigo el id arrendatario para actualizar valores
+    request.session['monto'] = request.POST.get('monto')
+    request.session['valor_total'] = request.POST.get('valor_total')
     print(f"Valor boton editar: {btn}")
     print(f"Valor boton pago: {btnPago}")
     if btn == '1':
@@ -1096,15 +1099,22 @@ def factura_Arr(request, idInmueble, idUsuario, idArrendatario):
     fecha_actual= fecha.strftime("%d/%m/%Y")
     logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))
     logo_datacredito_url = request.build_absolute_uri(static('image/Logo-Datacredito.png'))
-    #Se supone que aquí se debe implementar la función de calcular_monto_atraso() para el atraso.
-    descuento = 0
-    totalPagar = int(obj_inmueble.canon) + descuento
+
+    monto_str = request.session.get('monto', '')
+    valor_total_str = request.session.get('valor_total', '')
+
+    monto_clean = re.findall(r'\d+\.?\d*', monto_str)[0]
+    valor_total_clean = re.findall(r'\d+\.?\d*', valor_total_str)[0]
+
+    monto = float(monto_clean)
+    valor_total = float(valor_total_clean)
+
     data = {
         'usuario': obj_usuario,
         'inmueble': obj_inmueble,
         'arrendatario': obj_arrendatario,
-        'descuento': descuento,
-        'totalPagar': totalPagar,
+        'descuento': monto,
+        'totalPagar': valor_total,
         'fecha_actual': fecha_actual,
         'logo_rentacasa_url': logo_rentacasa_url,
         'logo_datacredito_url': logo_datacredito_url,

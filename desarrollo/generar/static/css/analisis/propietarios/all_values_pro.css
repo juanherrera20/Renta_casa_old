@@ -47,7 +47,7 @@
     border: 2px dashed #1677ff;
     box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
 }
-.campos-one, .campos-two, .campos-three, 
+.campos-zero,.campos-one, .campos-two, .campos-three, 
 .campos-four, .campos-five {
     display: flex;
     gap: 20px;
@@ -404,4 +404,21 @@
 }
 .container-descuento{
     margin-top: 20px;
+}
+.input-dias {
+    width: 120px;
+}
+.input-monto{
+    width: 150px;
+}
+.container-mora {
+    margin-left: -80px;
+}
+.btn_pago {
+    margin-right: 40px;
+    margin-top: -5px;
+    margin-left: -60px
+}
+.confirma{
+    color: #1e860c;
 }
