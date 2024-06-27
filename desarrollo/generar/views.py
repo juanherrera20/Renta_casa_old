@@ -10,7 +10,7 @@ from django.db.models import Q, Max
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
-from .functions import autenticado_required, actualizar_estados_propietarios,actualizar_estados_arrendatarios, actualizar_tareas, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf, render_pdf_arr #Importo las funciones desde functions.py
+from .functions import autenticado_required, actualizar_estados_propietarios,actualizar_estados_arrendatarios, actualizar_tareas, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf, render_pdf_arr, calcular_monto_atraso #Importo las funciones desde functions.py
 from .functions import diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
 import json
 import zipfile
@@ -533,7 +533,7 @@ def guardar_inquilino(request): #Función para guardar inquilinos
 
         observ = request.POST.get('obs', None)
         modelo = arrendatario(direccion = direc, fecha_inicio_cobro= fecha_cobrar, fecha_fin_cobro = fecha_limite, inicio_contrato = inicioContrato, fin_contrato = finalContrato, tipo_contrato = tipo_contrato, obs = observ, usuarios_id_id = usuarios_id)
-        modelo.save()
+        modelo.update()
         
         #Guardar documentos
         IdObjetoArrendatario = modelo.id
@@ -642,7 +642,7 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     guardar2.fin_contrato = finalContrato
     guardar2.tipo_contrato = tipo_contrato
     guardar2.obs = obs
-    guardar2.save()
+    guardar2.update()
     
     #Logica para guardar y/o eliminar documentos
     documentos_delet = request.POST.getlist("eliminar_documentos", None)
@@ -659,18 +659,29 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
 @autenticado_required
 def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
     actualizar_estados_arrendatarios()
-
+    
     objetoInmuebles = inmueble.objects.select_related('arrendatario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Solo para arrendatarios que estan vinculados a un inmueble
     num_inmueble = objetoInmuebles.count()
     # Obtener los tipos de inmuebles y estados de habilitación de pago de los arrendatarios
     tipoInmueble = []
     estadoArrendatario = []
+    montos = []
+    totales = []
 
     for objeto in objetoInmuebles:  #De esta manera obtengo los valores especificos para cada inmueble directamente desde el
+        #Llamo a la función para calcular el monto de atraso y los días si aplica
+        monto, dias_atrasado = calcular_monto_atraso(objeto)
+        print(f"Este es el monto que se debe: ${monto}")
+        print(f"Estos son los días de atraso: {dias_atrasado}") #Los días de atraso no son muy relevantes aquí
+        total = objeto.canon + monto
+        
+        montos.append(monto)
+        totales.append(total)
         tipoInmueble.append(diccionarioTipoInmueble[str(objeto.tipo)])
         estadoArrendatario.append(diccionarioPago[str(objeto.arrendatario_id.habilitarPago)])
+        
     estados_espacio = [valor.lower().replace(' ', '') for valor in estadoArrendatario]
-    All = list(zip(objetoInmuebles, tipoInmueble, estadoArrendatario, estados_espacio))
+    All = list(zip(objetoInmuebles, tipoInmueble, estadoArrendatario, estados_espacio, montos, totales))
     
     return render(request, 'analisis/inquilinos/analisis_inquilinos.html',{'datosUsuario': All, 'contador':num_inmueble})
 
@@ -1010,7 +1021,7 @@ def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     All = [(objetoInmueble, clave_tipo,clave_estado,clave_porcentaje,servicios)]
 
     #------------------------------------------------------Individuo_Propietario----------------------------------------------------
-    objetoPropietario = propietario.objects.filter(id=objetoInmueble.propietario_id_id).first()
+    objetoPropietario = propietario.objects.filter(id=objetoInmueble.propietario_id_id).first()  #se puede optimizar 
     pago = diccionarioPago[str(objetoInmueble.estadoPago)]
     objetoUser = usuarios.objects.get( id = objetoPropietario.usuarios_id_id)
     documentos = objetoPropietario.DocsPersona.all()
@@ -1021,7 +1032,10 @@ def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     totalDescuento = ((canon * descuento)/ 100)
     totalPago = (canon - totalDescuento)
     #------------------------------------------------------Individuo_Arrendatario----------------------------------------------------
+    monto, dias_atrasado = calcular_monto_atraso(objetoInmueble)
     
+    valor_total = monto + canon
+        
     if objetoInmueble.arrendatario_id_id:
         respaldo = 1
         objetoArrendatario = arrendatario.objects.filter(id=objetoInmueble.arrendatario_id_id).first()
@@ -1030,9 +1044,10 @@ def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     else: 
         respaldo = 2
 
-    return render(request, 'analisis/all_values_arr.html', {'inmueble': All, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
+    return render(request, 'analisis/all_values_arr.html', {'inmueble': All, 'canon': canon, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
                                                         'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos, 'total':totalPago,
-                                                        'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})
+                                                        'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'monto': monto, 'dias':dias_atrasado, 'valor_total': valor_total, 
+                                                        'estado':estados, 'respaldo':respaldo})
 
 @autenticado_required
 def redireccion_arr(request):  # Redirección solo para los arrendatarios
@@ -1064,7 +1079,7 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         guardar.habilitarPago = habilitarPago
         guardar.fecha_inicio_cobro = nuevaFecha  # Guardar el objeto datetime directamente
         guardar.fecha_fin_cobro = fecha_limite   # Guardar el objeto datetime directamente
-        guardar.pagar()
+        guardar.save()
         
         resultado = factura_Arr(request, idInmueble, idUsuario, idArrendatario)
         return resultado #Aquí se redirecciona al html de la factura para arrendatarios

@@ -84,19 +84,16 @@ class arrendatario(models.Model): #Tabla usuarios
     inicio = models.DateField(auto_now_add=True)
     habilitarPago = models.IntegerField(default=4) 
     obs = models.CharField(max_length = 400) 
-    
-    def save(self, *args, **kwargs): #pk igual a id
-        super().save(*args, **kwargs) # Llamar al método save de la superclase para guardar todo lo demas que se solicita en la vista
+   
+    def update(self, *args, **kwargs): #Metodo copiado de save() Para guardar un arrendatario pero actualizando los inmuebles
+        models.Model.save(self, *args, **kwargs)  # Llamar al método save de la clase base sin la lógica adicional
         print("--------------este mensaje es del save normal")
+        
         if self.inmueble.exists():  #Verificar si tiene un inmueble asociado
             obj_inmueble = self.inmueble.first()
             obj_inmueble.fechaPago = self.fecha_fin_cobro + relativedelta(days=7)
             obj_inmueble.save()  #(Revisar) si es necesario
             fechas_pago_automaticas(obj_inmueble)
-            
-    def pagar(self, *args, **kwargs): #Metodo pagar, igual al save pero sin actualizar 
-        print("-------------Este save es de pagar---------")
-        models.Model.save(self, *args, **kwargs)  # Llamar al método save de la clase base sin la lógica adicional
             
     class Meta:
         db_table = 'arrendatario'

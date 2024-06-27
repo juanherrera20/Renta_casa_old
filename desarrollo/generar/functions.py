@@ -5,7 +5,7 @@
 from datetime import date,timedelta, datetime
 import re
 from django.shortcuts import redirect
-from .models import  tareas, inmueble
+from .models import  tareas, inmueble, arrendatario, propietario
 from xhtml2pdf import pisa
 from io import BytesIO
 from django.http import FileResponse
@@ -93,6 +93,11 @@ diccionarioBancos = {
 }
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+#-----------------------------------------------------Variables Globales para los calculos----------------------------------------------s
+#Variables Globales para los calculos
+fecha = date.today()
+ObjetoPago = inmueble.objects.filter(arrendatario_id__isnull=False)
+#---------------------------------------------------------------------------------------------------------------------------------------
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #Creación de funciones que se van a usar en la app.
@@ -104,31 +109,11 @@ def autenticado_required(view_func):
             return redirect('index')
         return view_func(request, *args, **kwargs)
     return verificacion
-#---------------------------------------------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------------------------------------s
 
 
-#------------Función para actualizar los estados de pago de propietarios e inquilinos automaticamente-----------------------------------
+#------------Función para actualizar los estados de pago de propietarios e inquilinos automaticamente-----------------------------------s
 
-#Calcular por día el atraso de un pago para incrementar el valor (Faltan cosas)
-def calcular_monto_atraso(fecha_pago, porcentaje_penalizacion):
-    fecha_actual = date.today()
-    dias_atraso = (fecha_actual - fecha_pago).days
-    if dias_atraso > 0:
-        monto_atraso = porcentaje_penalizacion * dias_atraso
-    else:
-        monto_atraso = 0
-    # Calcular monto por atraso y aplicar lógica
-    # porcentaje_penalizacion = 0.05
-    # fecha_pago_arrendatario = objeto.arrendatario_id.fecha_fin_cobro
-    # monto_atraso = calcular_monto_atraso(fecha_pago_arrendatario, porcentaje_penalizacion)
-
-    # if monto_atraso > 0:
-    #     # Aquí se tratara el tema de notificaciones y guardar el canon modificado en la base de datos o algo
-    #     pass
-    return monto_atraso
-
-fecha = date.today()
-ObjetoPago = inmueble.objects.filter(arrendatario_id__isnull=False)
 #No uso variable datetime.datetime si no una datetime.date que solo da el día y no las horas y segundos, esto permite poder hacer comparaciones con las fechas de la base de datos
 def  actualizar_estados_propietarios():
     global fecha
@@ -142,13 +127,15 @@ def  actualizar_estados_propietarios():
         fecha_inmueble = objeto.fechaPago
 
         fechaResta = (fecha_inmueble - fechaObjeto1).days
-
+        
         if fecha_inmueble >= fechaObjeto1: 
             if (EstadoPago in [1, 4]) and fechaResta <=7: #La fecha de pago es el ultimo día habil para pagar
+                print("Condicional debe propietario")
                 objeto.estadoPago = 2
                 objeto.save()
                 
         elif fechaObjeto1 > fecha_propietario and EstadoPago not in [1,3]: #Si el estado es pagado no debería cambiarse a no pago
+            print("Condicional no pago propietario")
             objeto.estadoPago = 3
             objeto.save()
     return None 
@@ -160,34 +147,60 @@ def  actualizar_estados_arrendatarios():
     fechaObjeto1 = fecha  #Fecha actual
     for objeto in ObjetoPago:
         #-----------------------Arrendatario-----------------------
-        idArrendatario = objeto.arrendatario_id.id
+        objetoArrendatario = objeto.arrendatario_id #Obtener los objetos con las relaciones
         EstadoArrendatario = objeto.arrendatario_id.habilitarPago
         inicio = objeto.arrendatario_id.inicio
         
-        #Esto es para verificar cuando cumple el año el arrendatarios
-        nuevaFecha = inicio + timedelta(days=days)
-        fechaInicio = nuevaFecha.strftime('%Y-%m-%d') #mirar como se puede manejar una alerta o una vista, donde se visualice los arrendatarios que estan proximos a cumplir el año (Esta variable ya calcula cuando cumple el año.)
+        # #Esto es para verificar cuando cumple el año el arrendatarios
+        # nuevaFecha = inicio + timedelta(days=days)
+        # fechaInicio = nuevaFecha.strftime('%Y-%m-%d') #mirar como se puede manejar una alerta o una vista, donde se visualice los arrendatarios que estan proximos a cumplir el año (Esta variable ya calcula cuando cumple el año.)
 
         fechaInicioCobro = objeto.arrendatario_id.fecha_inicio_cobro
         fechaFinCobro = objeto.arrendatario_id.fecha_fin_cobro
 
-        objetoArrendatario = objeto.arrendatario_id #Obtener los objetos con las relaciones
+        
         if fechaObjeto1 >= fechaInicioCobro and fechaObjeto1 <= fechaFinCobro and (EstadoArrendatario in [1, 4]): #De esta manera compruebo que no actualice el estado si es el mismo
             print("Condicional debe arrendatario")
             objetoArrendatario.habilitarPago = 2
-            objetoArrendatario.pagar()  #Se usa pagar() que no se actualicen las fechas de inmuebles
+            objetoArrendatario.save()  #Se usa pagar() que no se actualicen las fechas de inmuebles
 
         elif fechaObjeto1 > fechaFinCobro and (EstadoArrendatario not in [1,3]) : #De esta manera compruebo que no actualice el estado si es el mismo
             print("Condicional no pago arrendatario")
             objetoArrendatario.habilitarPago = 3
-            objetoArrendatario.pagar() 
+            objetoArrendatario.save()
         
-    inicioContrato = objeto.arrendatario_id.inicio_contrato
-    finContrato = objeto.arrendatario_id.fin_contrato
+    # inicioContrato = objeto.arrendatario_id.inicio_contrato
+    # finContrato = objeto.arrendatario_id.fin_contrato
     return None
-#---------------------------------------------------------------------------------------------------------------------------------------
 
-#------------------Actualizar las tareas(Cuando estan en Pendiente y se pasan de la fecha, se pasan a incompletas)--------------------------------------------------------------------------------------------
+#Calcular por día el atraso de un pago para incrementar el valor (Faltan cosas)
+def calcular_monto_atraso(objeto):
+    global fecha
+    porcentaje_penalizacion = 0.05  #Este es el porcentaje definido para el mora (Puede cambiar)
+    
+    #Saco los datos necesarios
+    obj_arrendatario = objeto.arrendatario_id
+    print(f"Arrendatario? {obj_arrendatario}")
+    fecha_limite = obj_arrendatario.fecha_fin_cobro
+    print(f"Fecha Limite {fecha_limite}")
+    canon = objeto.canon
+    
+    dias_atraso = (fecha - fecha_limite).days
+    
+    if obj_arrendatario.habilitarPago == 3:
+        monto_atraso = canon / 30 * porcentaje_penalizacion * dias_atraso
+    else:
+        monto_atraso = 0
+        dias_atraso = 0
+    
+    monto_atraso = round(monto_atraso,2)
+    print(f"Este es la deuda: {monto_atraso}")
+    
+    return monto_atraso, dias_atraso
+
+#---------------------------------------------------------------------------------------------------------------------------------------s
+
+#------------------Actualizar las tareas(Cuando estan en Pendiente y se pasan de la fecha, se pasan a incompletas)----------------------s
 def actualizar_tareas():
     fechaObjeto1 = fecha
     tareas_pendientes = tareas.objects.filter(estado='Pendiente', fecha_fin__lte=fechaObjeto1)

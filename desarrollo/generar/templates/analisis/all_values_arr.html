@@ -20,7 +20,35 @@
 {% block contenido %}
   <div class="contenido">
     <form action="{% url 'redirecArr' %}" id="miFormulario" method="post" enctype="multipart/form-data">
-      <button type="submit" class="tarea-btn" id="btnPago" name="btnPago" value="4">Pago</button><br><br>
+    <!-- Esto se debe revisar los estilos-->
+      <br><br>
+      <div class="campos-zero">
+          <div class="container">
+            <input type="text" name="expedida" value="{{dias}}" readonly class="input">
+            <label class="label" for="expedida">Dias de atraso</label>
+          </div>
+          <br><br>
+          <div class="container">
+            <input type="text" name="telefono" value="$ {{ monto }}" readonly class="input">
+            <label class="label" for="telefono">Mora por atraso</label>
+          </div>
+          <br><br>
+          <div class="container">
+            <input type="text" name="telefono2" value="$ {{ canon }}" readonly class="input">
+            <label class="label" for="telefono2">Valor del canon</label>
+          </div>
+          <br><br>
+          <div class="container">
+            <input type="text" name="telefono3" value="$ {{ valor_total }}" readonly class="input">
+            <label class="label" for="telefono3">Total a pagar</label>
+          </div>
+          <button type="submit" class="tarea-btn" id="btnPago" name="btnPago" value="4">Pago</button><br><br>
+        </div>
+        
+      
+      
+
+
       {% csrf_token %}
       <input type="hidden" name="idArrendatario" id="idArrendatario" value="{{ usuario2.id }}">
       <input type="hidden" name="idA" id="idA" value="{{ arrendatario.id }}">
