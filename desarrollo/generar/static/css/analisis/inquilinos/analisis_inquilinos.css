@@ -160,6 +160,7 @@
 .table-inmuebles{
     height: 448px;
     overflow-y: auto;
+    overflow-x: hidden;
     margin-left: 10px;
     border-collapse: collapse; /* Elimina los bordes entre las celdas */
     width: 97.2%;

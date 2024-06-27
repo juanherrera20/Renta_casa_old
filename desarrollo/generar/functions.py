@@ -5,8 +5,7 @@
 from datetime import date,timedelta, datetime
 import re
 from django.shortcuts import redirect
-from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
-from werkzeug.security import generate_password_hash, check_password_hash
+from .models import  tareas, inmueble
 from xhtml2pdf import pisa
 from io import BytesIO
 from django.http import FileResponse
@@ -118,14 +117,22 @@ def calcular_monto_atraso(fecha_pago, porcentaje_penalizacion):
         monto_atraso = porcentaje_penalizacion * dias_atraso
     else:
         monto_atraso = 0
+    # Calcular monto por atraso y aplicar lógica
+    # porcentaje_penalizacion = 0.05
+    # fecha_pago_arrendatario = objeto.arrendatario_id.fecha_fin_cobro
+    # monto_atraso = calcular_monto_atraso(fecha_pago_arrendatario, porcentaje_penalizacion)
+
+    # if monto_atraso > 0:
+    #     # Aquí se tratara el tema de notificaciones y guardar el canon modificado en la base de datos o algo
+    #     pass
     return monto_atraso
 
-fecha = date.today()  
+fecha = date.today()
+ObjetoPago = inmueble.objects.filter(arrendatario_id__isnull=False)
 #No uso variable datetime.datetime si no una datetime.date que solo da el día y no las horas y segundos, esto permite poder hacer comparaciones con las fechas de la base de datos
-def  actualizar_estados():
+def  actualizar_estados_propietarios():
     global fecha
-    ObjetoPago = inmueble.objects.filter(arrendatario_id__isnull=False)
-    days = 365
+    global ObjetoPago
     fechaObjeto1 = fecha  #Fecha actual
     for objeto in ObjetoPago:
         #-----------------------Propietario-----------------------
@@ -133,28 +140,25 @@ def  actualizar_estados():
         EstadoPago = objeto.estadoPago
         fecha_propietario = propietario.fecha_pago
         fecha_inmueble = objeto.fechaPago
-        
-        #En caso de errores, aunque no debería pasar
-        # if isinstance(fechaPago, date):
-        #     fechaObjeto2 = fechaPago
-        # else:
-        #     fecha_str = datetime.strptime(fechaPago, '%Y-%m-%d').date()
-        #     fechaObjeto2 = fecha_str
 
         fechaResta = (fecha_inmueble - fechaObjeto1).days
 
         if fecha_inmueble >= fechaObjeto1: 
             if (EstadoPago in [1, 4]) and fechaResta <=7: #La fecha de pago es el ultimo día habil para pagar
-                print("Condicional debe propietario")
                 objeto.estadoPago = 2
                 objeto.save()
                 
         elif fechaObjeto1 > fecha_propietario and EstadoPago not in [1,3]: #Si el estado es pagado no debería cambiarse a no pago
-            print("Condicional no pago propietario")
             objeto.estadoPago = 3
             objeto.save()
-            
-            
+    return None 
+
+def  actualizar_estados_arrendatarios():
+    global fecha
+    global ObjetoPago
+    days = 365
+    fechaObjeto1 = fecha  #Fecha actual
+    for objeto in ObjetoPago:
         #-----------------------Arrendatario-----------------------
         idArrendatario = objeto.arrendatario_id.id
         EstadoArrendatario = objeto.arrendatario_id.habilitarPago
@@ -177,21 +181,10 @@ def  actualizar_estados():
             print("Condicional no pago arrendatario")
             objetoArrendatario.habilitarPago = 3
             objetoArrendatario.pagar() 
-            
-       
-        
-    # Calcular monto por atraso y aplicar lógica
-    # porcentaje_penalizacion = 0.05
-    # fecha_pago_arrendatario = objeto.arrendatario_id.fecha_fin_cobro
-    # monto_atraso = calcular_monto_atraso(fecha_pago_arrendatario, porcentaje_penalizacion)
-
-    # if monto_atraso > 0:
-    #     # Aquí se tratara el tema de notificaciones y guardar el canon modificado en la base de datos o algo
-    #     pass
         
     inicioContrato = objeto.arrendatario_id.inicio_contrato
     finContrato = objeto.arrendatario_id.fin_contrato
-    return print(fecha)
+    return None
 #---------------------------------------------------------------------------------------------------------------------------------------
 
 #------------------Actualizar las tareas(Cuando estan en Pendiente y se pasan de la fecha, se pasan a incompletas)--------------------------------------------------------------------------------------------

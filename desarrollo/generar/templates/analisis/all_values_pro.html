@@ -102,7 +102,7 @@
         <br><br>
         <div class="campos-five">
           <div class="container">
-            <input type="datetime" name="fecha_pago" value="{{ propietario.fecha_pago }}" readonly class="input">
+            <input type="datetime" name="fecha_pago" value="{{ propietario.fecha_pago|date:"d/m/Y" }}" readonly class="input">
             <label class="label" for="fecha_pago">Fecha de Pago</label>
             <input type="hidden" name="respaldo_fecha" value="{{ propietario.fecha_pago }}">
           </div>
@@ -169,10 +169,6 @@
               <label for="tipo_inmueble"class="pre-label">Tipo de Inmueble</label>
               <select name="tipo_inmueble"  id="tipo_inmueble" class="select2 container-aux2" disabled>
                 <option value="{{ inmueble.tipo }}">{{ tipo }}</option>
-                <option value="1">Casa</option>
-                <option value="2">Apartamento</option>
-                <option value="3">Local</option>
-                <option value="4">Aparta-estudio</option>
               </select>
             </div>
             <div class="checkbox-container checkbox-container-aux">
@@ -201,12 +197,6 @@
               <label for="porcentaje_descuento"class="pre-label">Porcentaje de descuento</label>
               <select name="porcentaje_descuento"  id="porcentaje_descuento" class="select2 container-aux2" disabled>
                 <option value="{{ inmueble.porcentaje }}">{{ porcentaje }}%</option>
-                <option value="1">13%</option>
-                <option value="2">12%</option>
-                <option value="3">12.5%</option>
-                <option value="4">10%</option>
-                <option value="5">9%</option>
-                <option value="6">8%</option>
               </select>
             </div>
           </div>
@@ -323,8 +313,6 @@
             <label for="tipo_documento"class="pre-label">Tipo de Documento</label>
             <select name="tipo_documento"  id="tipo_documento" class="select2 container-aux2" id="tipo_inmueble" disabled>
               <option value="{{ usuario2.tipo_documento }}">{{ usuario2.tipo_documento }}</option>
-              <option value="Cedula">Cedula de Ciudadania</option>
-              <option value="Pasaporte">Pasaporte</option>
             </select>
           </div>
           <div class="container">
@@ -373,22 +361,22 @@
         <br><br>
         <div class="campos-four">
           <div class="container">
-            <input type="datetime" name="fecha_inicio" value="{{ arrendatario.fecha_inicio_cobro }}" readonly class="input">
+            <input type="datetime" name="fecha_inicio" value="{{ arrendatario.fecha_inicio_cobro|date:"d/m/Y" }}" readonly class="input">
             <label class="label" for="fecha_inicio">Fecha de Pago</label>
             <input type="hidden" name="fecha_inicioRes" value="{{ arrendatario.fecha_inicio_cobro }}">
           </div>
           <div class="container">
-            <input type="datetime" name="fecha_fin" value="{{ arrendatario.fecha_fin_cobro }}" readonly class="input">
+            <input type="datetime" name="fecha_fin" value="{{ arrendatario.fecha_fin_cobro|date:"d/m/Y" }}" readonly class="input">
             <label class="label" for="fecha_fin">Límite de Pago</label>
             <input type="hidden" name="fecha_finRes" value="{{ arrendatario.fecha_fin_cobro }}">
           </div>
           <div class="container">
-            <input type="datetime" name="inicio_contrato" value="{{ arrendatario.inicio_contrato }}" readonly class="input">
+            <input type="datetime" name="inicio_contrato" value="{{ arrendatario.inicio_contrato|date:"d/m/Y" }}" readonly class="input">
             <label class="label" for="inicio_contrato">Inicio del contrato</label>
             <input type="hidden" name="inicio_contratoRes" value="{{ arrendatario.inicio_contrato }}">
           </div>
           <div class="container">
-            <input type="datetime" name="fin_contrato" value="{{ arrendatario.fin_contrato }}" readonly class="input">
+            <input type="datetime" name="fin_contrato" value="{{ arrendatario.fin_contrato|date:"d/m/Y" }}" readonly class="input">
             <label class="label" for="fin_contrato">Fin del contrato</label>
             <input type="hidden" name="fin_contratoRes" value="{{ arrendatario.fin_contrato }}">
           </div>
@@ -399,20 +387,12 @@
             <label for="estado"class="pre-label">Estado</label>
             <select name="estado"  id="estado" class="select2 container-aux2" id="tipo_inmueble" disabled>
               <option value="{{ arrendatario.habilitarPago }}">{{ estado }}</option>
-              <option value="1">Pagado</option>
-              <option value="2">Debe</option>
-              <option value="3">No pago</option>
-              <option value="4">Indefinido</option>
             </select>
           </div>
           <div class="select2-container">
             <label for="tipo_contrato"class="pre-label">Tipo de Contrato</label>
             <select name="tipo_contrato"  id="tipo_contrato" class="select2 container-aux2" id="tipo_inmueble" disabled>
               <option value="{{ arrendatario.tipo_contrato }}">{{ arrendatario.tipo_contrato }}</option>
-              <option value="Trimestral">Trimestral</option>
-              <option value="Semestral">Semestral</option>
-              <option value="Anual">Anual</option>
-              <option value="Indefinido">Indefinido</option>
             </select>
           </div>
         </div>
@@ -438,7 +418,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary closeModal" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-primary actualizarM">Pagar</button>
+          <button type="button" class="btn btn-primary actualizarM" id="download-link">Pagar</button>
         </div>
       </div>
     </div>

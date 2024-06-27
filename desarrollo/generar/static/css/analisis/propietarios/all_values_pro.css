@@ -14,7 +14,7 @@
     border: 2px dashed #1677ff;
     box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
 }
-.tarea-btn:hover{
+.tarea-btn:hover, .btnDescuento:hover, .btnConfirmar:hover{
     background-color: #30db12;
     border: 2px dashed #30db12;
 }
@@ -313,14 +313,14 @@
     list-style-type: none;
     margin-left: -20px;
 }
-* ---------------------------------------------------Fin de checkbox----------------Documentos ---------------------------------------------------------------------------- */
+/* ---------------------------------------------------Fin de checkbox----------------Documentos ---------------------------------------------------------------------------- */
 .pre-label-documentos{
     display: flex;
     font-weight: bold;
     font-size: 18px;
     padding-top: 4px;
 }
-.pre-label-documentos p {
+.pre-label-documentos p, .label-p  {
     color:red
 }
 .documents {
@@ -375,4 +375,33 @@
 .image-container {
     margin-left: 60px;
     margin-bottom: 50px;
+}
+.btnDescuento, .btnCancelar, .btnConfirmar{
+    margin-left: -20px;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    width: 130px;
+    height: 35px;
+    border-radius: 10px;
+    background-color: #1677ff;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    cursor: pointer;
+    border: 2px dashed #1677ff;
+    box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+    padding-top: 2px;
+}
+.btnCancelar, .btnConfirmar{
+    margin-top: 20px;
+}
+.btnConfirmar {
+    margin-left: 30px;
+}
+.btnCancelar:hover {
+    background-color: #db1212;
+    border: 2px dashed #db1212;
+}
+.container-descuento{
+    margin-top: 20px;
 }

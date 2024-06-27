@@ -1,7 +1,6 @@
 from datetime import date, datetime, timedelta
 from io import BytesIO
 from dateutil.relativedelta import relativedelta
-from django.conf import settings
 from django.templatetags.static import static
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
@@ -11,38 +10,32 @@ from django.db.models import Q, Max
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
-from .functions import autenticado_required, actualizar_estados, actualizar_tareas, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf, render_pdf_arr #Importo las funciones desde functions.py
+from .functions import autenticado_required, actualizar_estados_propietarios,actualizar_estados_arrendatarios, actualizar_tareas, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf, render_pdf_arr #Importo las funciones desde functions.py
 from .functions import diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
 import json
 import zipfile
-
-#Librerias y paquetes posbilemente utiles
-# from cryptography.fernet import Fernet
-# from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
-# from django.contrib.auth import authenticate
 
 # Creations the views.
 def index(request):
     if request.method == 'GET':
         return render(request, 'index.html')
-    else: # Obtengo los valores del formulario de inicio de sesión
-        username_form = request.POST.get('documento')
-        password_form = request.POST.get('password')
-        user = superuser.objects.filter(documento=username_form).first() # Busco el usuario en la base de datos
-        if user is not None: # Verifico si la contraseña coincide con la almacenada en la base de datos
-            if check_password_hash(user.password, password_form): #Permite autenticar la contraseña del usuario encontrado
-                #Estas son variables de sesión
-                request.session["estado_sesion"] = True
-                request.session["id_usuario"] = user.id
-                request.session["email"] = user.email
-                datos = { 'nombre' : user.nombre, 'apellido' : user.apellido} #Usar los datos a nivel de template
-                return redirect('dash')
-            else:
-                messages.error(request, "Contraseña incorrecta") 
-        else:
-            messages.error(request, "Usuario no encontrado en la base de datos")
-
+    
+    username_form = request.POST.get('documento')
+    password_form = request.POST.get('password')
+    try:
+        user = superuser.objects.get(documento=username_form)
+    except superuser.DoesNotExist:
+        messages.error(request, "EL usuario no exise, intentelo nuevamente por favor.")
         return redirect('index')
+    if not check_password_hash(user.password, password_form):
+        messages.error(request, "Contraseña incorrecta, intentelo nuevamente por favor.")
+        return redirect('index')
+     # Estas son variables de sesión
+    request.session["estado_sesion"] = True
+    request.session["id_usuario"] = user.id
+    request.session["email"] = user.email
+    return redirect('dash')
+
 def close(request):
     try: #Elimino las variables de sesion
         del request.session["estado_sesion"] 
@@ -54,27 +47,38 @@ def close(request):
 #----------------------------------------------------------------Función para registrar los usuarios administrativos---------------------------------------------------------
 def register(request):
     if request.method == 'POST':# Procesar el formulario cuando se envíe
-        name = request.POST.get('nombre', None)
-        lastname = request.POST.get('apellido', None)
-        phone = request.POST.get('telefono', None)
-        email = request.POST.get('email', None)
-        ide = request.POST.get('documento', None)
-        passw = request.POST.get('pass', None)
-
-        encrypt_passw = generate_password_hash(passw)# Encriptar la contraseña
-        
-        # Crear y guardar el objeto superuser
-        model = superuser(nombre=name, apellido=lastname, documento=ide, password=encrypt_passw, telefono=phone, email=email)
-        model.save()
-
-        return redirect('index')# Redireccionar a la página de inicio de sesión después del registro
-    
+        form_data = {
+            'nombre': request.POST.get('nombre', None),
+            'apellido': request.POST.get('apellido', None),
+            'telefono': request.POST.get('telefono', None),
+            'email': request.POST.get('email', None),
+            'documento': request.POST.get('documento', None),
+            'pass': request.POST.get('pass', None)
+        }
+        encrypt_passw = generate_password_hash(form_data['pass'])# Encriptar la contraseña
+        try:
+            model = superuser(
+                nombre=form_data['nombre'],
+                apellido=form_data['apellido'],
+                documento=form_data['documento'],
+                password=encrypt_passw,
+                telefono=form_data['telefono'],
+                email=form_data['email']
+            )
+            model.save()
+            return redirect('index')
+        except Exception as e:
+            # Manejar el error adecuadamente, por ejemplo, mostrando un mensaje de error al usuario
+            print(f"Error al registrar el usuario: {e}")
+            return render(request, 'register.html', {'error': "Hubo un problema al registrarte."})
     else:
         return render(request, 'register.html')# Renderizar el formulario vacío cuando la solicitud es GET
+    
 #-------------------------------------------------------------------------Logica del Dashboard------------------------------------------------------------------------------------------------
 @autenticado_required #Decorador personalizado 
 def dash(request):
-    actualizar_estados() #Llamamos a la función
+    actualizar_estados_propietarios() #Llamamos a la función
+    actualizar_estados_arrendatarios()
     actualizar_tareas()
     
     objetoPropietario = usuarios.objects.filter(propie_client=1).order_by('-id')[:5] #Propietarios
@@ -124,7 +128,6 @@ def dash(request):
     habilitada = [diccionarioInmueble[str(values)]for values in objetoEstado ]
     habilitada_espacio = [item.lower().replace(' ', '') for item in habilitada]
     All = list(zip(objetoInmuebles, tipoInmueble, habilitada, habilitada_espacio))
-    actualizar_estados()
 
     return render(request, 'dash.html',{'context':context, 'propietarios': usuarios_propietarios, 'arrendatarios': usuarios_arrendatarios, 'inmuebles': All})
 #------------------------------------------------------------------------------Vistas para inmuebles-----------------------------------------------------------------------------
@@ -415,6 +418,7 @@ def actualizar_propietario(request): #Actualizar propietario.
 
     return redirect('personas_propietarios')
 
+@autenticado_required
 def individuo_propietario(request, id):
     objetoPropietarios = propietario.objects.get(usuarios_id_id = id)
     cantidad_inmuebles = objetoPropietarios.inmueble.count()# Calcular la cantidad de inmuebles solo para este propietario
@@ -423,8 +427,9 @@ def individuo_propietario(request, id):
     documentos = objetoPropietarios.DocsPersona.all()
     return render(request, 'personas/propietarios/individuo_propietario.html', {'usuario':objetoUser, 'propietario':objetoPropietarios, 'pago': pago, 'documentos':documentos, 'cantidad_inmuebles': cantidad_inmuebles})
 
+@autenticado_required
 def analisis_propietarios(request):
-    actualizar_estados() #Llamamos a la función
+    actualizar_estados_propietarios() #Llamamos a la función
     
     #Logica para la tabla de propietarios
     objetoInmuebles = inmueble.objects.select_related('propietario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Aquí filtro para que solo aparezcan los inmuebles con arrendatario
@@ -459,6 +464,7 @@ def analisis_propietarios(request):
 
 #-------------------------------------------------------------------Logica para inquilinos/Arrendatarios----------------------------------------------------------------
 
+@autenticado_required
 def personas_inquilinos(request): #Logica para la tabla de Inquilinos-Personas
     objetoArrendatario = arrendatario.objects.values_list('usuarios_id_id')
     objetoUsuario = usuarios.objects.filter(id__in = objetoArrendatario) # Se filtra para saber si son propietarios o clientes
@@ -471,6 +477,7 @@ def personas_inquilinos(request): #Logica para la tabla de Inquilinos-Personas
         usuarios_con_estados.append((usuario, estado, direccion))
     return render(request, 'personas/inquilinos/personas_inquilinos.html', {'datosUsuario': usuarios_con_estados, 'contador': num_inmueble})
 
+@autenticado_required
 def add_inquilino(request): #Vista para añadir inquilinos
     objetoInmueble = inmueble.objects.filter(arrendatario_id_id = None)
     return render(request, 'personas/inquilinos/add_inquilino.html',{'inmuebles': objetoInmueble})
@@ -544,6 +551,7 @@ def guardar_inquilino(request): #Función para guardar inquilinos
             
     return redirect('personas_inquilinos')
 
+@autenticado_required
 def individuo_inquilino(request, id):
     objetoArrendatario= arrendatario.objects.get(usuarios_id_id = id)
     objetoUser = usuarios.objects.get( id = objetoArrendatario.usuarios_id_id)
@@ -648,8 +656,9 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
         
     return redirect('personas_inquilinos')
 
+@autenticado_required
 def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
-    actualizar_estados() #Llamamos a la función
+    actualizar_estados_arrendatarios()
 
     objetoInmuebles = inmueble.objects.select_related('arrendatario_id__usuarios_id').filter(arrendatario_id__isnull=False) #Solo para arrendatarios que estan vinculados a un inmueble
     num_inmueble = objetoInmuebles.count()
@@ -667,6 +676,7 @@ def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
 
 #----------------------------------------------------------------Logica para las tareas--------------------------------------------------------------------------------
 
+@autenticado_required
 def tarea(request): #Visualizar las tareas
     actualizar_tareas()
     
@@ -681,6 +691,7 @@ def tarea(request): #Visualizar las tareas
     }
     return render(request, 'tareas/dash_tareas.html',{'context': contexto})    
 
+@autenticado_required
 def add_tarea(request): #Poder añadir las tareas
     id = superuser.objects.values_list('id', flat=True)
     nombre = superuser.objects.values_list('nombre', flat=True)
@@ -704,6 +715,7 @@ def guardar_tarea(request): #Logica para guardar las tareas
 
     return redirect('tareas')
 
+@autenticado_required
 def modal_ver_tarea(request, id): #Modal para ver más información de cada tarea
     template_path = 'tareas/modal_ver_tarea.html'
     objetoTarea = tareas.objects.filter(id = id).first()
@@ -773,15 +785,15 @@ def actualizar_modal(request): #Logica para actualizar cada modal o tarea
 
 #------------------------------------------------------------------------------Logica para las notificaciones-----------------------------------------------------------------------------------------  
 
+@autenticado_required
 def noti(request):
-    actualizar_estados() #Llamamos a la función
     
     return render(request, 'noti.html')
 
 #-----------------------------------------------------------------Logica para visualizar todos los datos (en analisis)--------------------------------------------------
 
+@autenticado_required
 def all_values_pro(request, id): #Vista exclusivamente para los propietarios
-    actualizar_estados() #Llamamos a la función
     
     #------------------------------------------------------Individuo_inmueble----------------------------------------------------
     objetoInmueble = inmueble.objects.filter(id=id).first()
@@ -819,6 +831,7 @@ def all_values_pro(request, id): #Vista exclusivamente para los propietarios
                                                         'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos, 'total':totalPago,
                                                         'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})
 
+@autenticado_required
 def redireccion_pro(request): #Redirección solo para los propietarios
     btn = request.POST.get('btn')
     idInmueble = request.POST.get('idInmueble')
@@ -838,6 +851,7 @@ def redireccion_pro(request): #Redirección solo para los propietarios
     
     return redirect('analisis_propietarios') #Este return se puede cambiar para el control de errores.
 
+@autenticado_required
 def confirmar_pago (request, id):
     template_path = "analisis/modal_pago.html"
     obj_propietario = propietario.objects.get(id = id)
@@ -980,8 +994,8 @@ def factura(request):
     return response
 
 
+@autenticado_required
 def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
-    actualizar_estados() #Llamamos a la función
     
     #------------------------------------------------------Individuo_inmueble----------------------------------------------------
     objetoInmueble = inmueble.objects.filter(id=id).first()
@@ -1020,6 +1034,7 @@ def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
                                                         'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos, 'total':totalPago,
                                                         'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})
 
+@autenticado_required
 def redireccion_arr(request):  # Redirección solo para los arrendatarios
     btn = request.POST.get('btn')
     btnPago = request.POST.get('btnRespaldoPago')
