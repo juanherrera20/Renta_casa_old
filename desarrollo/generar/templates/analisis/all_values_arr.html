@@ -34,8 +34,9 @@
           </div>
           <br><br>
           <div class="container container-mora">
-            <input type="text" name="canon_arrendatario" value="$ {{ canon }}" readonly class="input input-monto">
+            <input type="text" name="canon_arrendatario" value="$ {{ canon }} x{{meses}}" readonly class="input input-monto">
             <label class="label" for="canon_arrendatario">Valor del canon</label>
+            <input type="number" name="meses_acumulados" value='{{meses}}' hidden class="input input-monto">
           </div>
           <br><br>
           <div class="container container-mora">

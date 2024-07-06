@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
 from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino,  add_tarea, guardar_tarea, modal_ver_tarea
 from generar.views import individuo_propietario, individuo_inquilino,all_values_pro, add_inmueble, guardar_inmueble, individuo_inmueble, actualizar_propietario, actualizar_inquilino
-from generar.views import actualizar_modal, actualizar_inmueble, redireccion_pro, redireccion_arr, all_values_arr, confirmar_pago, actualizar_estado, factura, factura_Arr
+from generar.views import actualizar_modal, actualizar_inmueble, redireccion_pro, redireccion_arr, all_values_arr, confirmar_pago, actualizar_estado, factura, factura_Arr,  eliminar_tarea
 
 urlpatterns = [
 
@@ -47,6 +47,7 @@ urlpatterns = [
     path('Tareas/Estados/', actualizar_estado, name="actualizar_estado"),
     path('Tareas/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
     path('Inicio/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
+    path('Eliminar-tarea/<int:task_id>', eliminar_tarea, name="eliminar_tarea"),
     path('Dashboard/Modal/<int:id>', modal_ver_tarea, name="modal_ver_tarea"),
     path('Tareas/Modal/Actualizado', actualizar_modal, name="actualizarModal"),
 

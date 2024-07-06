@@ -1,3 +1,85 @@
-ul {
+.title {
+    margin-left: 13%;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.content-wrapper {
+    margin: 0 auto;
+    width: fit-content;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#notificaciones, #notificacionesAnio {
+    margin-bottom: 30px;
+}
+
+h3 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.lista {
     list-style: none;
+    padding: 0;
+}
+
+.lista2 {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.item-info {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.item-status {
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.estado {
+    font-weight: bold;
+    color: #007bff;
+}
+
+.item-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #fff;
+    border: none;
+}
+
+.btn:hover {
+    opacity: 0.8;
 }

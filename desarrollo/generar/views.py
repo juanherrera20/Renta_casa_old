@@ -1,6 +1,6 @@
 from datetime import date, datetime, timedelta
 from io import BytesIO
-import re
+import re, math
 from dateutil.relativedelta import relativedelta
 from django.templatetags.static import static
 from django.contrib import messages
@@ -671,12 +671,10 @@ def analisis_inquilinos(request): #Logica para la tabla de Inquilinos - Analisis
 
     for objeto in objetoInmuebles:  #De esta manera obtengo los valores especificos para cada inmueble directamente desde el
         #Llamo a la función para calcular el monto de atraso y los días si aplica
-        monto, dias_atrasado = calcular_monto_atraso(objeto)
-        print(f"Este es el monto que se debe: ${monto}")
-        print(f"Estos son los días de atraso: {dias_atrasado}") #Los días de atraso no son muy relevantes aquí
-        total = objeto.canon + monto
+        monto, dias_atrasado, meses = calcular_monto_atraso(objeto)
+        total = objeto.canon * meses + monto
         
-        montos.append(monto)
+        montos.append(monto)    
         totales.append(total)
         tipoInmueble.append(diccionarioTipoInmueble[str(objeto.tipo)])
         estadoArrendatario.append(diccionarioPago[str(objeto.arrendatario_id.habilitarPago)])
@@ -795,12 +793,81 @@ def actualizar_modal(request): #Logica para actualizar cada modal o tarea
     guardarT.save()
     return redirect('tareas')
 
+def eliminar_tarea(request, task_id):
+    try:
+        tarea = tareas.objects.get(id=task_id)
+        tarea.delete()
+        return redirect('tareas')
+    except tareas.DoesNotExist:
+        return JsonResponse({'success': False}, status=404)
+
 #------------------------------------------------------------------------------Logica para las notificaciones-----------------------------------------------------------------------------------------  
 
 @autenticado_required
 def noti(request):
+    fecha = date.today()  # Calculo fecha del día
+    objetoInmuebles = inmueble.objects.select_related('arrendatario_id__usuarios_id').filter(arrendatario_id__isnull=False)
     
-    return render(request, 'noti.html')
+    if request.method == 'GET':
+        arrendatarios_contrato = []
+        arrendatarios_anio = []
+        
+        for objeto in objetoInmuebles:
+            obj_arrendatario = objeto.arrendatario_id  # Obtengo el objeto arrendatario
+            obj_usuario = obj_arrendatario.usuarios_id
+            estado = diccionarioPago[str(obj_arrendatario.habilitarPago)]
+            
+            #Los campos necesarios para los calculos
+            inicio = obj_arrendatario.inicio
+            fecha_final_contrato = obj_arrendatario.fin_contrato
+            
+            resta = (fecha_final_contrato - fecha).days  # Calcular días restantes para el fin del contrato
+            fecha_final_anio = inicio + relativedelta(years=1)  # Calcular cuando cumple el año
+            
+            # Mirar quienes están próximos a vencerse el contrato
+            if (fecha <= fecha_final_contrato and resta <= 30) or fecha >= fecha_final_contrato:
+                arrendatarios_contrato.append({
+                    'arrendatario': obj_arrendatario,
+                    'usuario': obj_usuario,
+                    'estados': estado
+                })
+            
+            # Mirar quienes ya cumplieron el año para aumentar porcentaje
+            if fecha >= fecha_final_anio:
+                arrendatarios_anio.append({
+                    'arrendatario': obj_arrendatario,
+                    'usuario': obj_usuario,
+                    'inmueble': objeto,
+                    'estados': estado
+                })
+        
+        return render(request, 'noti.html', {
+            'arrendatarios_contrato': arrendatarios_contrato,
+            'arrendatarios_anio': arrendatarios_anio
+        })
+        
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        arrendatario_id = request.POST.get('arrendatario_id')
+        
+        try:
+            obj_arrendatario = arrendatario.objects.get(id=arrendatario_id)
+            obj_inmueble = obj_arrendatario.inmueble.first()
+        except obj_arrendatario.DoesNotExist:
+            return redirect('noti')
+
+        if action == 'denegar':
+            print(f"Inmueble si señor: {obj_inmueble}")
+            obj_inmueble.arrendatario_id = None
+            obj_inmueble.save()
+        
+        if action == 'actualizar_anio':
+            obj_arrendatario.inicio = obj_arrendatario.inicio + relativedelta(years=1)
+            obj_arrendatario.save()
+
+            return redirect('IndividuoInmueble', obj_inmueble.id)
+        
+        return redirect('noti')
 
 #-----------------------------------------------------------------Logica para visualizar todos los datos (en analisis)--------------------------------------------------
 
@@ -1033,9 +1100,9 @@ def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     totalDescuento = ((canon * descuento)/ 100)
     totalPago = (canon - totalDescuento)
     #------------------------------------------------------Individuo_Arrendatario----------------------------------------------------
-    monto, dias_atrasado = calcular_monto_atraso(objetoInmueble)
-    
-    valor_total = monto + canon
+    monto, dias_atrasado, meses = calcular_monto_atraso(objetoInmueble)
+        
+    valor_total = monto + canon * meses #si completo mas de un mes se aumenta el canon
         
     if objetoInmueble.arrendatario_id_id:
         respaldo = 1
@@ -1048,7 +1115,7 @@ def all_values_arr(request, id): #Vista exclusivamente para los arrendatarios
     return render(request, 'analisis/all_values_arr.html', {'inmueble': All, 'canon': canon, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
                                                         'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos, 'total':totalPago,
                                                         'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'monto': monto, 'dias':dias_atrasado, 'valor_total': valor_total, 
-                                                        'estado':estados, 'respaldo':respaldo})
+                                                        'estado':estados, 'respaldo':respaldo, 'meses':meses})
 
 @autenticado_required
 def redireccion_arr(request):  # Redirección solo para los arrendatarios
@@ -1058,10 +1125,8 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
     idUsuario = request.POST.get('idUser')
     idArrendatario = request.POST.get('idArrendatario')
     idA = request.POST.get('idA')  # Extraigo el id arrendatario para actualizar valores
-    request.session['monto'] = request.POST.get('monto')
-    request.session['valor_total'] = request.POST.get('valor_total')
-    print(f"Valor boton editar: {btn}")
-    print(f"Valor boton pago: {btnPago}")
+    
+    
     if btn == '1':
         resultado = individuo_propietario(request, idUsuario)
         return HttpResponse(resultado)
@@ -1072,9 +1137,18 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         resultado = individuo_inquilino(request, idArrendatario)
         return HttpResponse(resultado)
     elif btnPago == '4':
+        #obtengo los valores del html
+        meses = int(request.POST.get('meses_acumulados'))
+        request.session['monto'] = request.POST.get('monto')
+        request.session['valor_total'] = request.POST.get('valor_total')
+        
+        print(f"Los meses acumulados: {meses}")
+        print(f"El monto de mora: {request.POST.get('monto')}")
+        print(f"El valor total a pagar: {request.POST.get('valor_total')}")
+        
         guardar = arrendatario.objects.get(id=idA)
         fechaCobro = guardar.fecha_inicio_cobro
-        nuevaFecha = fechaCobro + relativedelta(months=1)
+        nuevaFecha = fechaCobro + relativedelta(months= meses)
         fecha_limite = nuevaFecha + timedelta(days=5)
         habilitarPago = 1
 
@@ -1084,17 +1158,16 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         guardar.fecha_fin_cobro = fecha_limite   # Guardar el objeto datetime directamente
         guardar.save()
         
-        resultado = factura_Arr(request, idInmueble, idUsuario, idArrendatario)
+        resultado = factura_Arr(request, idInmueble, idArrendatario)
         return resultado #Aquí se redirecciona al html de la factura para arrendatarios
     
     return redirect('dash')  # Este return se puede cambiar para el control de errores
 
 #------------------------------------------------------------------Función para la factura de Arrendatario----------------------------------------------------------
-def factura_Arr(request, idInmueble, idUsuario, idArrendatario):
+def factura_Arr(request, idInmueble, idArrendatario):
     
     obj_inmueble = inmueble.objects.filter(id=idInmueble).first()
-    obj_arrendatario = arrendatario.objects.filter(id=idArrendatario).first()
-    obj_usuario = usuarios.objects.filter(id=idUsuario).first()
+    obj_usuario = usuarios.objects.filter(id=idArrendatario).first()
     fecha = date.today()
     fecha_actual= fecha.strftime("%d/%m/%Y")
     logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))
@@ -1112,7 +1185,6 @@ def factura_Arr(request, idInmueble, idUsuario, idArrendatario):
     data = {
         'usuario': obj_usuario,
         'inmueble': obj_inmueble,
-        'arrendatario': obj_arrendatario,
         'descuento': monto,
         'totalPagar': valor_total,
         'fecha_actual': fecha_actual,

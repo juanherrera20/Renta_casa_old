@@ -10,9 +10,68 @@
 {% endblock encabezado %}
 
 {% block title %}
-  Notificaciones y demás
+  <div class="title">
+    Notificaciones 
+  </div>
 {% endblock title %}
 
 {% block contenido %}
-  <!-- Aun no se ha realizado nada-->
+  <div class="content-wrapper">
+    <div id="notificaciones">
+        <h3>Arrendatarios con contrato próximo a vencerse</h3>
+        {% if arrendatarios_contrato %}
+            <ul class = 'lista'>
+                {% for item in arrendatarios_contrato %}
+                    <li class = 'lista2'>
+                        <div class="item-info">
+                            <span>{{ item.usuario.nombre }} - Fin del contrato {{ item.arrendatario.fin_contrato }}</span>
+                        </div>
+                        <div class="item-status">
+                            <span>Estado de pago:</span> <span class="estado">{{ item.estados }}</span>
+                        </div>
+                        <div class="item-actions">
+                            <a href="{% url 'IndividuoInquilino' item.usuario.id %}" class="btn btn-primary">Renovar</a>
+                            <form method="post" action="{% url 'noti' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="denegar">
+                                <input type="hidden" name="arrendatario_id" value="{{ item.arrendatario.id }}">
+                                <button type="submit" class="btn btn-danger">Terminar contrato</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hay arrendatarios con contrato próximo a vencerse.</p>
+        {% endif %}
+    </div>
+
+    <div id="notificacionesAnio">
+        <h3>Arrendatarios que cumplen un año de registrados</h3>
+        {% if arrendatarios_anio %}
+            <ul class = 'lista'>
+                {% for item in arrendatarios_anio %}
+                    <li class = 'lista2'> 
+                        <div class="item-info">
+                            <span>{{ item.usuario.nombre }} - Registrado desde {{ item.arrendatario.inicio }}</span>
+                        </div>
+                        <div class="item-status">
+                            <span>Estado de pago:</span> <span class="estado">{{ item.estados }}</span>
+                        </div>
+                        <div class="item-actions">
+                            <form method="post" action="{% url 'noti' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="actualizar_anio">
+                                <input type="hidden" name="arrendatario_id" value="{{ item.arrendatario.id }}">
+                                <button type="submit" class="btn btn-warning">Actualizar Año</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No hay arrendatarios que cumplan un año de registrados.</p>
+        {% endif %}
+    </div>
+  </div>
 {% endblock %}
