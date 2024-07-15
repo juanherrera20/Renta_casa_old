@@ -70,7 +70,6 @@ def register(request):
             return redirect('index')
         except Exception as e:
             # Manejar el error adecuadamente, por ejemplo, mostrando un mensaje de error al usuario
-            print(f"Error al registrar el usuario: {e}")
             return render(request, 'register.html', {'error': "Hubo un problema al registrarte."})
     else:
         return render(request, 'register.html')# Renderizar el formulario vacío cuando la solicitud es GET
@@ -818,7 +817,7 @@ def noti(request):
             estado = diccionarioPago[str(obj_arrendatario.habilitarPago)]
             
             #Los campos necesarios para los calculos
-            inicio = obj_arrendatario.inicio
+            inicio = obj_arrendatario.anual
             fecha_final_contrato = obj_arrendatario.fin_contrato
             
             resta = (fecha_final_contrato - fecha).days  # Calcular días restantes para el fin del contrato
@@ -857,12 +856,11 @@ def noti(request):
             return redirect('noti')
 
         if action == 'denegar':
-            print(f"Inmueble si señor: {obj_inmueble}")
             obj_inmueble.arrendatario_id = None
             obj_inmueble.save()
         
         if action == 'actualizar_anio':
-            obj_arrendatario.inicio = obj_arrendatario.inicio + relativedelta(years=1)
+            obj_arrendatario.anual = obj_arrendatario.anual + relativedelta(years=1)
             obj_arrendatario.save()
 
             return redirect('IndividuoInmueble', obj_inmueble.id)
@@ -956,24 +954,17 @@ def confirmar_pago (request, id):
         totalPagar = []
         for obj_inmueble in objs_inmuebles:
             id_inmueble = obj_inmueble.id
-            print(f"id inmueble {id_inmueble}")
             documento = request.FILES.getlist(f'docRespaldo_{id_inmueble}', None) #Los inputs estan en relación al inmueble
-            print(f"documentos: {documento}")
             valor = request.POST.get(f'descuento_{id_inmueble}', None)
-            print(f"Valor descuento: {valor}")
             descrip = request.POST.get(f'descripcionDescuento_{id_inmueble}', None)
-            print(f"Descripción: {descrip}")
             total = request.POST.get(f'totalPagar_{id_inmueble}')
-            print(f"Total a pagar: {total}")
             urls=[]
             
-            if valor != None or descrip != None:  #controlar si se apreto el boton descuento o no
-                today = str(date.today())
-                fs = FileSystemStorage(location='../media/documents/'+ today) #Guardo una carpeta afuera de la carpeta principal
+            if valor  or descrip :  #controlar si se apreto el boton descuento o no
+                fs = FileSystemStorage(location=f"../media/Inmuebles/{obj_inmueble.direccion}/Documentos") #Guardo una carpeta afuera de la carpeta principal
                 
                 if documento: #Si se adjuntaron documentos
                     for doc in documento:
-                        print("Entra al ciclo documentos")
                         filename = fs.save(doc.name, doc)
                         url = fs.url(filename)
                         urls.append(url)
@@ -1139,19 +1130,49 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
     elif btnPago == '4':
         #obtengo los valores del html
         meses = int(request.POST.get('meses_acumulados'))
-        request.session['monto'] = request.POST.get('monto')
-        request.session['valor_total'] = request.POST.get('valor_total')
+        documento = request.FILES.getlist('docRespaldo', None)
+        descuento = request.POST.get('descuento', None)
+        observaciones = request.POST.get('descripcionDescuento', None)
+        
+        print(f"EStos son los documentos: {documento}")
+        print(f"ESte es el valor del descuento: {descuento}")
+        print(f"Las increibles observaciones: {observaciones}")
         
         print(f"Los meses acumulados: {meses}")
-        print(f"El monto de mora: {request.POST.get('monto')}")
-        print(f"El valor total a pagar: {request.POST.get('valor_total')}")
         
         guardar = arrendatario.objects.get(id=idA)
+        obj_inmueble = guardar.inmueble.first()
+        
         fechaCobro = guardar.fecha_inicio_cobro
         nuevaFecha = fechaCobro + relativedelta(months= meses)
         fecha_limite = nuevaFecha + timedelta(days=5)
         habilitarPago = 1
+        urls=[]
+        
+        if descuento  or observaciones:  #controlar si se apreto el boton descuento o no
+            print("Entro al if")
+            fs = FileSystemStorage(location=f"../media/Inmuebles/{obj_inmueble.direccion}/Documentos") #Guardo una carpeta afuera de la carpeta principal
+            
+            if documento: #Si se adjuntaron documentos
+                print("Entro al if documentos")
+                for doc in documento:
+                    filename = fs.save(doc.name, doc)
+                    url = fs.url(filename)
+                    urls.append(url)
+            doc_descuentos = Docdescuentos(inmueble_id = idInmueble, valor = descuento, descrip = observaciones ,documento =','.join(urls))
+            doc_descuentos.save()
+        else: 
+            descuento = 0
+            observaciones = "No aplica ningún descuento"
 
+        request.session['monto'] = request.POST.get('monto')
+        request.session['valor_total'] = request.POST.get('valor_total')
+        request.session['valor_descuento'] = descuento
+        request.session['observaciones'] = observaciones
+        
+        print(f"El monto de mora: {request.POST.get('monto')}")
+        print(f"El valor total a pagar: {request.POST.get('valor_total')}")
+        
         # Actualizar los campos
         guardar.habilitarPago = habilitarPago
         guardar.fecha_inicio_cobro = nuevaFecha  # Guardar el objeto datetime directamente
@@ -1161,13 +1182,13 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         resultado = factura_Arr(request, idInmueble, idArrendatario)
         return resultado #Aquí se redirecciona al html de la factura para arrendatarios
     
-    return redirect('dash')  # Este return se puede cambiar para el control de errores
+    #return redirect('dash')  # Este return se puede cambiar para el control de errores
 
 #------------------------------------------------------------------Función para la factura de Arrendatario----------------------------------------------------------
 def factura_Arr(request, idInmueble, idArrendatario):
     
-    obj_inmueble = inmueble.objects.filter(id=idInmueble).first()
-    obj_usuario = usuarios.objects.filter(id=idArrendatario).first()
+    obj_inmueble = inmueble.objects.get(id=idInmueble)
+    obj_usuario = usuarios.objects.get(id=idArrendatario)
     fecha = date.today()
     fecha_actual= fecha.strftime("%d/%m/%Y")
     logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))

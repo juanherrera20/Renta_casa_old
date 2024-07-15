@@ -81,9 +81,10 @@ class arrendatario(models.Model): #Tabla usuarios
     inicio_contrato = models.DateField(max_length = 20)
     fin_contrato = models.DateField(max_length = 20)
     tipo_contrato = models.CharField(max_length = 100) #Se puede hacer la alarma mediante este campo.
-    inicio = models.DateField(auto_now_add=True)  #Fecha cuando se inscribio
     habilitarPago = models.IntegerField(default=4) 
     obs = models.CharField(max_length = 400) 
+    registro = models.DateField(auto_now_add=True)  #Fecha donde se registro al programa
+    anual = models.DateField(auto_now_add=True) #Seguimiento del año registrado
    
     def update(self, *args, **kwargs): #Metodo copiado de save() Para guardar un arrendatario pero actualizando los inmuebles
         models.Model.save(self, *args, **kwargs)  # Llamar al método save de la clase base sin la lógica adicional

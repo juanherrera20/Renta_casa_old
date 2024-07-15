@@ -130,12 +130,10 @@ def  actualizar_estados_propietarios():
         
         if fecha_inmueble >= fechaObjeto1: 
             if (EstadoPago in [1, 4]) and fechaResta <=7: #La fecha de pago es el ultimo día habil para pagar
-                print("Condicional debe propietario")
                 objeto.estadoPago = 2
                 objeto.save()
                 
         elif fechaObjeto1 > fecha_propietario and EstadoPago not in [1,3]: #Si el estado es pagado no debería cambiarse a no pago
-            print("Condicional no pago propietario")
             objeto.estadoPago = 3
             objeto.save()
     return None 
@@ -176,14 +174,10 @@ def calcular_monto_atraso(objeto):
         #El monto y día de atraso se calculan desde la primera fecha de atraso, así luego se acumulen meses completos estos valores siempre se deberan calcular
         dias_atraso = (fecha - fecha_limite).days
         monto_atraso = canon / 30 * porcentaje_penalizacion * dias_atraso  
-        print(f"monto de pago por mes: {monto_atraso}")
         
         for i in range(1,7): #un rango de 6 meses que representa la cantidad de meses posiblemente maximos para un atraso
-            print(f"Ciclo -------- {i}")
             fecha_limitex = fecha_limite + relativedelta(months = i) #Calculo las fechas hipoteticas donde debería volver a pagar el siguiente mes
             fecha_iniciox = fecha_limitex - relativedelta(days= 5)
-            print(f"fecha hipotetica limite : {fecha_limitex}")
-            print(f"fecha hipotetica inicio: {fecha_iniciox}")
             
             if fecha <= fecha_limitex:  #Si la fecha hipotetica es menor significa que no a excedido el siguiente mes de pago, por ende no es necesario seguir ejecutando el for
                 
@@ -191,16 +185,11 @@ def calcular_monto_atraso(objeto):
                     meses = i + 1
                 else: 
                     meses = i
-                
-                print("Se va a romper el for")
                 break #Rompo el ciclo
             
-            print(f"Supera un mes mas")
             dias_atrasox = (fecha - fecha_limitex).days  #Calculo dias de atraso basados en las nuevas fechas hipoteticas, para un mora extra por otro mes de atraso
             monto_atrasox = canon / 30 * porcentaje_penalizacion * dias_atrasox
-            print(f"monto extra de pago por mes: {monto_atrasox}")
-            print(f"Dias de atraso extra por mes: {dias_atrasox}")
-            
+
             monto_atraso += monto_atrasox
            
     else:

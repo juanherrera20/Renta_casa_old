@@ -20,32 +20,52 @@
 {% block contenido %}
   <div class="contenido">
     <form action="{% url 'redirecArr' %}" id="miFormulario" method="post" enctype="multipart/form-data">
-    <!-- Esto se debe revisar los estilos-->
       <br><br>
       <div class="campos-zero">
-          <div class="container">
-            <input type="text" name="dias_atraso" value="{{dias}}" readonly class="input input-dias">
-            <label class="label" for="dias_atraso">Dias de atraso</label>
-          </div>
-          <br><br>
-          <div class="container container-mora">
-            <input type="text" name="monto" value="$ {{ monto }}" readonly class="input input-monto">
-            <label class="label" for="monto">Mora por atraso</label>
-          </div>
-          <br><br>
-          <div class="container container-mora">
-            <input type="text" name="canon_arrendatario" value="$ {{ canon }} x{{meses}}" readonly class="input input-monto">
-            <label class="label" for="canon_arrendatario">Valor del canon</label>
-            <input type="number" name="meses_acumulados" value='{{meses}}' hidden class="input input-monto">
-          </div>
-          <br><br>
-          <div class="container container-mora">
-            <input type="text" name="valor_total" value="$ {{ valor_total }}" readonly class="input input-monto">
-            <label class="label" for="valor_total">Total a pagar</label>
-          </div>
-          <button type="submit" class="tarea-btn btn_pago" id="btnPago" name="btnPago" value="4">Pago</button>
+        <div class="container">
+          <input type="text" name="dias_atraso" value="{{dias}}" readonly class="input input-dias">
+          <label class="label" for="dias_atraso">Dias de atraso</label>
+        </div>
+        <div class="container">
+          <input type="text" name="monto" value="$ {{ monto }}" readonly class="input input-monto">
+          <label class="label" for="monto">Mora por atraso</label>
+        </div>
+        <div class="container">
+          <input type="text" name="canon_arrendatario" value="$ {{ canon }} x{{meses}}" readonly class="input input-monto">
+          <label class="label" for="canon_arrendatario">Valor del canon</label>
+          <input type="number" name="meses_acumulados" value='{{meses}}' hidden class="input input-monto">
+        </div>
+        <div class="container">
+          <input type="text" name="valor_total" value="$ {{ valor_total }}" readonly class="input input-monto">
+          <label class="label" for="valor_total">Total a pagar</label>
+        </div>
+        <button type="submit" class="tarea-btn btn_pago" id="btnPago" name="btnPago" value="4">Pago</button>
       </div>
+
+      <div class="campos-zero" id="descuento-container" style="display:none;">
+        <div class="container">
+            <input type="number" id="descuento" name="descuento" class="input descuento">
+            <label class="label" for="descuento"><p class="label-p">*</p>Descuento</label>
+        </div>
+        <div class="container">
+            <input type="text" id="descripcionDescuento" name="descripcionDescuento" class="input descripcionDescuento">
+            <label class="label" for="descripcionDescuento"><p class="label-p">*</p>Descripción</label>
+        </div>
+        <div class="container">
+            <label for="docRespaldo" class="pre-label-documentos">Documento de respaldo:</label>
+            <input id="docRespaldo" type="file" name="docRespaldo" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple class="file-input">
+        </div>
+        <button type="button" class="btnConfirmar">Confirmar</button>
+      </div>
+      <div class="confirmation-section">
+          <button type="button" class="btnCancelar" style="display:none;">Cancelar</button>
+          <p id="pConfirmacion" class="confirma" name="pConfirmacion" style="display:none;">Descuento aplicado con éxito</p>
+      </div>
+      <button type="button" class="btnDescuento">+ Descuento</button>
+
       <br>
+
+
       {% csrf_token %}
       <input type="hidden" name="idArrendatario" id="idArrendatario" value="{{ usuario2.id }}">
       <input type="hidden" name="idA" id="idA" value="{{ arrendatario.id }}">
