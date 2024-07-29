@@ -11,7 +11,7 @@ from django.db.models import Q, Max
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
-from .functions import autenticado_required, actualizar_estados_propietarios,actualizar_estados_arrendatarios, actualizar_tareas, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf, render_pdf_arr, calcular_monto_atraso #Importo las funciones desde functions.py
+from .functions import autenticado_required, actualizar_estados_propietarios,actualizar_estados_arrendatarios, actualizar_tareas, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf, render_pdf_arr, calcular_monto_atraso, delete_imagenes #Importo las funciones desde functions.py
 from .functions import diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
 import json
 import zipfile
@@ -213,6 +213,7 @@ def guardar_inmueble(request): #Logica para guardar el inmueble en la dB
 @autenticado_required
 def individuo_inmueble(request, id):
     objetoInmueble = inmueble.objects.select_related('propietario_id__usuarios_id').get(id = id) #Get arroja un solo objeto filter un conjutno con n elementos
+    delete_imagenes(objetoInmueble)
     documentos = objetoInmueble.documentos.all()
     imagenes = objetoInmueble.imagenes.all()[:10]
     
@@ -506,7 +507,7 @@ def guardar_inquilino(request): #Función para guardar inquilinos
         objeto = usuarios.objects.last() #Guarda todo el objeto del último registro
         usuarios_id = objeto.id # id del último registro guardado en la dB
         
-        direc = request.POST.get('direc', None)
+        direc = request.POST.get('direccion', None)
         fecha_cobrar = request.POST.get('inicio_cobro', None)
 
         #Logica para agregarle los 5 días de plazo para el pago.

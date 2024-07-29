@@ -4,13 +4,14 @@
 
 from datetime import date,timedelta, datetime
 from dateutil.relativedelta import relativedelta
-import re, math
+import re
 from django.shortcuts import redirect
 from .models import  tareas, inmueble, arrendatario, propietario
 from xhtml2pdf import pisa
 from io import BytesIO
 from django.http import FileResponse
 from django.template.loader import get_template
+import os
 
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -276,4 +277,18 @@ def render_pdf_arr( template_src, context_dict={}):
         result.seek(0)
         return FileResponse(result, as_attachment=True, filename='Factura-Arrendatario.pdf')
     return None
+
+
+#-----------------------------------------------Función para limpiar la BD desde las carpetas--------------------------------------------
+#Elimina las imagenes de la base de datos que se eliminen manual desde las carpetas de los archivos
+def delete_imagenes(objeto):
+    print("Entro en la función de eliminar")
+    objs_imagenes = objeto.imagenes.all()
+    print(f"Objetos imagenes {objs_imagenes}")
+    
+    for obj_imagen in objs_imagenes:
+        print(f"Objeto: {obj_imagen.id}")
+        if not os.path.isfile(obj_imagen.imagen.path):
+            print("Entro condicional")
+            obj_imagen.delete()
 #---------------------------------------------------------------------------------------------------------------------------------------s

@@ -107,7 +107,6 @@ class propietario(models.Model): #Tabla usuarios
     bancos = models.CharField(max_length = 200)
     num_banco = models.CharField(max_length = 200) #Numero de cuenta bancaria
     obs = models.CharField(max_length = 400)
-    #habilitarPago = models.IntegerField(default=4)
     
     
     class Meta:
@@ -185,14 +184,6 @@ class Imagenes(models.Model):
             os.remove(self.imagen.path)
         super().delete(*args, **kwargs)
     
-    #Aun falta revisar cosas
-    # def delete_if_file_missing(self):
-    #     if not os.path.isfile(self.imagen.path):
-    #         self.delete()
-
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     self.delete_if_file_missing()
         
     class Meta:
         db_table = 'Imagenes'
@@ -213,8 +204,8 @@ class Documentos(models.Model):
         
 class DocsPersonas(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
-    propietario = models.ForeignKey(propietario, related_name='DocsPersona', on_delete=models.CASCADE) #Al hacer las migraciones cambiar este valor en la base de dato a Nulo
-    arrendatario = models.ForeignKey(arrendatario, related_name='DocsPersona', on_delete=models.CASCADE)  #Al hacer las migraciones cambiar este valor en la base de dato a Nulo
+    propietario = models.ForeignKey(propietario, related_name='DocsPersona', on_delete=models.CASCADE, null=True) #Al hacer las migraciones cambiar este valor en la base de dato a Nulo
+    arrendatario = models.ForeignKey(arrendatario, related_name='DocsPersona', on_delete=models.CASCADE, null=True)  #Al hacer las migraciones cambiar este valor en la base de dato a Nulo
     documento = models.FileField(upload_to=Crear_carpetas) 
     
     #Función para eliminar los archivos cuando se eliminan de la base de datos
@@ -222,15 +213,6 @@ class DocsPersonas(models.Model):
         if os.path.isfile(self.documento.path):
             os.remove(self.documento.path)
         super().delete(*args, **kwargs)
-    
-     #Aun falta revisar cosas
-    # def delete_if_file_missing(self):
-    #     if not os.path.isfile(self.documento.path):
-    #         self.delete()
-
-    # def save(self, *args, **kwargs):
-    #     super().save(*args, **kwargs)
-    #     self.delete_if_file_missing()
         
     class Meta:
         db_table = 'DocsPersonas'
