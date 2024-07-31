@@ -72,6 +72,7 @@ diccionarioPorcentajeDescuento = { # Relacionado al porcentaje de descuento por 
     '4' : 10,
     '5' : 9,
     '6' : 8,
+    '7' : 12.2,
 }
 
 diccionarioBancos = {
