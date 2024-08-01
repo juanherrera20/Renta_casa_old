@@ -62,7 +62,8 @@ diccionarioTipoInmueble={
     '1':'Casa',
     '2':'Apartamento',
     '3':'Local',
-    '4':'Aparta-estudio'
+    '4':'Aparta-estudio',
+    '5': 'Bodega'
 }
 
 diccionarioPorcentajeDescuento = { # Relacionado al porcentaje de descuento por cada inmueble al valor a pagar de arrendatario
@@ -79,7 +80,7 @@ diccionarioBancos = {
     'None': 'None',
     'Bancolombia':'https://www.bancolombia.com/personas',
     'Davivienda':'https://www.davivienda.com/wps/portal/personas/nuevo',
-    'Bogotá':'https://digital.bancodebogota.co/credito/index.html?&&gad_source=1&gclid=Cj0KCQjw_-GxBhC1ARIsADGgDjs2iaREWFvmN9HHQwW1XP2FedHJAy8UbC0GZaPn_b9V-Su31VwBI_caAn_AEALw_wcB',
+    'Bogota':'https://digital.bancodebogota.co/credito/index.html?&&gad_source=1&gclid=Cj0KCQjw_-GxBhC1ARIsADGgDjs2iaREWFvmN9HHQwW1XP2FedHJAy8UbC0GZaPn_b9V-Su31VwBI_caAn_AEALw_wcB',
     'Popular': 'https://www.bancopopular.com.co/wps/portal/bancopopular/inicio/para-ti/productos-ahorro-inversion/cuentas-ahorro/cuenta-para-ahorrar?utm_source=google&utm_medium=CAH-PRS&utm_campaign=renovacionkvabril-performance-performancemx-CPA-2024-mayo&utm_content=cuentaahorrar&gad_source=1&gclid=Cj0KCQjw_-GxBhC1ARIsADGgDjvLTm4_cc8X9j7ChblFhEoHOwu1j0sc1JTJajH6hwOp1cDvbmODYpMaArT1EALw_wcB',
     'Colpatria':'https://www.scotiabankcolpatria.com',
     'Agrario':'https://www.bancoagrario.gov.co',
@@ -92,7 +93,8 @@ diccionarioBancos = {
     'Tpaga':'https://tpaga.co',
     'Nubank':'https://nu.com.co/cf/cuenta/',
     'PayPal':'https://www.paypal.com/co/home',
-    'Efectivo':'Pago en efectivo'
+    'Efectivo':'Pago en efectivo',
+    'AV Villas': 'https://www.avvillas.com.co/',
 }
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
