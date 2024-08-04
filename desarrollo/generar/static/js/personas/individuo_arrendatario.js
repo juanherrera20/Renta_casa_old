@@ -59,22 +59,22 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             var fechaPagoInput = miFormulario.querySelector('input[name="fecha_inicio"]');
             if (fechaPagoInput) {
-                fechaPagoInput.type = 'datetime';
+                fechaPagoInput.type = 'date';
                 fechaPagoInput.value = fechaPagoInput.dataset.originalValue; 
             }
             var inicioContratoInput = miFormulario.querySelector('input[name="inicio_contrato"]');
             if (inicioContratoInput) {
-                inicioContratoInput.type = 'datetime';
+                inicioContratoInput.type = 'date';
                 inicioContratoInput.value = inicioContratoInput.dataset.originalValue;
             }
             var finContratoInput = miFormulario.querySelector('input[name="fin_contrato"]');
             if (finContratoInput) {
-                finContratoInput.type = 'datetime';
+                finContratoInput.type = 'date';
                 finContratoInput.value = finContratoInput.dataset.originalValue; // Restaurar el valor original
             }
             var fechaLimiteInput = miFormulario.querySelector('input[name="fecha_fin"]');
             if (fechaLimiteInput) {
-                fechaLimiteInput.type = 'datetime';
+                fechaLimiteInput.type = 'date';
                 fechaLimiteInput.value = fechaLimiteInput.dataset.originalValue;
             }
             this.style.display = 'none';

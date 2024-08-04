@@ -11,7 +11,7 @@ from django.db.models import Q, Max
 from django.shortcuts import render, redirect
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
 from werkzeug.security import generate_password_hash, check_password_hash
-from .functions import autenticado_required, actualizar_estados_propietarios,actualizar_estados_arrendatarios, actualizar_tareas, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf, render_pdf_arr, calcular_monto_atraso, delete_imagenes #Importo las funciones desde functions.py
+from .functions import autenticado_required, actualizar_estados_propietarios,actualizar_estados_arrendatarios, actualizar_tareas, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf, render_pdf_arr, calcular_monto_atraso, delete_imagenes, parse_date #Importo las funciones desde functions.py
 from .functions import diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
 import json
 import zipfile
@@ -391,13 +391,14 @@ def actualizar_propietario(request): #Actualizar propietario.
     fecha_pago = request.POST.get('fecha_pago')
     respaldo_fecha = request.POST.get('respaldo_fecha') 
 
-    if fecha_pago:
-        fechaPago = fecha_pago
-    else:
-        try:
-            fechaPago =  datetime.strptime(respaldo_fecha, "%b. %d, %Y")
-        except:
-            fechaPago =  datetime.strptime(respaldo_fecha, "%B %d, %Y")
+    try:
+        if fecha_pago:
+            fechaPago = fecha_pago
+        else:
+            fechaPago = parse_date(respaldo_fecha)
+    except ValueError as e:
+        return HttpResponse(f"Error en el inicio del contrato: {e}", status=400)
+    
     obs = request.POST.get('obs')
 
     guardar2 = propietario.objects.get(id=idPropietario)
@@ -512,7 +513,7 @@ def guardar_inquilino(request): #Función para guardar inquilinos
 
         #Logica para agregarle los 5 días de plazo para el pago.
         fechaObjeto = datetime.strptime(fecha_cobrar, "%Y-%m-%d")
-        fecha_limite = fechaObjeto + timedelta(days=5)
+        fecha_limite = fechaObjeto + timedelta(days=4)
 
         inicioContrato = request.POST.get('inicioContrato', None)
         fecha_inicio_contrato = datetime.strptime(inicioContrato, "%Y-%m-%d")
@@ -562,6 +563,7 @@ def individuo_inquilino(request, id):
     estados = diccionarioPago[str(objetoArrendatario.habilitarPago)]
     return render(request, 'personas/inquilinos/individuo_inquilino.html', {'usuario':objetoUser, 'arrendatario':objetoArrendatario, 'estado':estados, 'documentos':documentos, 'inmueble':obj_inmueble})
 
+
 def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     idUsuario = request.POST.get('id')
     nombre = request.POST.get('nombre')
@@ -595,29 +597,28 @@ def actualizar_inquilino(request): #Se actualizan usuarios y arrendatarios
     fecha_cobro = request.POST.get('fecha_inicio')
     fecha_cobroRes = request.POST.get('fecha_inicioRes')
     
-    if fecha_cobro: #Compruebo si se modifico la fecha
-        date_cobro = fecha_cobro
-        fechaCobro = datetime.strptime(date_cobro, '%Y-%m-%d')
-    else:
-        try:
-            fechaCobro =  datetime.strptime(fecha_cobroRes, "%B %d, %Y")
-        except:
-            fechaCobro =  datetime.strptime(fecha_cobroRes, "%b. %d, %Y")
-      
-    fecha_limite = fechaCobro + timedelta(days=5)
+    try:
+        if fecha_cobro:  #Compruebo si se modifico la fecha
+            date_cobro = fecha_cobro
+            fechaCobro = parse_date(date_cobro)
+        else:
+            fechaCobro = parse_date(fecha_cobroRes)
+    except ValueError as e:
+        return HttpResponse(f"Error en el inicio del contrato: {e}", status=400)
+    
+    fecha_limite = fechaCobro + timedelta(days=4)
   
     inicio_contrato = request.POST.get('inicio_contrato')
     inicio_contratoRes = request.POST.get('inicio_contratoRes')
    
-    if inicio_contrato:
-        date_contrato = inicio_contrato
-        inicioContrato = datetime.strptime(date_contrato, '%Y-%m-%d')
-    else:
-        try:
-            inicioContrato =  datetime.strptime(inicio_contratoRes, "%B %d, %Y")
-        except:
-            inicioContrato =  datetime.strptime(inicio_contratoRes, "%b. %d, %Y")
-
+    try:
+        if inicio_contrato:
+            inicioContrato = parse_date(inicio_contrato)
+        else:
+            inicioContrato = parse_date(inicio_contratoRes)
+    except ValueError as e:
+        return HttpResponse(f"Error en el inicio del contrato: {e}", status=400)
+    
     tipo_contrato = request.POST.get('tipo_contrato')
     finalContrato =""
 
@@ -822,7 +823,6 @@ def noti(request):
             fecha_final_contrato = obj_arrendatario.fin_contrato
             
             resta = (fecha_final_contrato - fecha).days  # Calcular días restantes para el fin del contrato
-            fecha_final_anio = inicio + relativedelta(years=1)  # Calcular cuando cumple el año
             
             # Mirar quienes están próximos a vencerse el contrato
             if (fecha <= fecha_final_contrato and resta <= 30) or fecha >= fecha_final_contrato:
@@ -833,7 +833,7 @@ def noti(request):
                 })
             
             # Mirar quienes ya cumplieron el año para aumentar porcentaje
-            if fecha >= fecha_final_anio:
+            if fecha >= inicio:
                 arrendatarios_anio.append({
                     'arrendatario': obj_arrendatario,
                     'usuario': obj_usuario,
@@ -1133,11 +1133,13 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         meses = int(request.POST.get('meses_acumulados'))
         documento = request.FILES.getlist('docRespaldo', None)
         descuento = request.POST.get('descuento', None)
-        observaciones = request.POST.get('descripcionDescuento', None)
+        observaciones1 = request.POST.get('descripcionDescuento', None)
+        observaciones2 = request.POST.get('descripcionOtroValor', None)
         
         print(f"EStos son los documentos: {documento}")
         print(f"ESte es el valor del descuento: {descuento}")
-        print(f"Las increibles observaciones: {observaciones}")
+        print(f"Las increibles observaciones: {observaciones1}")
+        print(f"Las increibles observaciones2: {observaciones2}")
         
         print(f"Los meses acumulados: {meses}")
         
@@ -1146,11 +1148,11 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         
         fechaCobro = guardar.fecha_inicio_cobro
         nuevaFecha = fechaCobro + relativedelta(months= meses)
-        fecha_limite = nuevaFecha + timedelta(days=5)
+        fecha_limite = nuevaFecha + timedelta(days=4)
         habilitarPago = 1
         urls=[]
         
-        if descuento  or observaciones:  #controlar si se apreto el boton descuento o no
+        if descuento  or observaciones1:  #controlar si se apreto el boton descuento o no
             print("Entro al if")
             fs = FileSystemStorage(location=f"../media/Inmuebles/{obj_inmueble.direccion}/Documentos") #Guardo una carpeta afuera de la carpeta principal
             
@@ -1160,12 +1162,20 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
                     filename = fs.save(doc.name, doc)
                     url = fs.url(filename)
                     urls.append(url)
-            doc_descuentos = Docdescuentos(inmueble_id = idInmueble, valor = descuento, descrip = observaciones ,documento =','.join(urls))
+            doc_descuentos = Docdescuentos(inmueble_id = idInmueble, valor = descuento, descrip = observaciones1 ,documento =','.join(urls))
             doc_descuentos.save()
         else: 
             descuento = 0
-            observaciones = "No aplica ningún descuento"
+            observaciones1 = "No aplica ningún descuento"
 
+        #concatenar texto
+        if observaciones2:
+            observaciones = observaciones1 + ".\n" + observaciones2
+        else:
+            observaciones = observaciones1
+        
+        print(f"Texto final: {observaciones}")
+        
         request.session['monto'] = request.POST.get('monto')
         request.session['valor_total'] = request.POST.get('valor_total')
         request.session['valor_descuento'] = descuento
@@ -1197,21 +1207,32 @@ def factura_Arr(request, idInmueble, idArrendatario):
 
     monto_str = request.session.get('monto', '')
     valor_total_str = request.session.get('valor_total', '')
+    valor_descuento_srt = request.session.get('valor_descuento','')
+    valor_descuento_srt = str(valor_descuento_srt)
+    if not valor_descuento_srt.strip():
+        valor_descuento_srt = '0'
+    
 
     monto_clean = re.findall(r'\d+\.?\d*', monto_str)[0]
     valor_total_clean = re.findall(r'\d+\.?\d*', valor_total_str)[0]
+    valor_descuento_clean = re.findall(r'\d+\.?\d*', valor_descuento_srt)[0]
 
     monto = float(monto_clean)
     valor_total = float(valor_total_clean)
-
+    valor_descuento = float(valor_descuento_clean)
+    descripcion = request.session.get('observaciones', [])
+    descrip = descripcion if descripcion  is not None else "No hay observaciones."
+        
     data = {
         'usuario': obj_usuario,
         'inmueble': obj_inmueble,
         'descuento': monto,
+        'valor_descuento': valor_descuento,
         'totalPagar': valor_total,
         'fecha_actual': fecha_actual,
         'logo_rentacasa_url': logo_rentacasa_url,
         'logo_datacredito_url': logo_datacredito_url,
+        'obs':descrip,
     }
     pdf = render_pdf_arr('factura _arr.html', data)
     return pdf

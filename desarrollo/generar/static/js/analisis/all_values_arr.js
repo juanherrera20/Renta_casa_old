@@ -2,14 +2,21 @@ document.addEventListener('DOMContentLoaded', function() {
     // Variables
     let btnPago = document.getElementById('btnPago');
     let btnDescuento = document.querySelector('.btnDescuento');
-    let btnConfirmar = document.querySelector('.btnConfirmar');
-    let btnCancelar = document.querySelector('.btnCancelar');
+    let btnOtroValor = document.querySelector('.btnOtroValor');
+    let btnConfirmarDescuento = document.querySelector('.btnConfirmar');
+    let btnConfirmarOtroValor = document.querySelector('.btnConfirmarOtroValor');
+    let btnCancelarDescuento = document.querySelector('.btnCancelar');
+    let btnCancelarOtroValor = document.querySelector('.btnCancelarOtroValor');
     let descuentoInput = document.getElementById('descuento');
-    let descripcionInput = document.getElementById('descripcionDescuento');
+    let otroValorInput = document.getElementById('otroValor');
+    let descripcionDescuentoInput = document.getElementById('descripcionDescuento');
+    let descripcionOtroValorInput = document.getElementById('descripcionOtroValor');
     let docRespaldoInput = document.getElementById('docRespaldo');
     let valorTotalInput = document.querySelector('input[name="valor_total"]');
-    let pConfirmacion = document.getElementById('pConfirmacion');
+    let pConfirmacionDescuento = document.getElementById('pConfirmacion');
+    let pConfirmacionOtroValor = document.getElementById('pConfirmacionOtroValor');
     let descuentoContainer = document.getElementById('descuento-container');
+    let otroValorContainer = document.getElementById('otro-valor-container');
 
     // Verificar si el elemento de valor total existe
     if (!valorTotalInput) {
@@ -19,9 +26,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Obtener el valor original del total y eliminar el símbolo `$`
     let valorTotalOriginal = parseFloat(valorTotalInput.value.replace(/[^0-9.-]+/g, "")) || 0;
+    let valorTotalActual = valorTotalOriginal; // Valor total que se va actualizando
 
-    // Ocultar el botón de cancelar por defecto al cargar la página
-    btnCancelar.style.display = 'none';
+    // Ocultar los botones de cancelar por defecto al cargar la página
+    btnCancelarDescuento.style.display = 'none';
+    btnCancelarOtroValor.style.display = 'none';
 
     // Evento para el botón de Pago
     if (btnPago) {
@@ -58,47 +67,85 @@ document.addEventListener('DOMContentLoaded', function() {
         btnDescuento.addEventListener('click', function() {
             // Mostrar los campos de descuento y ocultar el botón de añadir
             descuentoContainer.style.display = 'flex';
-            btnConfirmar.style.display = 'inline-block';
+            btnConfirmarDescuento.style.display = 'inline-block';
             btnDescuento.style.display = 'none';
-            pConfirmacion.style.display = 'none';
+            pConfirmacionDescuento.style.display = 'none';
 
             // Habilitar los campos de descuento
             descuentoInput.disabled = false;
-            descripcionInput.disabled = false;
+            descripcionDescuentoInput.disabled = false;
             docRespaldoInput.disabled = false;
         });
     }
 
-    // Evento para el botón de Cancelar
-    if (btnCancelar) {
-        btnCancelar.addEventListener('click', function() {
-            // Ocultar los campos de descuento y mostrar el botón de añadir
-            descuentoContainer.style.display = 'none';
-            btnConfirmar.style.display = 'none';
-            pConfirmacion.style.display = 'none';
-            btnDescuento.style.display = 'inline-block';
+    // Evento para el botón de Añadir Otro Valor
+    if (btnOtroValor) {
+        btnOtroValor.addEventListener('click', function() {
+            // Mostrar los campos de otro valor y ocultar el botón de añadir
+            otroValorContainer.style.display = 'flex';
+            btnConfirmarOtroValor.style.display = 'inline-block';
+            btnOtroValor.style.display = 'none';
+            pConfirmacionOtroValor.style.display = 'none';
 
-            // Asegurarse de que el botón de cancelar esté oculto
-            btnCancelar.style.display = 'none';
-
-            // Habilitar los campos de descuento
-            descuentoInput.disabled = true;
-            descripcionInput.disabled = true;
-            docRespaldoInput.disabled = true;
-
-            // Restablecer el valor original del total
-            valorTotalInput.value = `$ ${valorTotalOriginal.toFixed(2)}`;
+            // Habilitar los campos de otro valor
+            otroValorInput.disabled = false;
+            descripcionOtroValorInput.disabled = false;
         });
     }
 
-    // Evento para el botón de Confirmar
-    if (btnConfirmar) {
-        btnConfirmar.addEventListener('click', function() {
+    // Evento para el botón de Cancelar Descuento
+    if (btnCancelarDescuento) {
+        btnCancelarDescuento.addEventListener('click', function() {
+            // Ocultar los campos de descuento y mostrar el botón de añadir
+            descuentoContainer.style.display = 'none';
+            btnConfirmarDescuento.style.display = 'none';
+            pConfirmacionDescuento.style.display = 'none';
+            btnDescuento.style.display = 'inline-block';
+
+            // Asegurarse de que el botón de cancelar esté oculto
+            btnCancelarDescuento.style.display = 'none';
+
+            // Deshabilitar los campos de descuento
+            descuentoInput.disabled = true;
+            descripcionDescuentoInput.disabled = true;
+            docRespaldoInput.disabled = true;
+
+            // Restablecer el valor actual del total sin el descuento
+            valorTotalActual += parseFloat(descuentoInput.value) || 0;
+            valorTotalInput.value = `$ ${valorTotalActual.toFixed(2)}`;
+        });
+    }
+
+    // Evento para el botón de Cancelar Otro Valor
+    if (btnCancelarOtroValor) {
+        btnCancelarOtroValor.addEventListener('click', function() {
+            // Ocultar los campos de otro valor y mostrar el botón de añadir
+            otroValorContainer.style.display = 'none';
+            btnConfirmarOtroValor.style.display = 'none';
+            pConfirmacionOtroValor.style.display = 'none';
+            btnOtroValor.style.display = 'inline-block';
+
+            // Asegurarse de que el botón de cancelar esté oculto
+            btnCancelarOtroValor.style.display = 'none';
+
+            // Deshabilitar los campos de otro valor
+            otroValorInput.disabled = true;
+            descripcionOtroValorInput.disabled = true;
+
+            // Restablecer el valor actual del total sin el otro valor
+            valorTotalActual -= parseFloat(otroValorInput.value) || 0;
+            valorTotalInput.value = `$ ${valorTotalActual.toFixed(2)}`;
+        });
+    }
+
+    // Evento para el botón de Confirmar Descuento
+    if (btnConfirmarDescuento) {
+        btnConfirmarDescuento.addEventListener('click', function() {
             // Obtener el valor del descuento
             let descuento = parseFloat(descuentoInput.value) || 0;
 
-            // Validar que el descuento no sea mayor que el total original
-            if (descuento > valorTotalOriginal) {
+            // Validar que el descuento no sea mayor que el total actual
+            if (descuento > valorTotalActual) {
                 Swal.fire({
                     title: 'El descuento no puede ser mayor que el total',
                     icon: 'error',
@@ -108,23 +155,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Calcular el total final
-            let totalFinal = valorTotalOriginal - descuento;
-            valorTotalInput.value = `$ ${totalFinal.toFixed(2)}`;
+            valorTotalActual -= descuento;
+            valorTotalInput.value = `$ ${valorTotalActual.toFixed(2)}`;
 
             // Ocultar los campos de descuento y el botón de confirmar
             descuentoContainer.style.display = 'none';
-            btnConfirmar.style.display = 'none';
+            btnConfirmarDescuento.style.display = 'none';
 
             // Mostrar el mensaje de confirmación y el botón de cancelar
-            pConfirmacion.style.display = 'block';
-            btnCancelar.style.display = 'inline-block';
+            pConfirmacionDescuento.style.display = 'block';
+            btnCancelarDescuento.style.display = 'inline-block';
 
             // Aplicar efecto visual
             descuentoContainer.classList.add('descuento-highlight');
             setTimeout(() => {
                 descuentoContainer.classList.remove('descuento-highlight');
             }, 2000);
+        });
+    }
 
+    // Evento para el botón de Confirmar Otro Valor
+    if (btnConfirmarOtroValor) {
+        btnConfirmarOtroValor.addEventListener('click', function() {
+            // Obtener el valor del otro valor
+            let otroValor = parseFloat(otroValorInput.value) || 0;
+
+            // Calcular el total final
+            valorTotalActual += otroValor;
+            valorTotalInput.value = `$ ${valorTotalActual.toFixed(2)}`;
+
+            // Ocultar los campos de otro valor y el botón de confirmar
+            otroValorContainer.style.display = 'none';
+            btnConfirmarOtroValor.style.display = 'none';
+
+            // Mostrar el mensaje de confirmación y el botón de cancelar
+            pConfirmacionOtroValor.style.display = 'block';
+            btnCancelarOtroValor.style.display = 'inline-block';
+
+            // Aplicar efecto visual
+            otroValorContainer.classList.add('descuento-highlight');
+            setTimeout(() => {
+                otroValorContainer.classList.remove('descuento-highlight');
+            }, 2000);
         });
     }
 });

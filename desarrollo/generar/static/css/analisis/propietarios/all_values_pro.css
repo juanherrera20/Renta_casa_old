@@ -123,7 +123,7 @@ input[type="file"]:hover {
     border: 2px dashed #1677ff;
     box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
 }
-.tarea-btn:hover, .btnDescuento:hover, .btnConfirmar:hover{
+.tarea-btn:hover, .btnDescuento:hover, .btnConfirmar:hover, .btnConfirmarOtroValor:hover, .btnOtroValor:hover{
     background-color: #30db12;
     border: 2px dashed #30db12;
 }
@@ -485,7 +485,7 @@ input[type="file"]:hover {
     margin-left: 60px;
     margin-bottom: 50px;
 }
-.btnDescuento, .btnCancelar, .btnConfirmar{
+.btnDescuento, .btnCancelar, .btnConfirmar, .btnOtroValor, .btnCancelarOtroValor, .btnConfirmarOtroValor{
     margin-left: -20px;
     margin-top: 5px;
     margin-bottom: 20px;
@@ -501,13 +501,13 @@ input[type="file"]:hover {
     box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
     padding-top: 2px;
 }
-.btnCancelar, .btnConfirmar{
+.btnCancelar, .btnConfirmar, .btnCancelarOtroValor, .btnConfirmarOtroValor{
     margin-top: 20px;
 }
-.btnConfirmar {
+.btnConfirmar, .btnConfirmarOtroValor {
     margin-left: 30px;
 }
-.btnCancelar:hover {
+.btnCancelar:hover, .btnCancelarOtroValor:hover{
     background-color: #db1212;
     border: 2px dashed #db1212;
 }

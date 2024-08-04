@@ -53,18 +53,18 @@
             <label class="label" for="expedida">Expedida en</label>
           </div>
           <div class="container">
-            <input type="number" name="telefono" value="{{ usuario.telefono }}" readonly class="input">
+            <input type="text" name="telefono" value="{{ usuario.telefono }}" readonly class="input">
             <label class="label" for="telefono">Telefono principal</label>
           </div>
           <div class="container">
-            <input type="number" name="telefono2" value="{{ usuario.telefono2 }}" readonly class="input">
+            <input type="text" name="telefono2" value="{{ usuario.telefono2 }}" readonly class="input">
             <label class="label" for="telefono2">Telefono 2</label>
           </div>
         </div>
         <br><br>
         <div class="campos-three">
           <div class="container">
-            <input type="number" name="telefono3" value="{{ usuario.telefono3 }}" readonly class="input">
+            <input type="text" name="telefono3" value="{{ usuario.telefono3 }}" readonly class="input">
             <label class="label" for="telefono3">Telefono 3</label>
           </div>
           <div class="container">
@@ -95,7 +95,7 @@
             <label class="label" for="banco">Banco</label>
           </div>
           <div class="container">
-            <input type="number" name="numero_banco" value="{{ propietario.num_banco }}" readonly class="input">
+            <input type="text" name="numero_banco" value="{{ propietario.num_banco }}" readonly class="input">
             <label class="label" for="numero_banco">Numero Cuenta Bancaria</label>
           </div>
         </div>
@@ -198,6 +198,10 @@
               <select name="porcentaje_descuento"  id="porcentaje_descuento" class="select2 container-aux2" disabled>
                 <option value="{{ inmueble.porcentaje }}">{{ porcentaje }}%</option>
               </select>
+            </div>
+            <div class="container">
+              <input type="date" name="fechaPago" value="{{ inmueble.fechaPago|date:'Y-m-d'}}" readonly class="input">
+              <label class="label" for="fechaPago">Fecha de Pago</label>
             </div>
           </div>
           <br><br>

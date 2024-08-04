@@ -59,7 +59,7 @@
                     <th id="est">Estado</th>
                 </tr>
             </thead>
-            <tbody id="propietarios">
+            <tbody id="inquilinos">
               {% for inmueble, tipoInmueble, estadoPago, estados_espacio, monto, total in datosUsuario %}
               <tr>
                   <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'AllValuesArr' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ forloop.counter}}</button></td>

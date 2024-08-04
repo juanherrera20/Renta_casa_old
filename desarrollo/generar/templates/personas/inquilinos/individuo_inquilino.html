@@ -91,12 +91,12 @@
           <label class="label" for="direccion">Dirección</label>
         </div>
         <div class="container">
-          <input type="datetime" name="fecha_inicio" value="{{ arrendatario.fecha_inicio_cobro }}" readonly class="input">
+          <input type="date" name="fecha_inicio" value="{{ arrendatario.fecha_inicio_cobro|date:'Y-m-d'}}" readonly class="input">
           <label class="label" for="fecha_inicio">Fecha de Pago</label>
-          <input type="hidden" name="fecha_inicioRes" value="{{ arrendatario.fecha_inicio_cobro }}">
+          <input type="hidden" name="fecha_inicioRes" value="{{arrendatario.fecha_inicio_cobro|date:'Y-m-d'}}">
         </div>
         <div class="container">
-          <input type="datetime" name="fecha_fin" value="{{ arrendatario.fecha_fin_cobro }}" readonly class="input">
+          <input type="date" name="fecha_fin" value="{{ arrendatario.fecha_fin_cobro|date:'Y-m-d' }}" readonly class="input">
           <label class="label" id="LabelFechaFin" for="fecha_fin">Límite de Pago</label>
         </div>
         <div class="select2-container container-t-contrato">
@@ -112,12 +112,12 @@
       <br><br>
       <div class="seventh-block">
         <div class="container container-inicio-contrato">
-          <input type="datetime" name="inicio_contrato" value="{{ arrendatario.inicio_contrato }}" readonly class="input">
+          <input type="date" name="inicio_contrato" value="{{ arrendatario.inicio_contrato|date:'Y-m-d' }}" readonly class="input">
           <label class="label" for="inicio_contrato">Inicio del contrato</label>
-          <input type="hidden" name="inicio_contratoRes" value="{{ arrendatario.inicio_contrato }}">
+          <input type="hidden" name="inicio_contratoRes" value="{{ arrendatario.inicio_contrato|date:'Y-m-d' }}" >
         </div>
         <div class="container">
-          <input type="datetime" name="fin_contrato" value="{{ arrendatario.fin_contrato }}" readonly class="input">
+          <input type="date" name="fin_contrato" value="{{ arrendatario.fin_contrato|date:'Y-m-d' }}" readonly class="input">
           <label class="label" for="fin_contrato" id="LabelFinContrato">Fin del contrato</label>
         </div>
         <div class="container">

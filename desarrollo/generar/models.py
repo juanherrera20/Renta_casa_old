@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models.fields import CharField, IntegerField
+from django.db.models.fields import CharField, IntegerField, DateField
 import os
 from dateutil.relativedelta import relativedelta
 from django.db.models import Max
@@ -87,12 +87,13 @@ class arrendatario(models.Model): #Tabla usuarios
     anual = models.DateField(auto_now_add=True) #Seguimiento del año registrado
    
     def update(self, *args, **kwargs): #Metodo copiado de save() Para guardar un arrendatario pero actualizando los inmuebles
+        print(f"esta es en la función: {self.fecha_inicio_cobro}")
         models.Model.save(self, *args, **kwargs)  # Llamar al método save de la clase base sin la lógica adicional
         print("--------------este mensaje es del save normal")
         
         if self.inmueble.exists():  #Verificar si tiene un inmueble asociado
             obj_inmueble = self.inmueble.first()
-            obj_inmueble.fechaPago = self.fecha_fin_cobro + relativedelta(days=7)
+            obj_inmueble.fechaPago = self.fecha_fin_cobro + relativedelta(days=1)
             obj_inmueble.save()  #(Revisar) si es necesario
             fechas_pago_automaticas(obj_inmueble)
             
@@ -136,17 +137,17 @@ class inmueble(models.Model): #Tabla usuarios
             if original.arrendatario_id:
                 if self.arrendatario_id and original.arrendatario_id != self.arrendatario_id:
                     self.historial += 1
-                    self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=7)
+                    self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=1)
                     permitir = True
             else:
                 if self.arrendatario_id:
                     self.historial += 1
-                    self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=7)
+                    self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=1)
                     permitir = True
         else:
             if self.arrendatario_id:# Si es una nueva instancia y el arrendatario_id no es nulo, incrementar el historial
                 self.historial += 1
-                self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=7)
+                self.fechaPago = self.arrendatario_id.fecha_fin_cobro + relativedelta(days=1)
                 permitir = True
 
         super().save(*args, **kwargs) # Llamar al método save de la superclase para guardar todo lo demas que se solicita en la vista

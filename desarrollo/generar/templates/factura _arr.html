@@ -110,6 +110,7 @@
               <th>DOCUMENTO ARRENDATARIO</th>
               <th>CANON</th>
               <th>MONTO POR MORA</th>
+              <th>DES. ADICIONALES</th>
               <th>PAGO NETO</th>
             </tr>
           </thead>
@@ -118,6 +119,7 @@
               <td>{{ usuario.documento }}</td>
               <td>$ {{ inmueble.canon }}</td>
               <td>$ {{ descuento }}</td>
+              <td>$ {{ valor_descuento }}</td>
               <td>$ {{ totalPagar }}</td>
             </tr>
           </tbody>
@@ -125,11 +127,13 @@
         <table>
           <thead>
             <tr>
+              <th>OBSERVACIONES</th>
               <th>FIRMA RECEPCION PAGO</th>
             </tr>
           </thead>
           <tbody>
             <tr>
+              <td>{{ obs }}</td>
               <td>RENTA CASAS</td>
             </tr>
           </tbody>

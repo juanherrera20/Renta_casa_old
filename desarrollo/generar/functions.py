@@ -133,7 +133,7 @@ def  actualizar_estados_propietarios():
         fechaResta = (fecha_inmueble - fechaObjeto1).days
         
         if fecha_inmueble >= fechaObjeto1: 
-            if (EstadoPago in [1, 4]) and fechaResta <=7: #La fecha de pago es el ultimo día habil para pagar
+            if (EstadoPago in [1, 4]) and fechaResta <= 4: #La fecha de pago es el ultimo día habil para pagar
                 objeto.estadoPago = 2
                 objeto.save()
                 
@@ -294,4 +294,18 @@ def delete_imagenes(objeto):
         if not os.path.isfile(obj_imagen.imagen.path):
             print("Entro condicional")
             obj_imagen.delete()
+#---------------------------------------------------------------------------------------------------------------------------------------s
+
+#-----------------------------------------------Función para cuadrar los formatos de las fechas--------------------------------------------
+def parse_date(date_str):
+    """
+    Intenta convertir una cadena de texto en una fecha utilizando diferentes formatos.
+    """
+    formats = ["%Y-%m-%d", "%B %d, %Y", "%b. %d, %Y", "%b %d, %Y"]
+    for fmt in formats:
+        try:
+            return datetime.strptime(date_str, fmt)
+        except ValueError:
+            pass
+    raise ValueError(f"Fecha no válida: {date_str}")
 #---------------------------------------------------------------------------------------------------------------------------------------s
