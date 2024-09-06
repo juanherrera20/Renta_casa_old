@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura</title>
+    <style>
+      .container {
+      padding: 30px;
+      }
+      .table-aux  tbody tr td {
+        border: 1px solid #ffffff;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .text {
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        width: 380px;
+      }
+      .image {
+        width: 130px;
+        height: 130px;
+      }
+      .content {
+        justify-content: center;
+        align-items: center;
+      }
+      h1 {
+        padding-top: 10px;
+        padding-bottom: 5px;
+      }
+      h4 {
+        padding-top: 0px;
+        padding-bottom: 0px;
+      }
+      h5 {
+        padding-bottom: 5px;
+        padding-top: 0px;
+      }
+      p {
+        text-align: justify;
+      }
+    </style>
+  </head>
+  <body>
+      <div class="container">
+        <table class="table-aux">
+          <tbody>
+            <tr>
+              <div>
+                <td>
+                  <img class="image" src='{{ logo_rentacasa_url }}'>
+                  <h3>     Tu Inmobiliaria Amiga</h3>
+                </td>
+                
+              </div>
+              <td class="text">
+                <h1>Factura Electronica - Renta Casa</h1>
+                <h4>Carrera 23 BIS #72-43 LOCAL # 1 CUBA PEREIRA RISARALDA</h4>
+                <h4>NIT: 1.088.261.920-1</h4>
+                <h4>Registro Inmobiliario 0310</h4>
+                <h4>rentacasa38@gmail.com</h4>
+                <h5>Celular: 3215865975</h5>
+              </td>
+              <td ><img class="image" src='{{ logo_datacredito_url }}'></td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>FECHA FACTURACIÓN</th>
+              <th>INMOBILIARIA</th>
+              <th>RECIBO #</th>
+              <th>RESULTADO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ fecha_actual }}</td>
+              <td>RENTA CASA</td>
+              <td>{{ consecutivo }}</td> 
+              <td>APROBADO</td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>RECIBIDO DE:</th>
+              <th>DIRECCION</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ usuario.nombre|upper  }}  {{ usuario.apellido|upper  }}</td>
+              <td> {{ inmueble.direccion |upper }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>DOCUMENTO ARRENDATARIO</th>
+              <th>PAGO ARRIENDO DEL:</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ usuario.documento }}</td>
+              <td>{{meses_pagados}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>CANON</th>
+              <th>MONTO POR MORA</th>
+              <th>OTROS VALORES (+)</th>
+              <th>DES. ADICIONALES (-)</th>
+              <th>PAGO NETO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>$ {{ inmueble.canon }}</td>
+              <td>$ {{ monto }}</td>
+              <td>$ {{otro_valor}}</td>
+              <td>$ {{ valor_descuento }}</td>
+              <td>$ {{ totalPagar }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>OBSERVACIONES</th>
+              <th>FIRMA RECEPCION PAGO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ obs }}</td>
+              <td>RENTA CASAS</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>De conformidad con lo establecido en el <strong>artículo 772</strong> del Código de Comercio el cual señala, “Factura es un título valor que el vendedor o prestador 
+        del servicio podrá librar y entregar o remitir al comprador o beneficiario del servicio. <strong>MODALIDAD DE FACTURACIÓN: FACTURA POR COMPUTADOR:</strong> Emitida por medio de un software, 
+        donde interactúa la programación, el control y la ejecución de las funciones inherentes a la venta o servicio, entre otras, la emisión de facturas, comprobantes, notas crédito, etc. 
+        Mediante este documento se soporta transacciones de venta de bienes y/o servicios y que operativamente tiene lugar a través de sistemas computacionales 
+        y/o soluciones informáticas <strong>(Art 2. Decreto 2242 DE 2015).</strong>
+        </p>
+        <br><br><br><br><br>
+      </div>
+  </body>
+</html>

@@ -1,0 +1,491 @@
+body {
+    font-family: Arial, sans-serif; /* tipo de texto */
+    color: white;/* color del texto */
+    position: relative;
+}
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../image/image.png');
+    background-position: center center;/* Centra la imagen */
+    background-repeat: no-repeat;/* No se repite la imagen */
+    background-attachment: fixed;
+    background-size: cover;/* background-attachment y background-size ajustan la imagen y la vuelven adaptativa */
+    z-index: -2; /* Coloca la pseudo-capa detrás del contenido */
+}
+body::after {
+    content: "";
+    position: fixed; /* Fijo para que cubra todo el fondo */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Capa negra semi-transparente */
+    z-index: -1; /* Asegura que el pseudo-elemento esté detrás del contenido pero delante de la imagen de fondo */
+}
+body > * {
+    position: relative;
+    z-index: 1;
+}
+.header h1 {
+    font-size: 90px; /* Adjust font size for the title */
+    font-weight: bold; /* Make the title bold */
+}
+.body p{
+    font-size: 18px; /* Adjust font size for the paragraph */
+    font-weight: bold; /* Make the paragraph bold */
+    text-align: justify;
+}
+#casa{
+    color: #89EBEB;
+}
+.welcome{
+    float: left;
+    width: 50%;
+    padding: 20px;
+}
+.login-form {
+    color: black;
+    background-color: #ffffff; /* Color del fondo */
+    border-radius: 10px; /* Borde de los componentes */
+    padding: 20px; /* se le añade un padding  */
+    width: 430px; /* Adjust the width as needed */
+    float: right;
+    margin: 25px 120px 10px 40px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+#login, #bienvenido{
+    font-size: 40px; /* Adjust font size for the title */
+}
+a{
+    text-decoration: none;
+}
+input[type=text], input[type=password] {
+    /* margin-bottom: 10px; */ /* Add spacing between input fields */
+    border-radius: 5px; /* Rounded corners for input fields */
+    border: none; /* Remove default borders */
+    padding-left: 10px; /* Add left padding to input fields */
+}
+/* ----------------------Estilos para el botón de registrarse----------------------- */
+#registrarse {
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    --primary-color: #111;
+    --hovered-color: #6eb9b9;
+    position: relative;
+    display: flex;
+    font-weight: 600;
+    font-size: 20px;
+    gap: 0.5rem;
+    align-items: center;
+}
+button p {
+    margin: 0;
+    position: relative;
+    font-size: 20px;
+    color: var(--primary-color);
+}
+#registrarse {
+    min-height: 40px; /* Ajusta según sea necesario */
+}
+button::after {
+    position: absolute;
+    content: "";
+    width: 0;
+    left: 0;
+    bottom: -7px;
+    background: var(--hovered-color);
+    height: 2px;
+    transition: 0.3s ease-out;
+}
+button p::before {
+    position: absolute;
+    /*   box-sizing: border-box; */
+    content: "Registrate";
+    width: 0%;
+    inset: 0;
+    color: var(--hovered-color);
+    overflow: hidden;
+    transition: 0.3s ease-out;
+}
+button:hover::after {
+    width: 100%;
+}
+button:hover p::before {
+    width: 100%;
+}
+button:hover svg {
+    transform: translateX(4px);
+    color: var(--hovered-color);
+}
+button svg {
+    color: var(--primary-color);
+    transition: 0.2s;
+    position: relative;
+    width: 15px;
+    transition-delay: 0.2s;
+}
+/* -----------------------------Fin de estilos de botón de registrarse ----------------------------- */
+
+/*----------------------------------------Inicio de botón para Entrar-------------------------------- */
+#entrar {
+    width: 200px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    border: 3px solid #6eb9b9;
+    background-color: #6eb9b9;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.137);
+    margin: 10px 10px 10px 100px;
+}
+.text {
+    width: 70%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #6eb9b9;
+    color: rgb(0, 0, 0);
+    font-size: 20px; 
+    font-weight: bold;
+}
+.arrow path {
+    fill: rgb(19, 19, 19);
+}
+.button:hover .arrow {
+    animation: slide-in-left 0.6s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+@keyframes slide-in-left {
+    0% {
+      transform: translateX(-8px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateX(0px);
+      opacity: 1;
+    }
+}
+.button:active {
+    transform: scale(0.97);
+}
+/*----------------------------------------Fin de botón para Entrar-------------------------------- */
+.contenedor{
+    display: flex;
+    align-items: center;
+}
+.parrafo{
+    font-size: 20px; /* Adjust font size for the paragraph */
+    text-align: center;
+    margin: 33px 10px 30px 38px;
+}
+.image{
+    width: 20%; /* Ajusta el ancho según necesites */
+    height: auto; /* Mantiene la proporción de la imagen */
+    margin-left: 225px;
+    box-shadow: 1px 3px 3px 1px #414141;
+}
+/* ----------------------------------------Cambios para ser responsive------------------------------------- */
+@media (max-width: 1350px) {
+    .header h1 {
+        font-size: 55px; /* Adjust font size for the title */
+        font-weight: bold; /* Make the title bold */
+    }
+    .body p{
+        font-size: 18px; /* Adjust font size for the paragraph */
+        font-weight: bold; /* Make the paragraph bold */
+        text-align: justify;
+    }
+    .welcome{
+        float: left;
+        width: 50%;
+        padding: 20px;
+    }
+    .image {
+        width: 30%; /* Ajusta el tamaño de la imagen */
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .login-form {
+        margin: 20px auto; /* Centra el formulario */
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 410px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 10px 120px 10px 40px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    #registrarse {
+        min-height: 10px; /* Ajusta según sea necesario */
+    }
+    #entrar {
+        width: 200px;
+        height: 50px;
+        margin: 8px 10px 5px 100px;
+    }
+    .parrafo{
+        font-size: 20px; /* Adjust font size for the paragraph */
+        text-align: center;
+        margin: 30px 10px 30px 4px;
+    }
+}
+@media (max-width: 1339px) {
+    .header h1 {
+        font-size: 55px; /* Adjust font size for the title */
+        font-weight: bold; /* Make the title bold */
+    }
+    .body p{
+        font-size: 18px; /* Adjust font size for the paragraph */
+        font-weight: bold; /* Make the paragraph bold */
+        text-align: justify;
+    }
+    .welcome{
+        float: left;
+        width: 50%;
+        padding: 20px;
+    }
+    .image {
+        width: 30%; /* Ajusta el tamaño de la imagen */
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .login-form {
+        margin: 20px auto; /* Centra el formulario */
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 410px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 10px 120px 10px 40px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    #registrarse {
+        min-height: 10px; /* Ajusta según sea necesario */
+    }
+    #entrar {
+        width: 200px;
+        height: 50px;
+        margin: 8px 10px 5px 80px;
+    }
+    .parrafo{
+        font-size: 20px; /* Adjust font size for the paragraph */
+        text-align: center;
+        margin: 30px 10px 30px 5px;
+    }
+}
+@media (max-width: 1150px) {
+    .header h1 {
+        font-size: 50px; /* Adjust font size for the title */
+        font-weight: bold; /* Make the title bold */
+    }
+    .body p{
+        font-size: 15px; /* Adjust font size for the paragraph */
+        font-weight: bold; /* Make the paragraph bold */
+        text-align: justify;
+    }
+    .welcome{
+        float: left;
+        width: 50%;
+        padding: 20px;
+    }
+    .image {
+        width: 40%; /* Ajusta el tamaño de la imagen */
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .login-form {
+        margin: 20px auto; /* Centra el formulario */
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 410px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 10px 90px 10px 20px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    #registrarse {
+        min-height: 10px; /* Ajusta según sea necesario */
+    }
+    #entrar {
+        width: 200px;
+        height: 50px;
+        margin: 8px 10px 5px 80px;
+    }
+    .parrafo{
+        font-size: 20px; /* Adjust font size for the paragraph */
+        text-align: center;
+        margin: 30px 10px 30px 5px;
+    }
+}
+@media (max-width: 1050px) {
+    .header h1 {
+        font-size: 50px; /* Adjust font size for the title */
+        font-weight: bold; /* Make the title bold */
+    }
+    .body p{
+        font-size: 15px; /* Adjust font size for the paragraph */
+        font-weight: bold; /* Make the paragraph bold */
+        text-align: justify;
+    }
+    .welcome{
+        float: left;
+        width: 50%;
+        padding: 20px;
+    }
+    .image {
+        width: 40%; /* Ajusta el tamaño de la imagen */
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .login-form {
+        margin: 20px auto; /* Centra el formulario */
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 410px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 10px 55px 10px 20px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    #registrarse {
+        min-height: 10px; /* Ajusta según sea necesario */
+    }
+    #entrar {
+        width: 200px;
+        height: 50px;
+        margin: 8px 10px 5px 80px;
+    }
+    .parrafo{
+        font-size: 20px; /* Adjust font size for the paragraph */
+        text-align: center;
+        margin: 30px 10px 30px 5px;
+    }
+}
+@media (max-width: 1020px) {
+    #entrar {
+        margin: 10px auto 10px 70px;
+    }
+}
+@media (max-width: 1000px) {
+    .header h1 {
+        font-size: 50px; /* Adjust font size for the title */
+        font-weight: bold; /* Make the title bold */
+    }
+    .body p{
+        font-size: 20px; /* Adjust font size for the paragraph */
+        font-weight: bold; /* Make the paragraph bold */
+        text-align: justify;
+    }
+    .welcome{
+        float: left;
+        width: 50%;
+        padding: 10px;
+    }
+    .image {
+        width: 45%; /* Ajusta el tamaño de la imagen */
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+    }
+    .login-form {
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 500px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 40px 250px 30px 20px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    #entrar {
+        margin: 10px 10px 10px 105px;
+    }
+}
+@media (max-width: 920px) {
+    #entrar {
+        margin: 10px auto 10px 90px;
+    }
+    .login-form {
+        margin: 40px 240px 30px 20px;
+    }
+}
+@media (max-width: 870px) {
+    #entrar {
+        margin: 10px auto 10px 80px;
+    }
+    .login-form {
+        margin: 40px 220px 30px 20px;
+    }
+}
+@media (max-width: 820px) {
+    .welcome{
+        float: left;
+        width: 95%;
+        padding: 20px;
+    }
+    .header h1 {
+        font-size: 70px; /* Adjust font size for the title */
+        font-weight: bold; /* Make the title bold */
+    }
+    #entrar {
+        margin: 10px auto 10px 72px;
+    }
+    .image {
+        width: 70%; /* Ajusta el tamaño de la imagen */
+        display: block;
+        margin-left: 85px;
+        margin-right: auto;
+    }
+}
+@media (max-width: 800px) {
+    #entrar {
+        margin: 10px auto 10px 50px;
+    }
+    .login-form {
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 1000px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 40px 200px 30px 10px;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+}
+@media (max-width: 670px) {
+    #entrar {
+        margin: 10px auto 10px 40px;
+    }
+    .login-form {
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 1000px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 40px 145px 30px 10px;
+    }
+}
+@media (max-width: 620px) {
+    #entrar {
+        margin: 10px auto 10px 20px;
+    }
+    .login-form {
+        width: 50%; /* Ajusta el ancho del formulario según sea necesario */
+        max-width: 1000px; /* Ancho máximo para evitar que se expanda demasiado */
+        padding: 30px; /* se le añade un padding  */
+        margin: 40px 120px 30px 8px;
+    }
+}

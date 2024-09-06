@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href='{% static "css/analisis/modal_pago.css" %}' type="text/css">
+    <title>Modal de Pago</title>
+</head>
+<body>
+    <form action="{% url 'confirmarPago' id=propietario.id %}" method="post" id="ModalPago" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for inmueble, valor_pagar in inmuebles %}
+            <div class="form-check">
+                <div class="checkbox-container checkbox-container-aux">
+                    <div class="checkbox-container2">
+                        <div class="checkbox-label">
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="form-check-input checkInmueble ui-checkbox ui-checkbox-aux" id="checkInmueble_{{ inmueble.id }}" name="inmueblesId" value="{{ inmueble.id }}"  data-canon="{{ valor_pagar }}">
+                                <label class="container-aux3 form-check-label" for="checkInmueble_{{ inmueble.id }}">
+                                    <p>{{ inmueble.id }} <img width="24" height="24" src="https://img.icons8.com/sci-fi/23/home.png" alt="home"/> - {{ inmueble.direccion }} - ${{ valor_pagar }}</p>
+                                </label> 
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="totalPagar" name="totalPagar_{{ inmueble.id }}" value="{{ valor_pagar }}">
+                <!-- Sección de descuento por inmueble -->
+                <div class="descuentoSection" style="display: none;" data-inmueble-id="{{ inmueble.id }}">
+                    <div class="container container-descuento">
+                        <input type="number" id="descuento_{{ inmueble.id }}" name="descuento_{{ inmueble.id }}" disabled class="input descuento">
+                        <label class="label" for="descuento_{{ inmueble.id }}"><p class="label-p">*</p>Descuento</label>
+                    </div>
+                    <br><br>
+                    <div class="container">
+                        <input type="text" id="descripcionDescuento_{{ inmueble.id }}" name="descripcionDescuento_{{ inmueble.id }}" disabled class="input descripcionDescuento">
+                        <label class="label" for="descripcionDescuento_{{ inmueble.id }}"><p class="label-p">*</p>Descripción</label>
+                    </div>
+                    <div class="grid w-full max-w-xs items-center gap-1.5 documents">
+                        <label for="docRespaldo_{{ inmueble.id }}" class="pre-label-documentos">Documento de respaldo:</label>
+                        <input id="docRespaldo_{{ inmueble.id }}" type="file" name="docRespaldo_{{ inmueble.id }}" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled class="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium">
+                      </div>
+    
+                    <button type="button" class="btnCancelar" data-inmueble-id="{{ inmueble.id }}" style="display:none;">Cancelar</button>
+                    <button type="button" class="btnConfirmar" data-inmueble-id="{{ inmueble.id }}" style="display:none;">Confirmar</button>
+                </div>
+
+                <p id="pConfirmacion_{{ inmueble.id }}" class="confirma"  name="pConfirmacion_{{ inmueble.id }}" style="display:none;">Descuento aplicado con éxito</p>
+                <button type="button" class="btnDescuento" data-inmueble-id="{{ inmueble.id }}">+ Añadir Descuento</button>
+            </div>
+        {% endfor %}
+          
+        <div>
+            <p ><strong>Total a Pagar:</strong> <span id="totalPago">0</span></p>
+        </div>
+    </form>
+</body>
+</html>

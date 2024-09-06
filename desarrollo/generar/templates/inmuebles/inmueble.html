@@ -1,0 +1,77 @@
+{% extends "barra_navegacion.html" %}
+{% load static %}
+{% block static %}
+  <link rel="stylesheet" href='{% static "css/inmuebles/inmueble.css" %}' type="text/css">
+  <script type="text/javascript"  src='{% static "js/inmuebles/inmueble.js" %}'></script>
+{% endblock static %}
+
+{% block encabezado %}
+  Inmuebles
+{% endblock encabezado %}
+
+{% block title %}
+<div class="tittle">
+  Inmuebles y propiedades
+</div>
+{% endblock title %}
+
+{% block contenido %}
+  <div class="contenido">
+    <h3>Seguimiento de los Inmuebles</h3>
+    <div class="encabezado">
+      <p class="encabezado-total">{{ number }} Inmuebles</p>
+      <div class="search">
+        <div class="search-box">
+          <div class="search-field">
+            <input type="search" id="buscar" name="buscar" class="input" placeholder="Buscar...">
+            <div class="search-box-icon">
+              <button class="btn-icon-content">
+                <i class="search-icon">
+                  <svg xmlns="://www.w3.org/2000/svg" version="1.1" viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" fill="#000000"></path></svg>
+                </i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="encabezado-add-hover">
+        <a href="{% url 'addInmu' %}" class="encabezado-add"> <p>+ Añadir Inmueble</p></a>
+      </div>
+    </div>
+    <div class="table-container">
+      <div class="scrollable-table-container">
+        <div class="table-inmuebles">
+          <table>
+            <thead>
+              <tr>
+                <th id="id">ID</th>
+                <th id="ref">Referencia</th>
+                <th id="propietario">Propietario</th>
+                <th id="direccion">Dirección</th>
+                <th id="tipo">Tipo</th>
+                <th id="fecha">Fecha de Pago</th>
+                <th id="estado">Estado</th>
+                <th id="canon">Canon</th>
+              </tr>
+            </thead>
+            <tbody id="inmuebles">
+              {% for inmueble, tipoInmueble, habilitada, habilitada_espacio in inmuebles %}
+                <tr>
+                  <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ forloop.counter }}</button></td>
+                  <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.ref }}</button></td>
+                  <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.propietario_id.usuarios_id.nombre |add:" "|add:inmueble.propietario_id.usuarios_id.apellido }}</button></td>
+                  <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}"> <img class="image-icon" width="24" height="24" src="https://img.icons8.com/ios-filled/100/marker.png" alt="marker"/>{{ inmueble.direccion }}</button></td>            
+                  <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}"><img class="image-icon-home" width="24" height="24" src="https://img.icons8.com/pastel-glyph/24/home.png" alt="home"/> {{ tipoInmueble }}</button></td>
+                  <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}">{{ inmueble.fechaPago}}</button></td>
+                  <td><button class="especialI" onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}"><p class="{{ habilitada_espacio }}">{{ habilitada }}</p></button></td>
+                  <td><button onclick="enviarValor('{{ inmueble.id }}', '{% url 'IndividuoInmueble' id=inmueble.id %}')" value="{{ inmueble.id }}"><img class="image-icon-dollar" width="16" height="16" src="https://img.icons8.com/material-two-tone/24/us-dollar--v1.png" alt="us-dollar--v1"/>{{ inmueble.canon }}</button></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

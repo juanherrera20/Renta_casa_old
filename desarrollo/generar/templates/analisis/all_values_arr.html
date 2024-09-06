@@ -1,0 +1,480 @@
+{% extends "barra_navegacion.html" %}
+{% load static %}
+
+{% block static %}
+  <script type="text/javascript"  src='{% static "js/analisis/all_values_arr.js" %}'></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href='{% static "css/analisis/propietarios/all_values_pro.css" %}' type="text/css">  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% endblock static %}
+
+{% block encabezado %}
+  Analisis
+{% endblock encabezado %}
+
+{% block title %}
+<div class="title-add">
+  <h2>Analisis del arrendatario</h2>
+</div>
+{% endblock title %}
+
+{% block contenido %}
+  <div class="contenido">
+    <form action="{% url 'redirecArr' %}" id="miFormulario" method="post" enctype="multipart/form-data">
+      <br><br>
+      <div class="campos-zero">
+        <div class="container">
+          <input type="text" name="dias_atraso" value="{{dias}}" readonly class="input input-dias">
+          <label class="label" for="dias_atraso">Dias de atraso</label>
+        </div>
+        <div class="container">
+          <input type="text" name="monto" value="$ {{ monto }}" readonly class="input input-monto">
+          <label class="label" for="monto">Mora por atraso</label>
+        </div>
+        <div class="container">
+          <input type="text" name="canon_arrendatario" value="$ {{ canon }} x{{meses}}" readonly class="input input-monto">
+          <label class="label" for="canon_arrendatario">Valor del canon</label>
+          <input type="number" name="meses_acumulados" value='{{meses}}' hidden class="input input-monto">
+        </div>
+        <div class="container">
+          <input type="text" name="valor_total" value="$ {{ valor_total }}" readonly class="input input-monto">
+          <label class="label" for="valor_total">Total a pagar</label>
+        </div>
+        <button type="submit" class="tarea-btn btn_pago" id="btnPago" name="btnPago" value="4">Pago</button>
+      </div>
+
+      <div class="campos-zero" id="descuento-container" style="display:none;">
+        <div class="container">
+            <input type="number" id="descuento" name="descuento" class="input descuento">
+            <label class="label" for="descuento"><p class="label-p">*</p>Descuento</label>
+        </div>
+        <div class="container">
+            <input type="text" id="descripcionDescuento" name="descripcionDescuento" class="input descripcionDescuento">
+            <label class="label" for="descripcionDescuento"><p class="label-p">*</p>Descripción</label>
+        </div>
+        <div class="container">
+            <label for="docRespaldo" class="pre-label-documentos">Documento de respaldo:</label>
+            <input id="docRespaldo" type="file" name="docRespaldo" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple class="file-input">
+        </div>
+        <button type="button" class="btnConfirmar">Confirmar</button>
+      </div>
+      <div class="confirmation-section">
+          <button type="button" class="btnCancelar" style="display:none;">Cancelar</button>
+          <p id="pConfirmacion" class="confirma" name="pConfirmacion" style="display:none;">Descuento aplicado con éxito</p>
+      </div>
+      <button type="button" class="btnDescuento">+ Descuento</button>
+      <br>
+      <!-- Botón para añadir otro valor -->
+      <button type="button" class="btnOtroValor">+ Otro Valor</button>
+
+      <!-- Campos para el otro valor, inicialmente ocultos -->
+      <div class="campos-zero" id="otro-valor-container" style="display:none;">
+          <div class="container">
+              <input type="number" id="otroValor" name="otroValor" class="input otroValor">
+              <label class="label" for="otroValor"><p class="label-p">*</p>Otro Valor</label>
+          </div>
+          <div class="container">
+              <input type="text" id="descripcionOtroValor" name="descripcionOtroValor" class="input descripcionOtroValor">
+              <label class="label" for="descripcionOtroValor"><p class="label-p">*</p>Descripción</label>
+          </div>
+          <button type="button" class="btnConfirmarOtroValor">Confirmar</button>
+      </div>
+      <div class="confirmation-section">
+          <button type="button" class="btnCancelarOtroValor" style="display:none;">Cancelar</button>
+          <p id="pConfirmacionOtroValor" class="confirma" name="pConfirmacionOtroValor" style="display:none;">Otro valor aplicado con éxito</p>
+      </div>
+
+      <br>
+
+
+      {% csrf_token %}
+      <input type="hidden" name="idArrendatario" id="idArrendatario" value="{{ usuario2.id }}">
+      <input type="hidden" name="idA" id="idA" value="{{ arrendatario.id }}">
+      <div class="thrid-block"><!-- Inicio de individuo Arrendatario -->
+        <h3>Arrendatario: {{ usuario2.nombre |add:" "|add:usuario2.apellido}}</h3><button type="submit" id="btn"name="btn" value="3">Editar Arrendatario</button><br><br>
+        <input type="hidden" name="idArrendatario" id="idArrendatario" value="{{ usuario2.id }}">
+        <input type="hidden" name="idA" id="idA" value="{{ arrendatario.id }}">
+        <div class="campos-one">
+          <div class="container">
+            <input type="text" name="nombre" value="{{ usuario2.nombre |add:" "|add:usuario2.apellido }}" readonly class="input">
+            <label class="label" for="nombre">Nombre</label>
+          </div>
+          <div class="container">
+            <input type="text" name="apellido" value="{{ usuario2.apellido }}" readonly class="input">
+            <label class="label" for="apellido">Apellido</label>
+          </div>
+          <div class="select2-container">
+            <label for="tipo_documento"class="pre-label">Tipo de Documento</label>
+            <select name="tipo_documento"  id="tipo_documento" class="select2 container-aux2" id="tipo_inmueble" disabled>
+              <option value="{{ usuario2.tipo_documento }}">{{ usuario2.tipo_documento }}</option>
+            </select>
+          </div>
+          <div class="container">
+            <input type="number" name="documento" value="{{ usuario2.documento }}" readonly class="input">
+            <label class="label" for="documento">Documento</label>
+          </div>
+        </div>
+        <br><br>
+        <div class="campos-two">
+          <div class="container">
+            <input type="text" name="expedida" value="{{usuario2.expedida}}" readonly class="input">
+            <label class="label" for="expedida">Expedida en</label>
+          </div>
+          <div class="container">
+            <input type="number" name="telefono" value="{{ usuario2.telefono }}" readonly class="input">
+            <label class="label" for="telefono">Telefono principal</label>
+          </div>
+          <div class="container">
+            <input type="number" name="telefono2" value="{{ usuario2.telefono2 }}" readonly class="input">
+            <label class="label" for="telefono2">Telefono 2</label>
+          </div>
+          <div class="container">
+            <input type="number" name="telefono3" value="{{ usuario2.telefono3 }}" readonly class="input">
+            <label class="label" for="telefono3">Telefono 3</label>
+          </div>
+        </div>
+        <br><br>
+        <div class="campos-three">
+          <div class="container">
+            <input type="email" name="email" value="{{ usuario2.email }}" readonly class="input">
+            <label class="label" for="email">Correo electronico principal</label>
+          </div>
+          <div class="container">
+            <input type="email" name="email2" value="{{ usuario2.email2 }}" readonly class="input">
+            <label class="label" for="email2">Correo electronico 2</label>
+          </div>
+          <div class="container">
+            <input type="email" name="email2" value="{{ usuario2.email3 }}" readonly class="input">
+            <label class="label" for="email2">Correo electronico 3</label>
+          </div>
+          <div class="container">
+            <input type="text" name="direccion" value="{{ arrendatario.direccion }}" readonly class="input">
+            <label class="label" for="direccion">Dirección</label>
+          </div>
+        </div>
+        <br><br>
+        <div class="campos-four">
+          <div class="container">
+            <input type="datetime" name="fecha_inicio" value="{{ arrendatario.fecha_inicio_cobro|date:'d/m/Y' }}" readonly class="input">
+            <label class="label" for="fecha_inicio">Fecha de Pago</label>
+            <input type="hidden" name="fecha_inicioRes" value="{{ arrendatario.fecha_inicio_cobro }}">
+          </div>
+          <div class="container">
+            <input type="datetime" name="fecha_fin" value="{{ arrendatario.fecha_fin_cobro|date:'d/m/Y' }}" readonly class="input">
+            <label class="label" for="fecha_fin">Límite de Pago</label>
+            <input type="hidden" name="fecha_finRes" value="{{ arrendatario.fecha_fin_cobro }}">
+          </div>
+          <div class="container">
+            <input type="datetime" name="inicio_contrato" value="{{ arrendatario.inicio_contrato|date:'d/m/Y' }}" readonly class="input">
+            <label class="label" for="inicio_contrato">Inicio del contrato</label>
+            <input type="hidden" name="inicio_contratoRes" value="{{ arrendatario.inicio_contrato }}">
+          </div>
+          <div class="container">
+            <input type="datetime" name="fin_contrato" value="{{ arrendatario.fin_contrato|date:'d/m/Y' }}" readonly class="input">
+            <label class="label" for="fin_contrato">Fin del contrato</label>
+            <input type="hidden" name="fin_contratoRes" value="{{ arrendatario.fin_contrato }}">
+          </div>
+        </div>
+        <br><br>
+        <div class="campos-five">
+          <div class="select2-container">
+            <label for="estado"class="pre-label">Estado</label>
+            <select name="estado"  id="estado" class="select2 container-aux2" id="tipo_inmueble" disabled>
+              <option value="{{ arrendatario.habilitarPago }}">{{ estado }}</option>
+            </select>
+          </div>
+          <div class="select2-container">
+            <label for="tipo_contrato"class="pre-label">Tipo de Contrato</label>
+            <select name="tipo_contrato"  id="tipo_contrato" class="select2 container-aux2" id="tipo_inmueble" disabled>
+              <option value="{{ arrendatario.tipo_contrato }}">{{ arrendatario.tipo_contrato }}</option>
+            </select>
+          </div>
+        </div>
+        <br><br>
+        <div class="container">
+          <input type="text" name="obs" id="obs" class="input input-descrip" value="{{ arrendatario.obs }}" readonly>
+          <label class="label label-decrip">Observaciones</label>
+        </div>
+        <br><br>
+      </div>
+      <br><br>
+      <div class="second-block"><!-- Fin de individuo Arrendatario e inicio de individuo inmueble -->
+        {% for inmueble, tipo, habilitada, porcentaje, servicios in inmueble %}
+          <h3>Inmueble: {{ inmueble.direccion}}</h3><button type="submit" id="btn"name="btn" value="2">Editar Inmueble</button><br><br>
+          <div class="campos-one">
+            <input type="hidden" name="idInmueble" id="idInmueble" value="{{ inmueble.id }}">
+            <div class="container">
+              <input type="text" name="propietario_name" value="{{ inmueble.propietario_id.usuarios_id.nombre }}" readonly class="input">
+              <label class="label" for="propietario_name">Nombre del Propietario</label>
+            </div>
+            <div class="container">
+              <input type="text" name="propietario_apellido" value="{{ inmueble.propietario_id.usuarios_id.apellido }}" readonly class="input">
+              <label class="label" for="propietario_apellido">Apellido del Propietario</label>
+            </div>
+            <div class="container">
+              <input type="text" name="propietario_telefono" value="{{ inmueble.propietario_id.usuarios_id.telefono }}" readonly class="input">
+              <label class="label" for="propietario_telefono">Telefono del Propietario</label>
+            </div>
+            <div class="container">
+              {% if inmueble.arrendatario_id_id %}
+                <input type="text" name="arrendatario" class="input" value="{{ inmueble.arrendatario_id.usuarios_id.nombre |add:' '|add:inmueble.arrendatario_id.usuarios_id.apellido }}" readonly><br>
+              {% else %}
+                <input type="text" name="arrendatario2" value="No tiene ningún arrendatario" readonly>
+              {% endif %}
+              <label class="label" for="arrendatario">Arrendatario</label>
+            </div>
+          </div>
+          <br><br>
+          <div class="campos-two">
+            <div class="container">
+              <input type="text" name="direccion" value="{{ inmueble.direccion }}" readonly class="input">
+              <label class="label" for="direccion">Direccion del inmueble</label>
+            </div>
+            <div class="select2-container">
+              <label for="tipo_inmueble"class="pre-label">Tipo de Inmueble</label>
+              <select name="tipo_inmueble"  id="tipo_inmueble" class="select2 container-aux2" disabled>
+                <option value="{{ inmueble.tipo }}">{{ tipo }}</option>
+              </select>
+            </div>
+            <div class="checkbox-container checkbox-container-aux">
+              <label for="tipo_estado" class="t_estado">Tipo de Estado:</label>
+              <div class="checkbox-container2">
+                <div class="checkbox-label">
+                  <label class="checkbox-label">
+                      <input type="checkbox" class="ui-checkbox ui-checkbox-aux" name="tipo_estado" value="3" disabled>
+                      <p class="container-aux3">En proceso</p>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <br><br>
+          <div class="campos-three">
+            <div class="container">
+              <input type="text" name="ref" value="{{ inmueble.ref }}" readonly class="input">
+              <label class="label" for="ref">Referencia del inmueble</label>
+            </div>
+            <div class="container">
+              <input type="number" name="canon" value="{{ inmueble.canon }}" readonly class="input">
+              <label class="label" for="canon">Valor del inmueble</label>
+            </div>
+            <div class="select2-container">
+              <label for="porcentaje_descuento"class="pre-label">Porcentaje de descuento</label>
+              <select name="porcentaje_descuento"  id="porcentaje_descuento" class="select2 container-aux2" disabled>
+                <option value="{{ inmueble.porcentaje }}">{{ porcentaje }}%</option>
+              </select>
+            </div>
+            <div class="container">
+              <input type="datetime" name="fechaPago" value="{{ inmueble.fechaPago|date:'d/m/Y'}}" readonly class="input">
+              <label class="label" for="fechaPago">Fecha de Pago</label>
+            </div>
+          </div>
+          <br><br>
+          <div class="checkbox-container">
+            <label for="servicios"><h4>Servicios incluidos:</h4></label>
+            <div class="checkbox-container2">
+              <div class="checkbox-container3">
+                <div class="checkbox-label">
+                  <label class="checkbox-label">
+                    <input type="checkbox" class="ui-checkbox" name="opciones" value="Agua" {% if 'Agua' in servicios %} checked disabled {% endif %} disabled>
+                    <p>Agua</p>
+                  </label>
+                  <div class="container">
+                    <input  type="number" name="agua" class="input input-agua" placeholder="{{ matricula.0 }}" value="{{ matricula.0 }}" readonly>
+                    <label class="label label-aux">N° de matricula</label>
+                  </div><br><br><br>
+                </div>
+                <div class="checkbox-label">
+                  <label class="checkbox-label">
+                    <input type="checkbox" class="ui-checkbox" name="opciones" value="Electricidad" {% if 'Electricidad' in servicios %} checked disabled {% endif %} disabled>
+                    <p>Electricidad</p>
+                  </label>
+                  <div class="container">
+                    <input type="number" name="electric" class="input input-electric" placeholder="{{ matricula.1 }}" value="{{ matricula.1 }}" readonly>
+                    <label class="label label-aux">N° de matricula</label>
+                  </div>
+                </div><br>
+                <div class="checkbox-label">
+                  <label class="checkbox-label">
+                    <input type="checkbox" class="ui-checkbox" name="opciones" value="Gas" {% if 'Gas' in servicios %} checked disabled {% endif %} disabled>
+                    <p>Gas</p>
+                  </label>
+                  <div class="container">
+                    <input type="number" name="gas" class="input input-gas" placeholder="{{ matricula.2 }}" value="{{ matricula.2 }}" readonly>
+                    <label class="label label-aux">N° de matricula</label>
+                  </div>
+                </div><br>
+                <div class="checkbox-label">
+                  <label class="checkbox-label">
+                    <input type="checkbox" class="ui-checkbox" name="opciones" value="Internet" {% if 'Internet' in servicios %} checked disabled {% endif %} disabled>
+                    <p>Internet</p>
+                  </label>
+                  <div class="container">
+                    <input type="number" name="internet" class="input input-internet" placeholder="{{ matricula.3 }}" value="{{ matricula.3 }}" readonly>
+                    <label class="label label-aux">N° de matricula</label>
+                  </div>
+                </div>
+              </div>
+              <div class="checkbox-container4">
+                <label for="documento"><h3>Documentos:</h3></label>
+                {% if documentos %}
+                  <h3>Documentos existentes:</h3>
+                  <ul>
+                    {% for doc in documentos %}
+                      <li>
+                        <div class="checkbox-label">
+                          <a href="{{ doc.documento.url }}" target="_blank">{{ doc.documento.name }}</a>
+                          <div class="checkbox-label">
+                            <label class="checkbox-label">
+                                <input type="checkbox" class="ui-checkbox" name="eliminar_documentos" value="{{ doc.id }}" disabled>
+                                <p>Eliminar</p>
+                            </label>
+                          </div>
+                        </div>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  <p class="else">No tiene ningún Documento</p><br>
+                {% endif %}
+              </div>
+              
+            </div>
+          </div>
+          <br><br>
+          <div class="container">
+            <input type="text" name="descrip" id="descrip" class="input input-descrip" value="{{ inmueble.descripcion }}" readonly>
+            <label class="label label-decrip">Descripción</label>
+          </div><br>
+          <div class="container-image">
+            {% if imagenes %}
+              <h3>Imágenes existentes:</h3>
+              <ul id="lista-imagenes">
+                {% for img in imagenes %}
+                  <li>
+                    <label>
+                      <input type="checkbox" name="eliminar_imagenes" value="{{ img.id }}" class="checkbox-imagen" disabled>
+                      <img src="{{ img.imagen.url }}">
+                    </label>
+                  </li>
+                {% endfor %}
+              </ul>
+            {% endif %}
+          </div>
+          <br>
+        {% endfor %}
+      </div>
+      <br><br>
+      <div class="firts-block"><!-- Fin de individuo Inmueble e inicio de individuo Propietario -->
+        <h3>Propietario: {{ usuario.nombre |add:" "|add:usuario.apellido}}</h3>
+        <input type="hidden" name="idUser" id="idUser" value="{{ usuario.id }}">
+        <button type="submit" id="btn" name="btn" value="1">Editar Propietario</button><br><br>
+        <div class="campos-one">
+          <div class="container">
+            <input type="text" name="nombre" value="{{ usuario.nombre }}" readonly class="input">
+            <label class="label" for="nombre">Nombre</label>
+          </div>
+          <div class="container">
+            <input type="text" name="apellido" value="{{ usuario.apellido }}" readonly class="input">
+            <label class="label" for="apellido">Apellido</label>
+          </div>
+          <div class="select2-container">
+            <label for="tipo_documento"class="pre-label">Tipo de Documento</label>
+            <select name="tipo_documento"  id="tipo_documento" class="select2 container-aux2" id="tipo_inmueble" disabled>
+              <option value="{{ usuario.tipo_documento }}">{{ usuario.tipo_documento }}</option>
+            </select>
+          </div>
+        </div>
+        <br><br>
+        <div class="campos-two">
+          <div class="container">
+            <input type="number" name="documento" value="{{ usuario.documento }}" readonly class="input">
+            <label class="label" for="documento">Documento</label>
+          </div>
+          <div class="container">
+            <input type="text" name="expedida" value="{{ usuario.expedida }}" readonly class="input">
+            <label class="label" for="expedida">Expedida en</label>
+          </div>
+          <div class="container">
+            <input type="number" name="telefono" value="{{ usuario.telefono }}" readonly class="input">
+            <label class="label" for="telefono">Telefono principal</label>
+          </div>
+          <div class="container">
+            <input type="number" name="telefono2" value="{{ usuario.telefono2 }}" readonly class="input">
+            <label class="label" for="telefono2">Telefono 2</label>
+          </div>
+        </div>
+        <br><br>
+        <div class="campos-three">
+          <div class="container">
+            <input type="number" name="telefono3" value="{{ usuario.telefono3 }}" readonly class="input">
+            <label class="label" for="telefono3">Telefono 3</label>
+          </div>
+          <div class="container">
+            <input type="email" name="email" value="{{ usuario.email }}" readonly class="input">
+            <label class="label" for="email">Correo electronico principal</label>
+          </div>
+          <div class="container">
+            <input type="email" name="email2" value="{{ usuario.email2 }}" readonly class="input">
+            <label class="label" for="email2">Correo electronico 2</label>
+          </div>
+          <div class="container">
+            <input type="email" name="email3" value="{{ usuario.email3 }}" readonly class="input">
+            <label class="label" for="email3">Correo electronico 3</label>
+          </div>
+        </div>
+        <br><br>
+        <div class="campos-four">
+          <div class="container">
+            <input type="text" name="direccion" value="{{ propietario.direccion }}" readonly class="input">
+            <label class="label" for="direccion">Direccion</label>
+          </div>
+          <div class="container">
+            <input type="number" name="valor_pago" value="{{ total }}" readonly class="input">
+            <label class="label" for="valor_pago">Valor a Pagar</label>
+          </div>
+          <div class="container">
+            <input type="text" name="banco" value="{{ propietario.bancos }}" readonly class="input">
+            <label class="label" for="banco">Banco</label>
+          </div>
+          <div class="container">
+            <input type="text" name="numero_banco" value="{{ propietario.num_banco }}" readonly class="input">
+            <label class="label" for="numero_banco">Numero Cuenta Bancaria</label>
+          </div>
+        </div>
+        <br><br>
+        <div class="campos-five">
+          <div class="container">
+            <input type="datetime" name="fecha_pago" value="{{ propietario.fecha_pago|date:'d/m/Y' }}" readonly class="input">
+            <label class="label" for="fecha_pago">Fecha de Pago</label>
+            <input type="hidden" name="respaldo_fecha" value="{{ propietario.fecha_pago }}">
+          </div>
+          <div class="container">
+            <input type="text" name="habilitarPago" value="{{ pago }}" readonly class="input">
+            <label class="label" for="habilitarPago">Estado del Pago</label>
+          </div>
+        </div>
+        <br><br>
+        {% if documentos %}
+        <ul>
+          {% for doc in documentos %}
+            <li>
+              <div class="checkbox-label">
+                <a href="{{ doc.documento.url }}" target="_blank">{{ doc.documento.name }}</a>
+                <div class="checkbox-label">
+                  <label class="checkbox-label">
+                    <input type="checkbox" class="ui-checkbox" name="eliminar_documentos" value="{{ doc.id }}" disabled>
+                    <p>Eliminar</p>
+                  </label>
+                </div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+          <p class="else">No tiene ningún Documento</p>
+        {% endif %}
+      </div>
+      <br><br>
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href='{% static "css/tareas/modal_ver_tarea.css" %}' type="text/css">
+    <title>Modal</title>
+</head>
+<body>
+    <h4 class="{{ objetoTarea.estado }}"><p>{{ objetoTarea.estado }}</p></h4><br><br>
+    <form action="{% url 'actualizarModal' %}"  id="form_modal" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="idTarea" value="{{ objetoTarea.id }}">
+        <div class="container">
+            <input type="text" name="titulo" id="titulo" value="{{ objetoTarea.titulo }}" class="input">
+            <label class="label label-titulo">Titulo</label>
+        </div>
+        <br><br>
+        <div class="container">
+            <input type="datetime" name="inicioRes2" id="inicioRes2" class="input" value="{{ objetoTarea.fecha_inicio|date:'Y-m-d' }}" readonly>
+            <input type="hidden" name="inicioRes" id="inicioRes" value="{{ objetoTarea.fecha_inicio|date:'Y-m-d' }}">
+            <label class="label-fecha-inicio">Fecha de inicio actual:</label>
+        </div><br><br>
+        <div class="container">
+            <input required="" type="date" name="fechaInicio" id="direccion" class="input">
+            <label class="label-fecha-inicio"><p>*</p>Fecha de inicio:</label>
+        </div>
+        <br><br>
+        <div class="container">
+            <input type="datetime" name="finRes2" id="finRes2" class="input" value="{{ objetoTarea.fecha_fin|date:'Y-m-d' }}" readonly>
+            <input type="hidden" name="finRes" id="finRes" value="{{ objetoTarea.fecha_fin|date:'Y-m-d' }}">
+            <label class="label-fecha-inicio">Fecha de fin actual:</label>
+        </div><br><br>
+        <div class="container">
+            <input required="" type="date" name="fechaFin" id="fechaFin" class="input">
+            <label class="label-fecha-inicio"><p>*</p>Fecha de fin:</label>
+        </div>
+        <br><br>
+        <div class="container">
+            <input type="datetime" name="horaRes2" id="horaRes2" class="input" value="{{ objetoTarea.hora_inicio }}" readonly>
+            <input type="hidden" name="horaRes" id="horaRes" value="{{ objetoTarea.hora_inicio }}">
+            <label class="label-fecha-inicio">Hora actual:</label>
+        </div><br><br>
+        <div class="container">
+            <input required="" type="time" name="hora_inicio" id="hora_inicio" class="input">
+            <label class="label-fecha-inicio"><p>*</p>Hora:</label>
+        </div>
+        <br><br>
+        <div class="container">
+            <input required="" type="text" name="descrip" id="descrip" value="{{ objetoTarea.descrip }}" class="input">
+            <label class="label-fecha-inicio"><p>*</p>Descripción:</label>
+        </div>
+        <br>
+        <div class="form-add">
+            <label for="etiqueta" class="pre-label"><p> * </p>Etiqueta:</label>
+            <select name="etiqueta" id="etiqueta" class="form-select" >
+                <option value="{{ objetoTarea.etiqueta }}">{{ objetoTarea.etiqueta }}</option>
+                <option value="Presentar">Presentar</option>
+                <option value="Visitar">Visitar</option>
+                <option value="Mantenimiento">Mantenimiento</option>
+                <option value="Urgente">Urgente</option>
+            </select>
+        </div>
+        <br>
+        <div class="form-add">
+            <label for="usuario" class="pre-label"><p> * </p>Responsable:</label>
+            <select name="usuario" id="usuario" class="form-select" >
+                <option value="{{ objetoTarea.superuser_id_id }}">Cambiar a</option>
+                {% for nombre, apellido, id in nombres_usuario %}
+                <option value="{{ id }}">{{ nombre |add:" "|add:apellido }}</option>
+                {% endfor %}
+            </select>
+        </div><br>
+    </form>
+</body>
+</html>

@@ -1,0 +1,113 @@
+{% extends "barra_navegacion.html" %}
+{% load static %}
+
+{% block static %}
+  <script type="text/javascript"  src='{% static "js/tareas/dash_tareas.js" %}'></script>
+  <link rel="stylesheet" href='{% static "css/tareas/dash_tareas.css" %}' type="text/css">
+{% endblock static %}
+
+{% block encabezado %}
+  Tareas
+{% endblock encabezado %}
+
+{% block title %}
+  <div class="title-tareas">
+    <h1>Tareas</h1>
+    <h5>Seguimiento de las tareas</h5>
+    <div class="tareas-hover">
+      <a href="{% url 'AddTarea' %}" id="add-tarea"><p>+ Añadir Tarea</p></a>
+    </div>
+  </div>
+{% endblock title %}
+
+{% block contenido %}
+{% csrf_token %}
+  <div class="contenido-tareas">
+    <div class="firts-block">
+      <div class="pendientes">
+        <h2>
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAmUlEQVR4nO2TMQ6DMAxF30QP0StCj9nSAbsDU29R0d1VAgKGihKjSB3yJS9J5Gd/x1BUlF325GTCxYTWhPcUrXU04e5YcuVsysMU+xqChjf+ynUj+Rri6STaoj+SL1F7APcEwM0DGHYDhCEvQHn9oUUdTd4hjwumu75pT5UMmBdNNiBHFm2G9FTBguBzHPw4/Gs881ZeVESKPiJ+XnX80GmmAAAAAElFTkSuQmCC">
+          Pendientes
+        </h2>
+      </div>
+      <ul id="lista-pendientes" class="lista-tareas">
+        <div class="ciclo">
+          {% for tarea in context.pendientes %}
+          <li>
+            <button class="btn btn-primary tarea-btn" data-tarea-id="{{ tarea.id }}" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap" data-id="{{ tarea.id }}" data-descripcion="{{ tarea.descripcion }}">
+              <li class="{{ tarea.etiqueta | lower }}"><p>{{ tarea.etiqueta }}</p></li>
+              <li><h3>{{ tarea.titulo }}</h3></li>
+              <li><img width="32" height="32" src="https://img.icons8.com/windows/32/tear-off-calendar.png" alt="tear-off-calendar"/> {{ tarea.fecha_inicio }}  -   {{ tarea.fecha_fin }}</li>
+              <h4 class="ciclo-name">{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4>
+            </button>
+          </li><br>
+          {% endfor %}
+        </div>
+      </ul>
+    </div>
+
+    <div class="second-block">
+      <div class="pendientes">
+        <h2>
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAiUlEQVR4nO1TywqAMAzLqcNv8BfVz9R5mr8i8x6pDD0pezDwsEBOLU2btkBDQ30QRohJCCvEEWgNMWqsqHZH9EJsQvCFTnNKOt8+it8iWZMEWxhDQww5AmusgBBLjoBPEPC1Bfb/WWSIseqSw5m6yDOVkkdzdR7tmUTUAvU5LF45X7bkdt7QgBScmMr2ddfb1H0AAAAASUVORK5CYII=">
+          Completas
+        </h2>
+      </div>
+      <ul id="lista-completas" class="lista-tareas">
+        <div class="ciclo">
+          {% for tarea in context.completas %}
+            <li>
+              <button class="btn btn-primary tarea-btn" data-tarea-id="{{ tarea.id }}" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap" data-id="{{ tarea.id }}" data-descripcion="{{ tarea.descripcion }}">
+                <li class="{{ tarea.etiqueta | lower }}"><p>{{ tarea.etiqueta }}</p></li>
+                <li><h3>{{ tarea.titulo }}</h3></li>
+                <li><img width="32" height="32" src="https://img.icons8.com/windows/32/tear-off-calendar.png" alt="tear-off-calendar"/> {{ tarea.fecha_inicio }}  -   {{ tarea.fecha_fin }}</li>
+                <h4 class="ciclo-name">{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4>
+              </button>
+            </li><br>
+          {% endfor %}
+        </div>
+      </ul>
+    </div>
+
+    <div class="third-block">
+      <div class="pendientes">
+        <h2>
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAhElEQVR4nO2TPQrAIAyF36SH6BVrj9mfSa9S7J4SyODS0iiBDnnwQFTyxZgALpe5CIgELATsBFxiXic+Gw0+EVAIoAdnvjOSeXkJ3kL0L5Gy0EfPPYBDAdh6AFUBqNaA85clStafHKUFv7RpUAOaQcsmg9ZAApeA6ywfz15lry9zlwsa3ZF883vzYBB4AAAAAElFTkSuQmCC">
+          Incompletas
+        </h2>
+      </div>
+      <ul id="lista-incompletas" class="lista-tareas">
+        <div class="ciclo">
+          {% for tarea in context.incompletas %}
+          <li>
+            <button class="btn btn-primary tarea-btn" data-tarea-id="{{ tarea.id }}" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap" data-id="{{ tarea.id }}" data-descripcion="{{ tarea.descripcion }}">
+              <li class="{{ tarea.etiqueta | lower }}"><p>{{ tarea.etiqueta }}</p></li>
+              <li><h3>{{ tarea.titulo }}</h3></li>
+              <li><img width="32" height="32" src="https://img.icons8.com/windows/32/tear-off-calendar.png" alt="tear-off-calendar"/> {{ tarea.fecha_inicio }}  -   {{ tarea.fecha_fin }}</li>
+              <h4 class="ciclo-name">{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4>
+            </button>
+          </li><br>
+          {% endfor %}
+        </div>
+      </ul><br>
+    </div>
+  </div>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Descripción de tarea</h5>
+          <button type="button" class="btn-close closeModal" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger eliminarModal" onclick="eliminarTarea('{{ tarea.id }}')">Eliminar</button>
+          <button type="button" class="btn btn-secondary closeModal" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary actualizarM">Actualizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

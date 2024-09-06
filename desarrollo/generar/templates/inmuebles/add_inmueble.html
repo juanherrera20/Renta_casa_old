@@ -1,0 +1,148 @@
+{% extends "barra_navegacion.html" %}
+{% load static %}
+
+{% block static %}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script type="text/javascript"  src='{% static "js/all.js" %}'></script>
+    <script type="text/javascript"  src='{% static "js/inmuebles/add_inmueble.js" %}'></script>
+    <link rel="stylesheet" href='{% static "css/inmuebles/add_inmueble.css" %}' type="text/css">
+{% endblock static %}
+
+{% block encabezado %}
+    Inmuebles
+{% endblock encabezado %}
+
+{% block title %}
+    <div class="title-add">
+        <h2>Añadir Inmueble</h2>
+    </div>
+{% endblock title %}
+
+{% block contenido %}
+    <div class="contenido">
+        <h4>Lo marcado con "<p> * </p>" es un campo obligatorio</h4>
+        <div class="form-add">
+            <form action="{% url 'guardarInmueble' %}" method="post" id="addInmueble" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="firts-block-form">
+                    <label for="propietario" class="pre-label"><p> * </p>Propietario</label>
+                    <select name="propietario" class="form-select" required>
+                        <option value="">Seleccionar el propietario</option>
+                        {% for objeto in UsuarioPropietarios %}
+                        <option value="{{ objeto.id }}">{{ objeto.usuarios_id.nombre }} {{objeto.usuarios_id.apellido}}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="porcentaje_descuento" class="pre-label"><p> * </p>Porcentaje de comisión</label>
+                    <select name="porcentaje_descuento" id="porcentaje_descuento" class="form-select" required>
+                        <option value="">Seleccione un valor</option>
+                        <option value="1">13%</option>
+                        <option value="2">12%</option>
+                        <option value="3">12.5%</option>
+                        <option value="7">12.2%</option>
+                        <option value="4">10%</option>
+                        <option value="5">9%</option>
+                        <option value="6">8%</option>
+                    </select>
+                    <div class="container">
+                        <input required="" type="text" name="direccion" id="direccion" class="input">
+                        <label class="label"><p>*</p>Dirección</label>
+                    </div>
+                </div><br>
+                <div class="second-block-form">
+                    <label for="tipo_inmueble" class="pre-label"><p> * </p>Tipo de Inmueble</label>
+                    <select name="tipo_inmueble" id="tipo_inmueble" class="form-select" required>
+                        <option value="">Selecciona el Inmueble</option>
+                        <option value="1">Casa</option>
+                        <option value="2">Apartamento</option>
+                        <option value="3">Local</option>
+                        <option value="4">Aparta-estudio</option>
+                        <option value="5">Bodega</option>
+                    </select>
+                    <div class="container aux">
+                        <input required="" type="number" name="canon" id="canon" class="input" required>
+                        <label class="label"><p>*</p>Canon - Valor</label>
+                    </div>
+                    <label for="arrendatario" class="pre-label"><p> * </p>Arrendatario:</label>
+                    <select name="arrendatario" class="form-select">
+                        <option value="">Seleccionar al arrendatario
+                        </option>
+                        <option value="">Aún no tiene arrendatario</option>
+                        {% for objeto in UsuariosArrendatarios %}
+                        <option value="{{ objeto.id }}">{{ objeto.usuarios_id.nombre }} {{objeto.usuarios_id.apellido}}</option>
+                        {% endfor %}
+                    </select>
+                </div><br>
+                <div class="checkbox-container">
+                    <label for="servicios"><h4>Elige los servicios incluidos:</h4></label>
+                    <div class="checkbox-container2">
+                        <div class="checkbox-container3">
+                            <div class="checkbox-label">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" class="ui-checkbox" name="opciones" value="Agua">
+                                    <p>Agua</p>
+                                </label>
+                                <div class="container">
+                                    <input  type="number" name="agua" class="input">
+                                    <label class="label label-aux">N° de matricula</label>
+                                </div><br><br><br>
+                            </div>
+                            <div class="checkbox-label">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" class="ui-checkbox" name="opciones" value="Electricidad">
+                                    <p>Electricidad</p>
+                                </label>
+                                <div class="container">
+                                    <input type="number" name="electric" class="input input-electric">
+                                    <label class="label label-aux">N° de matricula</label>
+                                </div>
+                            </div><br>
+                            <div class="checkbox-label">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" class="ui-checkbox" name="opciones" value="Gas">
+                                    <p>Gas</p>
+                                </label>
+                                <div class="container">
+                                    <input type="number" name="gas" class="input input-gas">
+                                    <label class="label label-aux">N° de matricula</label>
+                                </div>
+                            </div><br>
+                            <div class="checkbox-label">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" class="ui-checkbox" name="opciones" value="Internet">
+                                    <p>Internet</p>
+                                </label>
+                                <div class="container">
+                                    <input type="number" name="internet" class="input input-internet">
+                                    <label class="label label-aux">N° de matricula</label>
+                                </div>
+                            </div><br><br>
+                        </div>
+                        <label class="custum-file-upload" for="file">
+                            <div class="icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="" viewBox="0 0 24 24"><g stroke-width="0" id="SVGRepo_bgCarrier"></g><g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g><g id="SVGRepo_iconCarrier"> <path fill="" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z" clip-rule="evenodd" fill-rule="evenodd"></path> </g></svg>
+                            </div>
+                            <div class="text">
+                               <span>Click para subir tus imagenes</span>
+                            </div>
+                            <input type="file" id="file" name="imagen" accept="image/*" multiple>
+                        </label>
+                    </div>  
+                </div>
+                <div class="container">
+                    <input required="" type="text" name="descrip" id="descrip" class="input input-descrip">
+                    <label class="label label-decrip">Descripción</label>
+                </div>
+                <div class="third-block-form">
+                    <div class="grid w-full max-w-xs items-center gap-1.5 documents">
+                        <label class="pre-label-documentos"><p>*</p>Documentos</label>
+                        <input id="documento" type="file" name="documento" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple class="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium">
+                    </div>
+                    <button class="btn-guardar" type="submit" name="add" id="add" value="1">Guardar</button>
+                    <button  class="btn-eliminar" name="borrar" id="borrar" value="2" onclick="resetForm()">Eliminar</button>
+                    <label for="cancelar" class="label-eliminar">Nota: Eliminar, limpiara todos los campos</label>
+                </div>
+            </form><br>
+        </div>
+    </div> <!-- Se debe aplicar JS para limpiar los campos del Form -->
+{% endblock %}
+

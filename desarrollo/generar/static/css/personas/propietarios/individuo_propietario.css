@@ -1,0 +1,237 @@
+.contenido {
+    margin-left: 13%;
+}
+.contenido h2 {
+    padding: 12px;
+    font-size: 35px;
+    margin-bottom: 30px;
+}
+.firts-block, .second-block, .third-block, 
+.fourth-block, .fiveth-block, .sixth-block, 
+.seventh-block, .eighth-block {
+    display: flex;
+    gap: 20px;
+}
+#btnEdit img {
+    margin-top: -5px;
+    margin-right: 8px;
+    filter: invert(100%) brightness(180%); 
+}
+#btnCancel {
+    align-content: center;
+    text-align: center;
+    justify-content: center;
+    padding-left: 18px;
+}
+#btnCancel img {
+    margin-top: -5px;
+    margin-left: 5px;
+    filter: invert(100%) brightness(180%); 
+}
+#btnEdit, #btnCancel {
+    position: absolute;
+    left: 84%;
+    width: 190px;
+    height: 45px;
+    border-radius: 10px;
+    background-color: #1677ff;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: -12px;
+    cursor: pointer;
+    border: 2px dashed #1677ff;
+    box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+}
+#btnActualizar {
+    position: absolute;
+    left: 80%;
+    align-content: center;
+    text-align: center;
+    justify-content: center;
+    width: 220px;
+    height: 45px;
+    border-radius: 10px;
+    background-color: #1677ff;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+    margin-top: 0px;
+    cursor: pointer;
+    border: 2px dashed #1677ff;
+    box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+}
+#btnActualizar img {
+    margin-top: -5px;
+    margin-left: 8px;
+    filter: invert(100%) brightness(180%); 
+}
+#btnEdit:hover {
+    background-color: #122ddb;
+    border: 2px dashed #122ddb;
+}
+#btnCancel:hover {
+    background-color: #db1212;
+    border: 2px dashed #db1212;
+}
+#btnActualizar:hover {
+    background-color: #30db12;
+    border: 2px dashed #30db12;
+}
+/* ---------------------------------------------------------Inicio de select------------------------------------------------------------------------------ */
+.pre-label {
+    display: flex;
+    font-weight: bold;
+    font-size: 15px;
+    margin-left: 10px;
+    margin-top: -12px;
+}
+.select1-container, .select2-container {
+    margin-left: 8px;
+    margin-top: -11.5px;
+    position: relative;
+}
+.select1-container select, .select2-container select{
+    width: 300px; /* Ancho de los selectores */
+    height: 36px;
+    padding: 5px 0px; /* Padding interno de los selectores */
+    padding-left: 5px;
+    border: 1px solid rgb(103, 128, 253); /* Borde de los selectores */
+    font-weight: bold;
+    background-color: rgb(255, 255, 255); /* Color de fondo de los selectores */
+    color: #000000; /* Color del texto de los selectores */
+    appearance: none; /* Eliminar el estilo por defecto de los selectores */
+    margin-bottom: 8px; /* Margen inferior de los selectores */
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 3px 3px 10px rgb(103, 128, 253),
+    -1px -1px 6px rgba(255, 255, 255, 0.4),
+    inset 3px 3px 10px rgba(255, 255, 255, 0.4),
+    inset -1px -1px 6px rgba(255, 255, 255, 0.4);
+}
+.select1::after, .select2::after {
+    content: '\f0da'; /* Icono de flecha hacia abajo (Font Awesome) */
+    font-family: 'FontAwesome'; /* Icono de Font Awesome */
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    pointer-events: none; /* Evitar que el icono se pueda hacer clic */
+}
+.select1-container select:focus, .select2-container select:focus {
+    outline: none; /* Eliminar el contorno al enfocar */
+    border: 2px solid transparent;
+    box-shadow: 3px 3px 10px rgb(103, 128, 253),
+    -1px -1px 6px rgb(103, 128, 253),
+    inset 3px 3px 10px rgba(255, 255, 255, 0.4),
+    inset -1px -1px 6px rgb(103, 128, 253);
+}
+.select1-container select.form-select option, .select2-container select.form-select option{
+    color: rgb(0, 0, 0)!important; /* Cambiar el color del texto a blanco */
+    background-color: white!important;
+}
+/* ----------------------------------------Fin de select --------------------Inicio de input-------------------------------------------- */
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    position: relative;
+    color: rgb(0, 0, 0);
+    font-weight: bold;
+    width: 22%;
+    margin-left: -8px;
+    margin-right: 30px;
+}
+.container .label {
+    display: flex;
+    font-size: 15px;
+    padding-left: 8px;
+    position: absolute;
+    top: -22px;
+    transition: 0.3s;
+    pointer-events: none;
+}
+.else{
+    font-weight: bold;
+    display: flex;
+    gap:10px;
+    font-size: 18px;
+    margin-left: 10px;
+    margin-top: 6px;
+}
+.input {
+    width: 250px;
+    height: 35px;
+    border: none;
+    outline: none;
+    padding: 0px 7px;
+    border-radius: 6px;
+    color: #000000;
+    font-size: 15px;
+    background-color: transparent;
+    box-shadow: 3px 3px 10px rgb(103, 128, 253),
+    -1px -1px 6px rgba(255, 255, 255, 0.4);
+}
+.input-aux{
+    width: 303px;
+}
+.input:focus {
+    border: 2px solid transparent;
+    color: #000000;
+    box-shadow: 3px 3px 10px rgb(103, 128, 253),
+    -1px -1px 6px rgba(255, 255, 255, 0.4),
+    inset 3px 3px 10px rgba(0,0,0,1),
+    inset -1px -1px 6px rgba(255, 255, 255, 0.4);
+}
+.container .input:valid, .container .input:focus {
+    box-shadow: 3px 3px 10px rgb(103, 128, 253);
+}
+.container-aux{
+    margin-right: -2px;
+}
+.container-aux2{
+    margin-right: 5px;
+}
+.container-aux3{
+    margin-right: 10px;
+    margin-top: -17px !important;
+}
+/* ----------------------------------------Fin de input --------------------Inicio de Documentos-------------------------------------------- */
+.pre-label-documentos{
+    display: flex;
+    font-weight: bold;
+    font-size: 18px;
+    padding-top: 4px;
+}
+.pre-label-documentos p {
+    color:red
+}
+.documents {
+    margin-top: -40px;
+    margin-left: 57px;
+}
+.documents input[type="file"]::-webkit-file-upload-button {
+    background-color: rgb(85, 113, 255); /* Change to your desired blue shade */
+    color: white; /* Adjust text color for better contrast */
+    border: none;
+    padding: 8px 10px; /* Adjust padding as needed */
+    border-radius: 4px; /* Add a subtle border radius */
+    cursor: pointer;
+}
+.documents input[type="file"]:hover::file-selector-button {
+    background-color: rgb(22, 111, 255); /* Blue color on hover */
+    color: white;
+}
+.documents input[type="file"]:focus::file-selector-button {
+    background-color: #1677ff; /* Blue color on focus (file selected) */
+}
+/* -----------------------------------------------fin de Documentos---------------------------------inicio de descripción----------------------- */
+.input-descrip {
+    margin-left: 20px;
+    width: 880px;
+    height: 50px;
+    margin-bottom: 25px;
+}
+.label-decrip {
+    margin-left: 20px;
+}

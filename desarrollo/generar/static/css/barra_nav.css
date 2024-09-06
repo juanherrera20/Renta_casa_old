@@ -1,0 +1,169 @@
+.containerr nav {
+    position: fixed; /* Fijar la barra de navegación en la parte superior */
+    top: 0; /* Posicionar la barra en la parte superior de la ventana */
+    left: 0; /* Posicionar la barra en la izquierda de la ventana */
+    width: 180px; /* Ancho de la barra */
+    height: 100vh; /* Altura de la barra (100% del viewport) */
+    background-color: rgb(103, 128, 253); /* Color de fondo de la barra */
+    padding: 20px; /* Padding interno de la barra */
+    display: flex; /* Modo de visualización flexbox */
+    flex-direction: column; /* Dirección de los elementos en la barra */
+    align-items: flex-start; /* Alineación horizontal de los elementos */
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.516); /* Box-shadow de la barra */
+  }
+.image{
+    float: left;
+    width: 100px;
+    height: 100px;
+    margin-left: 11.5%;
+    margin-top: -33px;
+    margin-bottom: 10px;
+    align-items: center;
+}
+.containerr nav ul {
+    list-style: none; /* Eliminar el estilo de lista por defecto */
+    margin: 0; /* Eliminar el margen por defecto */
+    padding: 0; /* Eliminar el padding por defecto */
+}
+.containerr nav ul li {
+    margin-bottom: 15px; /* Margen inferior entre elementos */
+}
+.containerr nav ul li a {
+    display: block; /* Mostrar los elementos como bloques */
+    padding: 10px 10px; /* Padding interno de los enlaces */
+    text-decoration: none; /* Eliminar la decoración por defecto de los enlaces */
+    color: #ffffff; /* Color del texto de los enlaces */
+    transition: background-color 0.3s ease; /* Efecto de transición al hover */
+}
+a {
+    font-size: 15px; /* Tamaño de fuente */
+    font-weight: bold; /* Peso de fuente en negrita */
+    padding: 5px 5px; /* Espacio alrededor del texto */
+    border-radius: 8px; /* Esquinas redondeadas */
+    transition: background-color 0.3s ease; /* Efecto de transición para el color de fondo */
+    text-align: left;
+}
+.containerr nav ul li a:hover {
+    background-color: rgb(22, 111, 255); /* Color de fondo al hover */
+    color: rgb(255, 255, 255);
+}
+
+.containerr nav ul li p {
+    margin: 0; /* Eliminar el margen por defecto */
+    padding: 0; /* Eliminar el padding por defecto */
+    color: #ffffff; /* Color del texto de los párrafos */
+}
+.containerr nav ul li select {
+    width: 85%; /* Ancho de los selectores */
+    padding: 5px 0px; /* Padding interno de los selectores */
+    border: 1px solid rgb(103, 128, 253); /* Borde de los selectores */
+    font-weight: bold;
+    background-color: rgb(103, 128, 253); /* Color de fondo de los selectores */
+    color: #ffffff; /* Color del texto de los selectores */
+    appearance: none; /* Eliminar el estilo por defecto de los selectores */
+    margin-bottom: 8px; /* Margen inferior de los selectores */
+    margin-left: 12px;
+    border-radius: 8px;
+}
+.containerr nav ul li select:focus {
+    outline: none; /* Eliminar el contorno al enfocar */
+    border-color: #007bff; /* Color del borde al enfocar */
+}
+.containerr nav ul li:last-child p {
+    display: flex; /* Modo de visualización flexbox */
+    align-items: left; /* Alineación vertical de los elementos */
+}
+.inicio{
+    text-align: left;
+    margin-top: 80px;
+    align-items: left;
+}
+.text-inicio{
+    text-align: left;
+    align-items: left;
+    padding-top: 10px;
+}
+.ini{
+    display: flex;
+    align-items: left; /* Asegura que el icono y el texto estén alineados verticalmente */
+    gap: 53.5px;
+}
+.text-inmueble{
+    text-align: left;
+    align-items: left;
+}
+.inmue{
+    display: flex;
+    align-items: left; /* Asegura que el icono y el texto estén alineados verticalmente */
+    gap: 22px;
+}
+.text-tarea{
+    text-align: left;
+    align-items: left;
+    
+}
+.homework{
+    display: flex;
+    align-items: left; /* Asegura que el icono y el texto estén alineados verticalmente */
+    gap: 50px;
+}
+.text-close{
+    font-size: 14px;
+    text-align: left;
+    align-items: left;
+}
+.Csesion{
+    display: flex;
+    align-items: left; /* Asegura que el icono y el texto estén alineados verticalmente */
+    gap: 7px;
+}
+.text-noti{
+    font-size: 14px;
+    text-align: left;
+    align-items: left;
+}
+.noti{
+    display: flex;
+    align-items: left; /* Asegura que el icono y el texto estén alineados verticalmente */
+    gap: 3px;
+}
+.tarea{
+    margin-bottom: 120px;
+}
+.containerr nav ul li select.form-select option {
+    color: rgb(0, 0, 0)!important; /* Cambiar el color del texto a blanco */
+    background-color: white!important;
+}
+/* ---------------------- Estilos para select "Personas" --------------------------------------- */
+#personas {
+    border: 1px solid  rgb(103, 128, 253);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: url(../image/select.gif) 96% / 15% no-repeat rgb(103, 128, 253);
+} 
+#personas::-ms-expand { 
+    display: none; /* remove default arrow on ie10 and ie11 */
+}
+@media screen and (min-width:0\0) {
+    #personas {
+        background:none\9;
+        padding: 5px\9;
+    }
+}
+#analisis {
+    border: 1px solid  rgb(103, 128, 253);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: url(../image/select2.gif) 96% / 15% no-repeat rgb(103, 128, 253);
+}
+#analisis::-ms-expand { 
+    display: none; /* remove default arrow on ie10 and ie11 */
+}
+@media screen and (min-width:0\0) {
+    #analisis {
+        background:none\9;
+        padding: 5px\9;
+    } 
+}

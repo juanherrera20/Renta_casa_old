@@ -1,0 +1,180 @@
+{% extends "barra_navegacion.html" %}
+{% load static %}
+{% block static %}
+ <!-- Se implementa el archivo CSS -->
+  <link rel="stylesheet" href='{% static "css/dash.css" %}' type="text/css">
+  <script type="text/javascript"  src='{% static "js/dash.js" %}'></script>
+{% endblock static %}
+
+{% block encabezado %}
+  Bienvenido
+{% endblock encabezado %}
+
+{% block title %}
+  <div class="tittle">
+    Dashboard
+  </div>
+{% endblock title %}
+
+{% block contenido %}
+  <div class="containerr">
+    <div class="totales">
+      <ul>
+        <div class="uno">
+          <div class="img">
+            <img width="32" height="32" src="https://img.icons8.com/windows/32/building-with-rooftop-terrace.png" alt="building-with-rooftop-terrace"/>
+          </div>
+          <h2>Inmuebles Totales</h2>
+          <li><h3>{{ context.inmuebles }}</h3></li>
+        </div>
+        <div class="dos">
+          <div class="img">
+            <img width="32" height="32" src="https://img.icons8.com/windows/32/defend-family--v3.png" alt="defend-family--v3"/>
+          </div>
+          <h2>Arrendatarios Totales</h2>
+          <li><h3>{{ context.arrendatarios }}</h3></li>
+        </div>
+        <div class="tres">
+          <div class="img">
+            <img width="32" height="32" src="https://img.icons8.com/windows/32/landlord.png" alt="landlord"/>
+          </div>
+          <h2>Propietarios Totales</h2>
+          <li><h3>{{ context.propietarios }}</h3></li>
+        </div>
+      </ul>
+    </div>
+    <div class="tareas">
+      <h2 id="tittle-tareas">Tareas</h2>
+      <div class="tareas-hover">
+        <a href="{% url 'AddTarea' %}" id="Add-tarea"><p>+ Crear Tarea</p></a>
+      </div>
+      <br>
+      <ul>
+        <li>
+          <div class="pendientes">
+            <h5>Pendientes:</h5>
+            <h6>{{ context.tareas }} tareas abiertas</h6>
+          </div>
+        </li>
+      </ul>
+      <ul>
+        <div class="ciclo">
+          {% for tarea in context.pendientes %}
+            <button class="btn btn-primary tarea-btn" data-tarea-id="{{ tarea.id }}" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap" data-id="{{ tarea.id }}" data-descripcion="{{ tarea.descripcion }}">
+              <li class="{{ tarea.etiqueta | lower }}"><p>{{ tarea.etiqueta }}</p></li>
+              <li><h3>{{ tarea.titulo }}</h3></li>
+              <li><img width="32" height="32" src="https://img.icons8.com/windows/32/tear-off-calendar.png" alt="tear-off-calendar"/> {{ tarea.fecha_inicio }}  -   {{ tarea.fecha_fin }}</li>
+              <h4 class="ciclo-name">{{ tarea.superuser_id.nombre }} {{ tarea.superuser_id.apellido }}</h4>
+            </button><br><br><br>
+          {% endfor %}
+        </div>
+      </ul>
+    </div>
+    <!-- ------------------------------------------------------------------------------------------------------- -->
+    <div class="propietarios">
+      <h4>Propietarios</h4>
+      <div class="table-propietarios">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Telefono</th>
+              <th>Estado</th>
+              <th>Dirección</th>
+            </tr>
+          </thead>
+          <tbody id="propietarios">
+            {% for propietario, direccion, estados, estados_espacio in propietarios %}
+            <tr>
+              <td>{{ forloop.counter}}</td>
+              <td>{{ propietario.nombre |add:" "|add:propietario.apellido}}</td>
+              <td>{{ propietario.email }}</td>
+              <td>{{ propietario.telefono }}</td>
+              <td class="especial"><p class="{{ estados_espacio }}">{{ estados }}</p></td>
+              <td>{{ direccion }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+<!-- Fin de la tabla de propietarios -->
+    <div class="arrendatarios">
+      <h4>Clientes/Arrendatarios</h4>
+      <div class="table-arrendatarios">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Telefono</th>
+              <th>Estado</th>
+              <th>Dirección</th>
+            </tr>
+          </thead>
+          <tbody id="inquilinos">
+            {% for arrendatario, direccionArrendatario, estadosArrendatario, estados_espacioA in arrendatarios %}
+            <tr>
+              <td>{{ forloop.counter}}</td>
+              <td>{{ arrendatario.nombre |add:" "|add:arrendatario.apellido}}</td>
+              <td>{{ arrendatario.email }}</td>
+              <td>{{ arrendatario.telefono }}</td>
+              <td class="especial"><p class="{{ estados_espacioA }}">{{ estadosArrendatario }}</p></td>
+              <td>{{ direccionArrendatario }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+<!-- Fin de tabla inquilinos -->
+    <div class="inmuebles">
+      <h4>Inmuebles</h4>
+      <div class="table-inmuebles">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Propietario</th>
+              <th>Telefono</th>
+              <th>Dirección</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="inmuebles">
+            {% for inmueble, tipoInmueble, habilitada, habilitada_espacio in inmuebles %}
+            <tr>
+              <td>{{ forloop.counter}}</td>
+              <td>{{ inmueble.propietario_id.usuarios_id.nombre |add:" "|add:inmueble.propietario_id.usuarios_id.apellido }}</td>
+              <td>{{ inmueble.propietario_id.usuarios_id.telefono }}</td>
+              <td>{{ inmueble.direccion }}</td>
+              <td>{{ tipoInmueble }}</td>
+              <td class="especialI"><p class="{{ habilitada_espacio }}">{{ habilitada }}</p></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div><!-- Fin de la tabla de Inmuebles -->
+  </div>
+  <!-- Modal para tareas. -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Descripción de tarea</h5>
+          <button type="button" class="btn-close closeModal" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body"></div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary closeModal" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary actualizarM">Actualizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
