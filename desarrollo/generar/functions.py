@@ -179,9 +179,12 @@ def calcular_monto_atraso(objeto):
         dias_atraso = (fecha - fecha_limite).days
         monto_atraso = canon / 30 * porcentaje_penalizacion * dias_atraso  
         
-        for i in range(1,7): #un rango de 6 meses que representa la cantidad de meses posiblemente maximos para un atraso
+        for i in range(1,8): #un rango de 6 meses que representa la cantidad de meses posiblemente maximos para un atraso
             fecha_limitex = fecha_limite + relativedelta(months = i) #Calculo las fechas hipoteticas donde debería volver a pagar el siguiente mes
-            fecha_iniciox = fecha_limitex - relativedelta(days= 5)
+            print(f"fecha limite aumentada {i} es: {fecha_limitex}")
+            fecha_iniciox = fecha_limitex - relativedelta(days= 4)
+            print(f"fecha inicio aumentada {i} es: {fecha_iniciox}")
+            meses = i
             
             if fecha <= fecha_limitex:  #Si la fecha hipotetica es menor significa que no a excedido el siguiente mes de pago, por ende no es necesario seguir ejecutando el for
                 
@@ -271,14 +274,14 @@ def render_pdf( template_src, context_dict={}):
 #---------------------------------------------------------------------------------------------------------------------------------------s
 
 #-----------------------------------------------Función para renderizar el pdf de Arrendatario----------------------------------------------------------------------
-def render_pdf_arr( template_src, context_dict={}):
+def render_pdf_arr( template_src, name, context_dict={}):
     template = get_template(template_src)
     html = template.render(context_dict)
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("utf-8")), dest=result)
     if not pdf.err:
         result.seek(0)
-        return FileResponse(result, as_attachment=True, filename='Factura-Arrendatario.pdf')
+        return FileResponse(result, as_attachment=True, filename=f'{name}')
     return None
 
 

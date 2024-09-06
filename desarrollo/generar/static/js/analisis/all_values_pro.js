@@ -204,9 +204,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Agrega el evento click al botón "Pagar" para cerrar el modal y enviar el formulario
     document.getElementById('exampleModal').addEventListener('click', function(event) {
         if (event.target.classList.contains('actualizarM') && event.target.textContent === 'Pagar') {
-            // Enviar los datos a la vista para el procesamiento
+            event.preventDefault(); // Evita la acción predeterminada si es necesario
+
+            // Cierra el modal
+            var modal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
+            modal.hide();
+
+            // Enviar los datos al servidor
             var form = document.getElementById('ModalPago');
             var checkboxes = document.querySelectorAll('.checkInmueble:checked');
             checkboxes.forEach(function(checkbox) {

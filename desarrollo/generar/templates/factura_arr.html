@@ -61,11 +61,19 @@
         <table class="table-aux">
           <tbody>
             <tr>
-              <td><img class="image" src='{{ logo_rentacasa_url }}'></td>
+              <div>
+                <td>
+                  <img class="image" src='{{ logo_rentacasa_url }}'>
+                  <h3>     Tu Inmobiliaria Amiga</h3>
+                </td>
+                
+              </div>
               <td class="text">
-                <h1>Estado de Cuenta - Renta Casa</h1>
-                <h4>Carrera CRA 23 BIS #72-43 LOCAL # 1 CUBA PEREIRA RISARALDA</h4>
+                <h1>Factura Electronica - Renta Casa</h1>
+                <h4>Carrera 23 BIS #72-43 LOCAL # 1 CUBA PEREIRA RISARALDA</h4>
                 <h4>NIT: 1.088.261.920-1</h4>
+                <h4>Registro Inmobiliario 0310</h4>
+                <h4>rentacasa38@gmail.com</h4>
                 <h5>Celular: 3215865975</h5>
               </td>
               <td ><img class="image" src='{{ logo_datacredito_url }}'></td>
@@ -75,9 +83,9 @@
         <table>
           <thead>
             <tr>
-              <th>FECHA (d/m/a)</th>
+              <th>FECHA FACTURACIÓN</th>
               <th>INMOBILIARIA</th>
-              <th>NIT INMOBILIARIA</th>
+              <th>RECIBO #</th>
               <th>RESULTADO</th>
             </tr>
           </thead>
@@ -85,7 +93,7 @@
             <tr>
               <td>{{ fecha_actual }}</td>
               <td>RENTA CASA</td>
-              <td>1.088.261.920-1</td>
+              <td>{{ consecutivo }}</td> 
               <td>APROBADO</td>
             </tr>
           </tbody>
@@ -93,7 +101,7 @@
         <table>
           <thead>
             <tr>
-              <th>ARRENDATARIO</th>
+              <th>RECIBIDO DE:</th>
               <th>DIRECCION</th>
             </tr>
           </thead>
@@ -108,17 +116,31 @@
           <thead>
             <tr>
               <th>DOCUMENTO ARRENDATARIO</th>
-              <th>CANON</th>
-              <th>MONTO POR MORA</th>
-              <th>DES. ADICIONALES</th>
-              <th>PAGO NETO</th>
+              <th>PAGO ARRIENDO DEL:</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>{{ usuario.documento }}</td>
+              <td>{{meses_pagados}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <table>
+          <thead>
+            <tr>
+              <th>CANON</th>
+              <th>MONTO POR MORA</th>
+              <th>OTROS VALORES (+)</th>
+              <th>DES. ADICIONALES (-)</th>
+              <th>PAGO NETO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
               <td>$ {{ inmueble.canon }}</td>
-              <td>$ {{ descuento }}</td>
+              <td>$ {{ monto }}</td>
+              <td>$ {{otro_valor}}</td>
               <td>$ {{ valor_descuento }}</td>
               <td>$ {{ totalPagar }}</td>
             </tr>
@@ -138,15 +160,11 @@
             </tr>
           </tbody>
         </table>
-        <p>Con la aceptación de la presente factura autorizo a (nombre de la empresa <strong>RENTA CASA</strong>), identificada con <strong>(NIT 1.088.261.920-1)</strong>, a)
-        Consultar, en cualquier tiempo, en <strong>DATACRÉDITO</strong> o en cualquier otra base de datos manejada por un operador de información
-        financiera y crediticia, toda la información relevante para conocer mi desempeño como deudor y mi capacidad de pago, la viabilidad
-        para entablar o mantener una relación contractual y demás finalidades establecidas en el Artículo 15 de la Ley 1266 de 2008. b) Reportar
-        a <strong>DATACRÉDITO</strong> o a cualquier otra base de datos manejada por un operador de información financiera y crediticia, datos, tratados o sin
-        tratar, sobre el cumplimiento o incumplimiento de mis obligaciones crediticias, mis deberes legales de contenido patrimonial, mis datos
-        de ubicación y contacto (número de teléfono fijo, número de teléfono celular, dirección del domicilio, dirección laboral y correo
-        electrónico), mis solicitudes de crédito así como otros atinentes a mis relaciones comerciales, financieras y en general socioeconómicas
-        que haya entregado o que consten en registros públicos, bases de datos públicas o documentos públicos.
+        <p>De conformidad con lo establecido en el <strong>artículo 772</strong> del Código de Comercio el cual señala, “Factura es un título valor que el vendedor o prestador 
+        del servicio podrá librar y entregar o remitir al comprador o beneficiario del servicio. <strong>MODALIDAD DE FACTURACIÓN: FACTURA POR COMPUTADOR:</strong> Emitida por medio de un software, 
+        donde interactúa la programación, el control y la ejecución de las funciones inherentes a la venta o servicio, entre otras, la emisión de facturas, comprobantes, notas crédito, etc. 
+        Mediante este documento se soporta transacciones de venta de bienes y/o servicios y que operativamente tiene lugar a través de sistemas computacionales 
+        y/o soluciones informáticas <strong>(Art 2. Decreto 2242 DE 2015).</strong>
         </p>
         <br><br><br><br><br>
       </div>

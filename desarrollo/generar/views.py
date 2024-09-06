@@ -9,7 +9,7 @@ from django.http import JsonResponse, HttpResponse
 import uuid
 from django.db.models import Q, Max
 from django.shortcuts import render, redirect
-from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos
+from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos, Consecutivo
 from werkzeug.security import generate_password_hash, check_password_hash
 from .functions import autenticado_required, actualizar_estados_propietarios,actualizar_estados_arrendatarios, actualizar_tareas, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf, render_pdf_arr, calcular_monto_atraso, delete_imagenes, parse_date #Importo las funciones desde functions.py
 from .functions import diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
@@ -756,19 +756,18 @@ def actualizar_modal(request): #Logica para actualizar cada modal o tarea
     inicioRes = request.POST.get('inicioRes')
 
     if fechaInicio:
-        fecha_inicio = fechaInicio
+        fecha_inicio = parse_date(fechaInicio)
     else:
-        date = datetime.strptime(inicioRes, "%B %d, %Y")
-        fecha_inicio = date.strftime("%Y-%m-%d")
+        fecha_inicio = parse_date(inicioRes)
 
     fechaFin = request.POST.get('fechaFin')
     finRes = request.POST.get('finRes')
+    
 
     if fechaFin:
-        fecha_fin = fechaFin
+        fecha_fin = parse_date(fechaFin)
     else:
-        date2 = datetime.strptime(finRes, "%B %d, %Y")
-        fecha_fin = date2.strftime("%Y-%m-%d")    
+        fecha_fin = parse_date(finRes)    
 
     hora_inicio = request.POST.get('hora_inicio')
     horaRes = request.POST.get('horaRes')
@@ -933,7 +932,7 @@ def redireccion_pro(request): #Redirección solo para los propietarios
 def confirmar_pago (request, id):
     template_path = "analisis/modal_pago.html"
     obj_propietario = propietario.objects.get(id = id)
-    objs_inmuebles = obj_propietario.inmueble.exclude(estadoPago = 1) #filtrar los que no se han pagado
+    objs_inmuebles = obj_propietario.inmueble.exclude(estadoPago = 1).filter(arrendatario_id__isnull=False) #filtrar los que no se han pagado
     objeto_usuario = obj_propietario.usuarios_id
     
     if request.method == 'GET':
@@ -1005,18 +1004,14 @@ def confirmar_pago (request, id):
             'banco': obj_propietario.bancos,
             'num_cuenta': obj_propietario.num_banco,
         }
-        propietario_user = {
-            'id': objeto_usuario.id,
-            'nombre': objeto_usuario.nombre,
-            'apellido': objeto_usuario.apellido,
-            'documento': objeto_usuario.documento,
-        }
+        propietario_user_id = objeto_usuario.id
+        
         request.session['totalPagar'] = totalPagar
         request.session['descuentos'] = descuento
         request.session['descripcion'] = descripcion
         request.session['ids_inmuebles'] = ids_inmuebles
         request.session['obj_propietario'] = propietarios
-        request.session['obj_usuario'] = propietario_user
+        request.session['obj_usuario'] = propietario_user_id
 
         #return redirect('analisis_propietarios')
         return redirect("factura") #Aquí se redirecciona al html de la factura    
@@ -1028,9 +1023,13 @@ def factura(request):
     ids_inmuebles = request.session.get('ids_inmuebles', [])
     objeto_inmueblef = inmueble.objects.filter(id__in=ids_inmuebles)
     obj_propietario = request.session.get('obj_propietario')
-    obj_usuario = request.session.get('obj_usuario')
+    obj_usuario = usuarios.objects.get(id = request.session.get('obj_usuario'))
     fecha = date.today()
     fecha_actual= fecha.strftime("%d/%m/%Y")
+    
+    #Valor del recibo consecutivo
+    consecutivo, creado = Consecutivo.objects.get_or_create(id=1) #Asegura que solo haya una instancia del objeto y si no existe crea una
+    
     logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))
     logo_datacredito_url = request.build_absolute_uri(static('image/Logo-Datacredito.png'))
     pdf_files = []
@@ -1049,9 +1048,15 @@ def factura(request):
             'propietario': obj_propietario, 
             'usuario': obj_usuario, 
             'fecha': fecha_actual,
+            'consecutivo':f'{consecutivo.factura_pro:04d}', # '04d' significa que debe tener 4 dígitos con ceros a la izquierda,
             'logo_rentacasa_url': logo_rentacasa_url,
             'logo_datacredito_url': logo_datacredito_url,
         }
+        
+        #Aumento el numero para la proxima factura y actualizo
+        consecutivo.factura_pro += 1
+        consecutivo.save()
+        
         pdf = render_pdf('factura.html', value)
         pdf_files.append((f'factura_{i+1}.pdf', pdf))
 
@@ -1060,8 +1065,10 @@ def factura(request):
         for filename, pdf in pdf_files:
             zip_file.writestr(filename, pdf.getvalue())
     zip_buffer.seek(0)
+    nombre_zip = f"{obj_usuario.nombre.upper()}_{obj_usuario.apellido.upper()}.zip"
+    
     response = HttpResponse(zip_buffer, content_type='application/zip')
-    response['Content-Disposition'] = 'attachment; filename="facturas.zip"'
+    response['Content-Disposition'] = f'attachment; filename="{nombre_zip}"'
     return response
 
 
@@ -1147,7 +1154,9 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         obj_inmueble = guardar.inmueble.first()
         
         fechaCobro = guardar.fecha_inicio_cobro
+        print(f"esta es la fecha de pago inicila {fechaCobro}")
         nuevaFecha = fechaCobro + relativedelta(months= meses)
+        print(f"esta es la fecha de pago aumentada un mes{nuevaFecha}")
         fecha_limite = nuevaFecha + timedelta(days=4)
         habilitarPago = 1
         urls=[]
@@ -1171,13 +1180,18 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         #concatenar texto
         if observaciones2:
             observaciones = observaciones1 + ".\n" + observaciones2
+            otro_valor = request.POST.get('otroValor')
         else:
+            otro_valor = 0
             observaciones = observaciones1
         
         print(f"Texto final: {observaciones}")
         
+        request.session['mesPagado1'] = fechaCobro.strftime("%d/%m/%Y")
+        request.session['mesPagado2'] = nuevaFecha.strftime("%d/%m/%Y") #Fecha hasta donde pago, en caso de llevar meses de atraso
         request.session['monto'] = request.POST.get('monto')
         request.session['valor_total'] = request.POST.get('valor_total')
+        request.session['OtroValor']= otro_valor
         request.session['valor_descuento'] = descuento
         request.session['observaciones'] = observaciones
         
@@ -1200,22 +1214,33 @@ def factura_Arr(request, idInmueble, idArrendatario):
     
     obj_inmueble = inmueble.objects.get(id=idInmueble)
     obj_usuario = usuarios.objects.get(id=idArrendatario)
+    
+    #fechas
     fecha = date.today()
     fecha_actual= fecha.strftime("%d/%m/%Y")
+    fecha_pago = request.session.get('mesPagado1', '')
+    fecha_pago2 = request.session.get('mesPagado2', '')
+    
+    meses_pagados = f"{fecha_pago} al {fecha_pago2}"
+    
     logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))
     logo_datacredito_url = request.build_absolute_uri(static('image/Logo-Datacredito.png'))
 
-    monto_str = request.session.get('monto', '')
-    valor_total_str = request.session.get('valor_total', '')
-    valor_descuento_srt = request.session.get('valor_descuento','')
-    valor_descuento_srt = str(valor_descuento_srt)
+    otro_valor_str = str(request.session.get('OtroValor', ''))
+    monto_str = str(request.session.get('monto', ''))
+    valor_total_str = str(request.session.get('valor_total', ''))
+    valor_descuento_srt = str(request.session.get('valor_descuento',''))
+    
+    #Valor del recibo consecutivo
+    consecutivo, creado = Consecutivo.objects.get_or_create(id=1) #Asegura que solo haya una instancia del objeto y si no existe crea una
+    
     if not valor_descuento_srt.strip():
         valor_descuento_srt = '0'
     
-
-    monto_clean = re.findall(r'\d+\.?\d*', monto_str)[0]
-    valor_total_clean = re.findall(r'\d+\.?\d*', valor_total_str)[0]
-    valor_descuento_clean = re.findall(r'\d+\.?\d*', valor_descuento_srt)[0]
+    otro_valor_clean = re.findall(r'\d+\.?\d*', otro_valor_str)[0] if otro_valor_str else '0'
+    monto_clean = re.findall(r'\d+\.?\d*', monto_str)[0] if monto_str else '0'
+    valor_total_clean = re.findall(r'\d+\.?\d*', valor_total_str)[0] if valor_total_str else '0'
+    valor_descuento_clean = re.findall(r'\d+\.?\d*', valor_descuento_srt)[0] if valor_descuento_srt else '0'
 
     monto = float(monto_clean)
     valor_total = float(valor_total_clean)
@@ -1226,13 +1251,22 @@ def factura_Arr(request, idInmueble, idArrendatario):
     data = {
         'usuario': obj_usuario,
         'inmueble': obj_inmueble,
-        'descuento': monto,
+        'monto': monto,
         'valor_descuento': valor_descuento,
+        'otro_valor': otro_valor_clean,
         'totalPagar': valor_total,
         'fecha_actual': fecha_actual,
+        'meses_pagados':meses_pagados,
         'logo_rentacasa_url': logo_rentacasa_url,
         'logo_datacredito_url': logo_datacredito_url,
         'obs':descrip,
+        'consecutivo':f'{consecutivo.factura_arr:04d}'  # '04d' significa que debe tener 4 dígitos con ceros a la izquierda,
     }
-    pdf = render_pdf_arr('factura _arr.html', data)
+    
+    #Aumento el numero para la proxima factura y actualizo
+    consecutivo.factura_arr += 1
+    consecutivo.save()
+    nombre_pdf = f"{obj_usuario.nombre.upper()}_{obj_usuario.apellido.upper()}.pdf"
+    
+    pdf = render_pdf_arr('factura_arr.html', nombre_pdf, data)
     return pdf

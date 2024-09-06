@@ -102,7 +102,7 @@
         <br><br>
         <div class="campos-five">
           <div class="container">
-            <input type="datetime" name="fecha_pago" value="{{ propietario.fecha_pago|date:"d/m/Y" }}" readonly class="input">
+            <input type="datetime" name="fecha_pago" value="{{ propietario.fecha_pago|date:'d/m/Y' }}" readonly class="input">
             <label class="label" for="fecha_pago">Fecha de Pago</label>
             <input type="hidden" name="respaldo_fecha" value="{{ propietario.fecha_pago }}">
           </div>
@@ -200,7 +200,7 @@
               </select>
             </div>
             <div class="container">
-              <input type="date" name="fechaPago" value="{{ inmueble.fechaPago|date:'Y-m-d'}}" readonly class="input">
+              <input type="datetime" name="fechaPago" value="{{ inmueble.fechaPago|date:'d/m/Y'}}" readonly class="input">
               <label class="label" for="fechaPago">Fecha de Pago</label>
             </div>
           </div>
@@ -365,22 +365,22 @@
         <br><br>
         <div class="campos-four">
           <div class="container">
-            <input type="datetime" name="fecha_inicio" value="{{ arrendatario.fecha_inicio_cobro|date:"d/m/Y" }}" readonly class="input">
+            <input type="datetime" name="fecha_inicio" value="{{ arrendatario.fecha_inicio_cobro|date:'d/m/Y' }}" readonly class="input">
             <label class="label" for="fecha_inicio">Fecha de Pago</label>
             <input type="hidden" name="fecha_inicioRes" value="{{ arrendatario.fecha_inicio_cobro }}">
           </div>
           <div class="container">
-            <input type="datetime" name="fecha_fin" value="{{ arrendatario.fecha_fin_cobro|date:"d/m/Y" }}" readonly class="input">
+            <input type="datetime" name="fecha_fin" value="{{ arrendatario.fecha_fin_cobro|date:'d/m/Y' }}" readonly class="input">
             <label class="label" for="fecha_fin">Límite de Pago</label>
             <input type="hidden" name="fecha_finRes" value="{{ arrendatario.fecha_fin_cobro }}">
           </div>
           <div class="container">
-            <input type="datetime" name="inicio_contrato" value="{{ arrendatario.inicio_contrato|date:"d/m/Y" }}" readonly class="input">
+            <input type="datetime" name="inicio_contrato" value="{{ arrendatario.inicio_contrato|date:'d/m/Y' }}" readonly class="input">
             <label class="label" for="inicio_contrato">Inicio del contrato</label>
             <input type="hidden" name="inicio_contratoRes" value="{{ arrendatario.inicio_contrato }}">
           </div>
           <div class="container">
-            <input type="datetime" name="fin_contrato" value="{{ arrendatario.fin_contrato|date:"d/m/Y" }}" readonly class="input">
+            <input type="datetime" name="fin_contrato" value="{{ arrendatario.fin_contrato|date:'d/m/Y' }}" readonly class="input">
             <label class="label" for="fin_contrato">Fin del contrato</label>
             <input type="hidden" name="fin_contratoRes" value="{{ arrendatario.fin_contrato }}">
           </div>

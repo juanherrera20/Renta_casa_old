@@ -18,8 +18,8 @@
         </div>
         <br><br>
         <div class="container">
-            <input type="datetime" name="inicioRes2" id="inicioRes2" class="input" value="{{ objetoTarea.fecha_inicio }}" readonly>
-            <input type="hidden" name="inicioRes" id="inicioRes" value="{{ objetoTarea.fecha_inicio }}">
+            <input type="datetime" name="inicioRes2" id="inicioRes2" class="input" value="{{ objetoTarea.fecha_inicio|date:'Y-m-d' }}" readonly>
+            <input type="hidden" name="inicioRes" id="inicioRes" value="{{ objetoTarea.fecha_inicio|date:'Y-m-d' }}">
             <label class="label-fecha-inicio">Fecha de inicio actual:</label>
         </div><br><br>
         <div class="container">
@@ -28,8 +28,8 @@
         </div>
         <br><br>
         <div class="container">
-            <input type="datetime" name="finRes2" id="finRes2" class="input" value="{{ objetoTarea.fecha_fin }}" readonly>
-            <input type="hidden" name="finRes" id="finRes" value="{{ objetoTarea.fecha_fin }}">
+            <input type="datetime" name="finRes2" id="finRes2" class="input" value="{{ objetoTarea.fecha_fin|date:'Y-m-d' }}" readonly>
+            <input type="hidden" name="finRes" id="finRes" value="{{ objetoTarea.fecha_fin|date:'Y-m-d' }}">
             <label class="label-fecha-inicio">Fecha de fin actual:</label>
         </div><br><br>
         <div class="container">

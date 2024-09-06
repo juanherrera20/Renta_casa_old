@@ -226,4 +226,12 @@ class Docdescuentos(models.Model):
     documento = models.CharField(max_length = 600)  
     class Meta:
         db_table = 'Docdescuentos'
+        
+class Consecutivo(models.Model):
+    id = models.AutoField(primary_key=True, unique=True)
+    factura_arr = models.IntegerField(default=1)
+    factura_pro = models.IntegerField(default=1)
+    
+    class Meta:
+        db_table = 'Consecutivo'
 
