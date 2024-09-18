@@ -11,7 +11,7 @@
 <body>
     <form action="{% url 'confirmarPago' id=propietario.id %}" method="post" id="ModalPago" enctype="multipart/form-data">
         {% csrf_token %}
-        {% for inmueble, valor_pagar in inmuebles %}
+        {% for inmueble, valor_pagar, DocDescuentos in inmuebles %}
             <div class="form-check">
                 <div class="checkbox-container checkbox-container-aux">
                     <div class="checkbox-container2">
@@ -26,33 +26,31 @@
                     </div>
                 </div>
                 <input type="hidden" id="totalPagar" name="totalPagar_{{ inmueble.id }}" value="{{ valor_pagar }}">
-                <!-- Sección de descuento por inmueble -->
+                <!-- Sección de descuentos por inmueble -->
                 <div class="descuentoSection" style="display: none;" data-inmueble-id="{{ inmueble.id }}">
-                    <div class="container container-descuento">
-                        <input type="number" id="descuento_{{ inmueble.id }}" name="descuento_{{ inmueble.id }}" disabled class="input descuento">
-                        <label class="label" for="descuento_{{ inmueble.id }}"><p class="label-p">*</p>Descuento</label>
+                    <div class="descuentos-existentes">
+                        {% for descuento in DocDescuentos %}
+                            <div class="descuento-item">
+                                <p class="id-descuento">{{ descuento.id }}</p>
+                                <p class="descripcion">{{ descuento.descrip }}</p>
+                                <p>Fecha: {{ descuento.fecha }}</p>
+                                <p class="valor-descuento">Valor: ${{ descuento.valor }}</p>
+                            </div>
+                        {% empty %}
+                            <p>No hay descuentos registrados.</p>
+                        {% endfor %}
                     </div>
-                    <br><br>
-                    <div class="container">
-                        <input type="text" id="descripcionDescuento_{{ inmueble.id }}" name="descripcionDescuento_{{ inmueble.id }}" disabled class="input descripcionDescuento">
-                        <label class="label" for="descripcionDescuento_{{ inmueble.id }}"><p class="label-p">*</p>Descripción</label>
-                    </div>
-                    <div class="grid w-full max-w-xs items-center gap-1.5 documents">
-                        <label for="docRespaldo_{{ inmueble.id }}" class="pre-label-documentos">Documento de respaldo:</label>
-                        <input id="docRespaldo_{{ inmueble.id }}" type="file" name="docRespaldo_{{ inmueble.id }}" accept=".txt,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.pdf" multiple disabled class="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm text-gray-400 file:border-0 file:bg-transparent file:text-gray-600 file:text-sm file:font-medium">
-                      </div>
-    
-                    <button type="button" class="btnCancelar" data-inmueble-id="{{ inmueble.id }}" style="display:none;">Cancelar</button>
-                    <button type="button" class="btnConfirmar" data-inmueble-id="{{ inmueble.id }}" style="display:none;">Confirmar</button>
+                    <!-- Botones para aplicar o cancelar los descuentos -->
+                    <button type="button" class="btnCancelar" data-inmueble-id="{{ inmueble.id }}" style="display:none;">No aplicar</button>
+                    <button type="button" class="btnConfirmar" data-inmueble-id="{{ inmueble.id }}" style="display:none;">Aplicar</button>
                 </div>
 
                 <p id="pConfirmacion_{{ inmueble.id }}" class="confirma"  name="pConfirmacion_{{ inmueble.id }}" style="display:none;">Descuento aplicado con éxito</p>
-                <button type="button" class="btnDescuento" data-inmueble-id="{{ inmueble.id }}">+ Añadir Descuento</button>
             </div>
         {% endfor %}
           
         <div>
-            <p ><strong>Total a Pagar:</strong> <span id="totalPago">0</span></p>
+            <p><strong>Total a Pagar:</strong> <span id="totalPago">0</span></p>
         </div>
     </form>
 </body>

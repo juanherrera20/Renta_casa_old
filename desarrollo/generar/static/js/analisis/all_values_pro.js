@@ -1,6 +1,7 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     var propietarioButtons = document.querySelectorAll('[data-id]');
-    var appliedDiscounts = {};
+    var appliedDiscounts = {}; // Almacena los descuentos aplicados por inmueble
+    var inmueblesSeleccionados = {}; // Almacena los valores por defecto de cada inmueble seleccionado
 
     function openModalWithContent(modal_pago) {
         fetch('/Analisis/All/ValuesPro/ConfirmarPago/' + modal_pago)
@@ -9,8 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelector('#exampleModal .modal-body').innerHTML = data;
                 var modal = new bootstrap.Modal(document.getElementById('exampleModal'));
                 modal.show();
-                setupCheckboxListeners();  // Configura los listeners después de mostrar el modal
-                setupDescuentoSections();  // Configura las secciones de descuento al abrir el modal
+                setupCheckboxListeners();
+                setupDescuentoSections();
             })
             .catch(error => {
                 console.error('Error al cargar el contenido modal:', error);
@@ -18,205 +19,115 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function calculateTotalWithDiscounts() {
-        var checkboxes = document.querySelectorAll('.checkInmueble:checked');
         var total = 0;
-        checkboxes.forEach(function(checkbox) {
-            var inmuebleId = checkbox.value;
-            var canon = parseFloat(checkbox.getAttribute('data-canon'));
-            var descuento = appliedDiscounts[inmuebleId] || 0; // Obtener el descuento aplicado o 0 si no hay
-            total += (canon - descuento); // Restar el descuento del canon
-        });
+        for (var inmuebleId in inmueblesSeleccionados) {
+            var canon = inmueblesSeleccionados[inmuebleId];
+            var descuento = appliedDiscounts[inmuebleId] || 0;
+            total += (canon - descuento);
+        }
         return total.toFixed(2);
     }
 
     function updateTotal() {
         var total = calculateTotalWithDiscounts();
         document.getElementById('totalPago').textContent = total;
-        console.log('Total actualizado:', total);  // Mensaje de consola para depuración
+        console.log('Total actualizado:', total);
     }
 
     function setupCheckboxListeners() {
         var checkboxes = document.querySelectorAll('.checkInmueble');
-        checkboxes.forEach(function(checkbox) {
-            checkbox.addEventListener('change', function() {
-                updateTotal();
-                toggleDescuentoButton(checkbox);
-                if (!checkbox.checked) {
-                    // Si se deselecciona, restablecer el descuento
-                    var inmuebleId = checkbox.value;
-                    appliedDiscounts[inmuebleId] = 0;
-                    ocultarMensaje(inmuebleId);
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                var inmuebleId = checkbox.value;
+                var canon = parseFloat(checkbox.getAttribute('data-canon'));
+                var descuentoSection = document.querySelector('.descuentoSection[data-inmueble-id="' + inmuebleId + '"]');
+
+                if (checkbox.checked) {
+                    inmueblesSeleccionados[inmuebleId] = canon;
+                    if (descuentoSection) {
+                        descuentoSection.style.display = 'block';
+                        descuentoSection.querySelector('.btnConfirmar').style.display = 'inline-block';
+                        descuentoSection.querySelector('.btnCancelar').style.display = 'inline-block';
+                    }
+                } else {
+                    delete inmueblesSeleccionados[inmuebleId];
+                    resetDescuentos(inmuebleId);
                 }
+                updateTotal();
             });
         });
-    }
-
-    function toggleDescuentoButton(checkbox) {
-        var inmuebleId = checkbox.value;
-        var btnDescuento = document.querySelector('.btnDescuento[data-inmueble-id="' + inmuebleId + '"]');
-        if (checkbox.checked) {
-            btnDescuento.style.display = 'inline-block';
-        } else {
-            btnDescuento.style.display = 'none';
-            var descuentoSection = document.querySelector('.descuentoSection[data-inmueble-id="' + inmuebleId + '"]');
-            if (descuentoSection) {
-                descuentoSection.style.display = 'none';
-                resetDescuentoFields(inmuebleId);
-            }
-        }
     }
 
     function setupDescuentoSections() {
-        var btnDescuento = document.querySelectorAll('.btnDescuento');
-        btnDescuento.forEach(function(btn) {
-            btn.style.display = 'none';
-        });
-
-        var btnCancelar = document.querySelectorAll('.btnCancelar');
         var btnConfirmar = document.querySelectorAll('.btnConfirmar');
+        var btnCancelar = document.querySelectorAll('.btnCancelar');
 
-        btnDescuento.forEach(function(btn) {
-            btn.addEventListener('click', function() {
+        btnConfirmar.forEach(function (btn) {
+            btn.addEventListener('click', function () {
                 var inmuebleId = this.getAttribute('data-inmueble-id');
-                var descuentoSection = document.querySelector('.descuentoSection[data-inmueble-id="' + inmuebleId + '"]');
-                if (descuentoSection) {
-                    descuentoSection.style.display = 'block';
-                    enableDescuentoFields(inmuebleId);
-                    this.style.display = 'none';
-                    var btnCancelar = document.querySelector('.btnCancelar[data-inmueble-id="' + inmuebleId + '"]');
-                    if (btnCancelar) {
-                        btnCancelar.style.display = 'inline-block';
-                    } else {
-                        console.error('No se encontró el botón de cancelar para el inmueble con ID:', inmuebleId);
-                    }
-                    var btnConfirmar = document.querySelector('.btnConfirmar[data-inmueble-id="' + inmuebleId + '"]');
-                    if (btnConfirmar) {
-                        btnConfirmar.style.display = 'inline-block';
-                    } else {
-                        console.error('No se encontró el botón de confirmar descuento para el inmueble con ID:', inmuebleId);
-                    }
-                } else {
-                    console.error('No se encontró la sección de descuento para el inmueble con ID:', inmuebleId);
-                }
+                aplicarDescuentos(inmuebleId);
             });
         });
 
-        btnCancelar.forEach(function(btn) {
-            btn.addEventListener('click', function() {
+        btnCancelar.forEach(function (btn) {
+            btn.addEventListener('click', function () {
                 var inmuebleId = this.getAttribute('data-inmueble-id');
-                var descuentoSection = document.querySelector('.descuentoSection[data-inmueble-id="' + inmuebleId + '"]');
-                if (descuentoSection) {
-                    descuentoSection.style.display = 'none';
-                    disableDescuentoFields(inmuebleId);
-                    var btnDescuento = document.querySelector('.btnDescuento[data-inmueble-id="' + inmuebleId + '"]');
-                    if (btnDescuento) {
-                        btnDescuento.style.display = 'inline-block';
-                    } else {
-                        console.error('No se encontró el botón de añadir descuento para el inmueble con ID:', inmuebleId);
-                    }
-                    var btnConfirmar = document.querySelector('.btnConfirmar[data-inmueble-id="' + inmuebleId + '"]');
-                    if (btnConfirmar) {
-                        btnConfirmar.style.display = 'none';
-                    } else {
-                        console.error('No se encontró el botón de confirmar descuento para cancelar para el inmueble con ID:', inmuebleId);
-                    }
-                } else {
-                    console.error('No se encontró la sección de descuento para cancelar para el inmueble con ID:', inmuebleId);
-                }
-            });
-        });
-
-        btnConfirmar.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                var inmuebleId = this.getAttribute('data-inmueble-id');
-                var descuentoInput = document.getElementById('descuento_' + inmuebleId);
-                if (descuentoInput) {
-                    var descuentoValue = parseFloat(descuentoInput.value);
-                    if (isNaN(descuentoValue) || descuentoValue <= 0) {
-                        Swal.fire({
-                            title: "<strong>El valor de descuento debe ser mayor a 0 </strong>",
-                            icon: "info",
-                            confirmButtonText: `
-                              <i class="fa fa-thumbs-up"></i> De acuerdo!
-                            `,
-                        });
-                        return;
-                    }
-                    applyDiscount(inmuebleId, descuentoValue);
-                } else {
-                    console.error('No se encontró el input de descuento para el inmueble con ID:', inmuebleId);
-                }
+                resetDescuentos(inmuebleId);
+                updateTotal();
             });
         });
     }
 
-    function enableDescuentoFields(inmuebleId) {
-        // Habilitar campos de descuento
-        document.getElementById('descuento_' + inmuebleId).removeAttribute('disabled');
-        document.getElementById('descripcionDescuento_' + inmuebleId).removeAttribute('disabled');
-        document.getElementById('docRespaldo_' + inmuebleId).removeAttribute('disabled');
-    }
+    function aplicarDescuentos(inmuebleId) {
+        var descuentoItems = document.querySelectorAll('.descuentoSection[data-inmueble-id="' + inmuebleId + '"] .descuento-item');
+        var totalDescuento = 0;
+        var descuentoIds = [];
 
-    function disableDescuentoFields(inmuebleId) {
-        // Deshabilitar campos de descuento
-        document.getElementById('descuento_' + inmuebleId).setAttribute('disabled', 'true');
-        document.getElementById('descripcionDescuento_' + inmuebleId).setAttribute('disabled', 'true');
-        document.getElementById('docRespaldo_' + inmuebleId).setAttribute('disabled', 'true');
-    }
+        descuentoItems.forEach(function (item) {
+            var valorDescuento = parseFloat(item.querySelector('.valor-descuento').textContent.replace('Valor: $', '').trim());
+            var idDescuento = item.querySelector('.id-descuento').textContent.trim();
+            if (!isNaN(valorDescuento)) {
+                totalDescuento += valorDescuento;
+                descuentoIds.push(idDescuento);
+            }
+        });
 
-    function resetDescuentoFields(inmuebleId) {
-        // Limpiar campos de descuento
-        document.getElementById('descuento_' + inmuebleId).value = '';
-        document.getElementById('descripcionDescuento_' + inmuebleId).value = '';
-        document.getElementById('docRespaldo_' + inmuebleId).value = '';
-        disableDescuentoFields(inmuebleId);
-    }
-
-    function applyDiscount(inmuebleId, descuento) {
-        appliedDiscounts[inmuebleId] = descuento;
+        appliedDiscounts[inmuebleId] = totalDescuento;
         updateTotal();
 
-        // Ocultar botón de añadir descuento
-        document.querySelector('.btnDescuento[data-inmueble-id="' + inmuebleId + '"]').style.display = 'none';
-        // Mostrar mensaje de éxito
         document.getElementById('pConfirmacion_' + inmuebleId).style.display = 'block';
-        // Ocultar la sección de descuento
         document.querySelector('.descuentoSection[data-inmueble-id="' + inmuebleId + '"]').style.display = 'none';
+        
+        var idsDescuentosInput = document.createElement('input');
+        idsDescuentosInput.type = 'hidden';
+        idsDescuentosInput.name = 'idsDescuentos_' + inmuebleId;
+        idsDescuentosInput.value = descuentoIds.join(',');
+        document.getElementById('ModalPago').appendChild(idsDescuentosInput);
     }
 
-    function ocultarMensaje(inmuebleId) {
-        // Ocultar mensaje de éxito
+    function resetDescuentos(inmuebleId) {
+        appliedDiscounts[inmuebleId] = 0;
         document.getElementById('pConfirmacion_' + inmuebleId).style.display = 'none';
+        document.querySelector('.descuentoSection[data-inmueble-id="' + inmuebleId + '"]').style.display = 'none';
+        updateTotal();
     }
 
-    // Modal
-    document.querySelectorAll('.modal').forEach(function(modal) {
-        modal.addEventListener('hidden.bs.modal', function() {
-            document.body.style.overflow = 'auto';
-            document.querySelector('.modal-backdrop').remove();
-        });
-    });
-
-    propietarioButtons.forEach(function(button) {
-        button.addEventListener('click', function() {
+    propietarioButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
             var propietarioId = this.getAttribute('data-id');
             openModalWithContent(propietarioId);
         });
     });
 
-    // Agrega el evento click al botón "Pagar" para cerrar el modal y enviar el formulario
-    document.getElementById('exampleModal').addEventListener('click', function(event) {
+    document.getElementById('exampleModal').addEventListener('click', function (event) {
         if (event.target.classList.contains('actualizarM') && event.target.textContent === 'Pagar') {
-            event.preventDefault(); // Evita la acción predeterminada si es necesario
-
-            // Cierra el modal
+            event.preventDefault();
             var modal = bootstrap.Modal.getInstance(document.getElementById('exampleModal'));
             modal.hide();
-
-            // Enviar los datos al servidor
             var form = document.getElementById('ModalPago');
             var checkboxes = document.querySelectorAll('.checkInmueble:checked');
-            checkboxes.forEach(function(checkbox) {
+
+            checkboxes.forEach(function (checkbox) {
                 var inmuebleId = checkbox.value;
                 var hiddenInput = document.createElement('input');
                 hiddenInput.type = 'hidden';
@@ -227,11 +138,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 var descuento = appliedDiscounts[inmuebleId] || 0;
                 var descuentoInput = document.createElement('input');
                 descuentoInput.type = 'hidden';
-                descuentoInput.name = 'descuentos[]';
+                descuentoInput.name = 'descuentosAplicados_' + inmuebleId;
                 descuentoInput.value = descuento;
                 form.appendChild(descuentoInput);
+
+                var totalPagoInput = document.createElement('input');
+                totalPagoInput.type = 'hidden';
+                totalPagoInput.name = 'totalPagar_' + inmuebleId;
+                totalPagoInput.value = inmueblesSeleccionados[inmuebleId];
+                form.appendChild(totalPagoInput);
             });
+
             form.submit();
         }
     });
 });
+
+

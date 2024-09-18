@@ -19,8 +19,30 @@
 {% block contenido %}
   <div class="contenido">
     <button class="btn btn-primary tarea-btn"  data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap" data-id="{{propietario.id}}"><img width="20" height="20" src="https://img.icons8.com/ios-filled/20/000000/refund.png" alt="refund"/> Pagar</button><br><br>
+    <div class="contenedor-agregar">
+      <p>Descuentos existentes vinculados a este Inmueble</p>
+      {% for inmueble, tipo, habilitada, porcentaje, servicios in inmueble %}
+      <a href="{% url 'agregar_descuento' id=inmueble.id %}" class="btn btn-primary">Agregar Descuento</a>
+      {% endfor %}
+    </div>
+    <br>
+    <div class="descuentos-existentes">
+      {% for descuento in Docdescuentos %}
+      <div class="descuento-item">
+        <p class="id-descuento">ID-{{descuento.id}}</p>
+        <p class="descripcion">{{ descuento.descrip }}</p>  
+        <p>Fecha: {{ descuento.fecha }}</p>
+        <p class="valor-descuento">Valor: ${{ descuento.valor }}</p>
+      </div>
+      {% empty %}
+        <p>No hay descuentos registrados.</p>
+      {% endfor %}
+    </div>
+    <br>
+  
     <form action="{% url 'redirecPro' %}" id="miFormulario" method="post" enctype="multipart/form-data">
       {% csrf_token %}
+      
       <input type="hidden" name="idUser" id="idUser" value="{{ usuario.id }}">
       <input type="hidden" name="idP" id="idP" value="{{ propietario.id }}">
       <div class="firts-block"><!-- Inicio de individuo propietario -->
@@ -215,7 +237,7 @@
                     <p>Agua</p>
                   </label>
                   <div class="container">
-                    <input  type="number" name="agua" class="input input-agua" placeholder="{{ matricula.0 }}" value="{{ matricula.0 }}" readonly>
+                    <input  type="text" name="agua" class="input input-agua" placeholder="{{ matricula.0 }}" value="{{ matricula.0 }}" readonly>
                     <label class="label label-aux">N° de matricula</label>
                   </div><br><br><br>
                 </div>
@@ -225,7 +247,7 @@
                     <p>Electricidad</p>
                   </label>
                   <div class="container">
-                    <input type="number" name="electric" class="input input-electric" placeholder="{{ matricula.1 }}" value="{{ matricula.1 }}" readonly>
+                    <input type="text" name="electric" class="input input-electric" placeholder="{{ matricula.1 }}" value="{{ matricula.1 }}" readonly>
                     <label class="label label-aux">N° de matricula</label>
                   </div>
                 </div><br>
@@ -235,7 +257,7 @@
                     <p>Gas</p>
                   </label>
                   <div class="container">
-                    <input type="number" name="gas" class="input input-gas" placeholder="{{ matricula.2 }}" value="{{ matricula.2 }}" readonly>
+                    <input type="text" name="gas" class="input input-gas" placeholder="{{ matricula.2 }}" value="{{ matricula.2 }}" readonly>
                     <label class="label label-aux">N° de matricula</label>
                   </div>
                 </div><br>
@@ -245,7 +267,7 @@
                     <p>Internet</p>
                   </label>
                   <div class="container">
-                    <input type="number" name="internet" class="input input-internet" placeholder="{{ matricula.3 }}" value="{{ matricula.3 }}" readonly>
+                    <input type="text" name="internet" class="input input-internet" placeholder="{{ matricula.3 }}" value="{{ matricula.3 }}" readonly>
                     <label class="label label-aux">N° de matricula</label>
                   </div>
                 </div>

@@ -12,6 +12,7 @@ from io import BytesIO
 from django.http import FileResponse
 from django.template.loader import get_template
 import os
+from weasyprint import HTML, CSS
 
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -74,6 +75,13 @@ diccionarioPorcentajeDescuento = { # Relacionado al porcentaje de descuento por 
     '5' : 9,
     '6' : 8,
     '7' : 12.2,
+    '8' : 14,
+    '9' : 15,
+    '10' : 16,
+    '11' : 17,
+    '12' : 18,
+    '13' : 19,
+    '14' : 20,
 }
 
 diccionarioBancos = {
@@ -120,7 +128,7 @@ def autenticado_required(view_func):
 
 #No uso variable datetime.datetime si no una datetime.date que solo da el día y no las horas y segundos, esto permite poder hacer comparaciones con las fechas de la base de datos
 def  actualizar_estados_propietarios():
-    global fecha
+    fecha = date.today()
     ObjetoPago = inmueble.objects.filter(arrendatario_id__isnull=False)
     fechaObjeto1 = fecha  #Fecha actual
     for objeto in ObjetoPago:
@@ -129,7 +137,6 @@ def  actualizar_estados_propietarios():
         EstadoPago = objeto.estadoPago
         fecha_propietario = propietario.fecha_pago
         fecha_inmueble = objeto.fechaPago
-
         fechaResta = (fecha_inmueble - fechaObjeto1).days
         
         if fecha_inmueble >= fechaObjeto1: 
@@ -143,7 +150,7 @@ def  actualizar_estados_propietarios():
     return None 
 
 def  actualizar_estados_arrendatarios():
-    global fecha
+    fecha = date.today()
     ObjetoPago = inmueble.objects.filter(arrendatario_id__isnull=False)
     fechaObjeto1 = fecha  #Fecha actual
     for objeto in ObjetoPago:
@@ -166,7 +173,7 @@ def  actualizar_estados_arrendatarios():
 
 #Calcular por día el atraso de un pago para incrementar el valor (Faltan cosas)
 def calcular_monto_atraso(objeto):
-    global fecha
+    fecha = date.today()
     porcentaje_penalizacion = 0.05  #Este es el porcentaje definido para el mora (Puede cambiar)
     
     #Saco los datos necesarios
@@ -276,7 +283,11 @@ def render_pdf( template_src, context_dict={}):
 #-----------------------------------------------Función para renderizar el pdf de Arrendatario----------------------------------------------------------------------
 def render_pdf_arr( template_src, name, context_dict={}):
     template = get_template(template_src)
+    
+    
     html = template.render(context_dict)
+    
+    
     result = BytesIO()
     pdf = pisa.pisaDocument(BytesIO(html.encode("utf-8")), dest=result)
     if not pdf.err:

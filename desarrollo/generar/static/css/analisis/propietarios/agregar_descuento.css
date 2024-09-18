@@ -1,0 +1,156 @@
+/* Estilo general para el contenedor principal */
+.content-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra horizontalmente */
+    min-height: 80vh; /* Ajusta la altura mínima según tus necesidades */
+    padding: 20px; /* Espaciado alrededor del contenido */
+    box-sizing: border-box; /* Incluye padding en el tamaño total del contenedor */
+}
+
+/* Título */
+.title {
+    text-align: center; /* Centra el título */
+    margin-bottom: 20px; /* Espaciado debajo del título */
+    font-size: 30px;
+    font-weight: bold;
+}
+
+/* Contenedor de descuentos existentes */
+.descuentos-existentes {
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 20px;
+}
+
+.descuento-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr 3fr 1fr; /* Ajusta las proporciones de las columnas */
+    border: 1px solid #ddd;
+    padding: 5px;
+    gap: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    max-width: 1100px;
+    background-color: #f9f9f9; /* Fondo gris claro */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+    word-wrap: break-word; /* Permite que el texto largo se ajuste */
+}
+
+.descuento-item p {
+    margin: 5px 0;
+    overflow-wrap: break-word; /* Permite que el texto largo se ajuste */
+}
+
+.descuento-item a {
+    color: #1a73e8; /* Color del enlace */
+    text-decoration: none;
+}
+
+/* Ajustar el contenedor de la descripción */
+.descripcion{
+    overflow: hidden; /* Evita el desbordamiento */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos si el texto es muy largo */
+    white-space: normal; /* Permite el ajuste de línea dentro de la celda */
+    word-wrap: break-word; /* Ajusta el texto largo a la celda */
+}
+
+.descuento-item a:hover {
+    text-decoration: underline;
+}
+
+/* Contenedor y estilo del checkbox y el icono de eliminar */
+.delete-container {
+    display: flex;
+    align-items: center;
+}
+
+.delete-container input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.delete-container .material-symbols-outlined {
+    color: #ff0000; /* Color rojo */
+    cursor: pointer;
+    font-size: 20px; /* Tamaño del icono */
+    transition: color 0.3s;
+}
+
+.delete-container .material-symbols-outlined:hover {
+    color: darkred; /* Color rojo oscuro al pasar el ratón */
+}
+
+/* Checkbox de eliminar marcado */
+input[name="eliminar"]:checked + .material-symbols-outlined {
+    color: darkred; /* Rojo oscuro cuando está marcado */
+}
+
+/* Botones */
+button {
+    margin: 10px; /* Espaciado alrededor de los botones */
+    padding: 10px 20px; /* Espaciado interno de los botones */
+    background-color: #507dc6; /* Color de fondo */
+    color: white; /* Color del texto */
+    border: none; /* Sin borde */
+    border-radius: 5px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar por encima */
+}
+
+button:hover {
+    background-color: #6ba5de; /* Color de fondo al pasar el mouse */
+}
+
+/* Formularios dinámicos */
+.form-container {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    background-color: #f9f9f9; /* Fondo gris claro */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+}
+
+.form-container h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 20px;
+}
+
+.form-container input[type="number"],
+.form-container input[type="text"],
+.form-container input[type="file"] {
+    width: calc(100% - 22px); /* Ajusta el ancho considerando el padding */
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.form-container input[type="file"] {
+    padding: 0;
+}
+
+.form-container button {
+    margin-right: 10px; /* Espaciado entre botones */
+}
+
+/* Formularios aceptados */
+.form-aceptado {
+    background-color: #e6ffe6; /* Fondo verde claro */
+    border-color: #4caf50; /* Borde verde */
+    opacity: 0.8; /* Ligero cambio de opacidad */
+}
+
+/* Indicador de descuento aceptado */
+.aceptado-indicator {
+    font-weight: bold;
+    color: #4caf50; /* Texto verde */
+    display: block;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+/* Botón para guardar todos los descuentos */
+.save-discounts {
+    margin-top: 20px;
+}

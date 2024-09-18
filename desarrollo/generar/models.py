@@ -220,6 +220,7 @@ class DocsPersonas(models.Model):
     
 class Docdescuentos(models.Model):
     id = models.AutoField(primary_key=True, unique=True)
+    fecha = models.DateField(max_length=500)
     inmueble = models.ForeignKey(inmueble, related_name='Docdescuento', on_delete=models.CASCADE)
     valor = models.IntegerField()
     descrip = models.CharField(max_length = 400) 

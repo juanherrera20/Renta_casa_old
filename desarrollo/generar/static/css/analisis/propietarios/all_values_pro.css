@@ -511,9 +511,7 @@ input[type="file"]:hover {
     background-color: #db1212;
     border: 2px dashed #db1212;
 }
-.container-descuento{
-    margin-top: 20px;
-}
+
 .input-dias {
     width: 120px;
 }
@@ -530,4 +528,63 @@ input[type="file"]:hover {
 }
 .confirma{
     color: #1e860c;
+}
+
+.contenedor-agregar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid grey;
+    width: 1200px;
+    font-weight: bold;
+}
+
+.contenedor-agregar p{
+    margin: 0;
+    font-size: 20px;
+}
+
+.descuentos-existentes {
+    border: 1px solid gray;
+    padding: 10px;
+    border-radius: 20px;
+    width: 1200px;
+}
+
+.descuento-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr 3fr 1fr; /* Ajusta las proporciones de las columnas */
+    border: 1px solid #ddd;
+    padding: 5px;
+    gap: 10px;
+    max-width: 100%;
+    word-wrap: break-word; /* Permite que el texto largo se ajuste */
+}
+
+.descuento-item p {
+    font-size: 15px;
+    margin: 5px 0;
+    overflow-wrap: break-word; /* Permite que el texto largo se ajuste */
+}
+
+/* Ajustar el contenedor de la descripción */
+.descripcion{
+    overflow: hidden; /* Evita el desbordamiento */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos si el texto es muy largo */
+    white-space: normal; /* Permite el ajuste de línea dentro de la celda */
+    word-wrap: break-word; /* Ajusta el texto largo a la celda */
+    font-weight: bold;
+}
+
+.id-descuento {
+    font-weight: bold;
+    color: #1677ff;
+}
+
+.valor-descuento {
+    font-weight: bold;
+    color: green;
 }

@@ -1,0 +1,157 @@
+/* Estilos Generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 20px;
+    color: #333;
+}
+
+p {
+    margin: 0.5em 0;
+    font-size: 14px;
+}
+
+/* Estilos del Modal */
+#ModalPago {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 90%; /* Ancho máximo del modal ajustado */
+    margin: auto; /* Centra el modal en la pantalla */
+}
+
+/* Estilo para aumentar el tamaño del modal */
+.modal-contenedor {
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Mantén los estilos generales */
+.form-check {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+}
+
+.checkbox-container2 {
+    display: flex;
+    flex-direction: column;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.ui-checkbox {
+    margin-right: 10px;
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+/* Estilos de Descuentos */
+.descuentoSection {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #f0f8ff;
+    border: 1px solid #a8d0e6;
+    border-radius: 4px;
+}
+
+.descuentos-existentes {
+    border: 1px solid gray;
+    padding: 10px;
+    border-radius: 20px;
+    width: 100%; /* Ajusta el ancho al 100% del contenedor padre */
+    max-width: 800px; /* Mantiene un máximo de 800px */
+    transform: scale(0.9); /* Reduce la escala de los descuentos */
+    overflow: hidden; /* Evita el desbordamiento del contenedor */
+}
+
+.descuento-item {
+    display: grid;
+    grid-template-columns: 1fr 2fr 3fr 1fr; /* Ajusta las proporciones de las columnas */
+    border: 1px solid #ddd;
+    padding: 5px;
+    gap: 10px;
+    max-width: 100%;
+    word-wrap: break-word; /* Permite que el texto largo se ajuste */
+    transform: scale(0.9); /* Reduce la escala de los elementos de descuento */
+}
+
+.descuento-item p {
+    font-size: 13px; /* Reduce el tamaño de la fuente */
+    margin: 5px 0;
+    overflow-wrap: break-word; /* Permite que el texto largo se ajuste */
+}
+
+/* Ajustar el contenedor de la descripción */
+.descripcion {
+    overflow: hidden; /* Evita el desbordamiento */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos si el texto es muy largo */
+    white-space: normal; /* Permite el ajuste de línea dentro de la celda */
+    word-wrap: break-word; /* Ajusta el texto largo a la celda */
+    font-weight: bold;
+}
+
+.id-descuento {
+    font-weight: bold;
+    color: #1677ff;
+}
+
+.valor-descuento {
+    font-weight: bold;
+    color: green;
+}
+
+/* Estilos de botones */
+.btnCancelar, .btnConfirmar {
+    margin-top: 10px;
+    padding: 6px 12px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btnCancelar {
+    background-color: #e74c3c;
+    color: #ffffff;
+}
+
+.btnConfirmar {
+    background-color: #2ecc71;
+    color: #ffffff;
+}
+
+/* Estilos de Confirmación */
+.confirma {
+    margin-top: 10px;
+    padding: 8px;
+    background-color: #2ecc71;
+    color: #ffffff;
+    font-size: 14px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Estilos del Total a Pagar */
+#totalPago {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
