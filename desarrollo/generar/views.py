@@ -6,6 +6,7 @@ from django.templatetags.static import static
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, HttpResponse
+from django.conf import settings
 import uuid
 from django.db.models import Q, Max
 from django.shortcuts import render, redirect, get_object_or_404
@@ -16,6 +17,10 @@ from .functions import diccionarioTareaEstado, diccionarioTareaEtiqueta, diccion
 import json
 import zipfile
 from django.urls import reverse
+from weasyprint import HTML, CSS
+from django.template.loader import get_template
+import os
+from num2words import num2words
 
 
 #Librerias Weasyprint para generar pdfs
@@ -1067,8 +1072,8 @@ def confirmar_pago (request, id):
                 print("Entro en existen descuentos aplicados")
                 objs_DocDescuentos = obj_inmueble.Docdescuento.all()
                 for obj_DocDescuento in objs_DocDescuentos:
-                    descrip += "\n" + obj_DocDescuento.descrip
-                    #obj_DocDescuento.delete() #Elimino el descuento
+                    descrip += obj_DocDescuento.descrip + "\n"
+                    obj_DocDescuento.delete() #Elimino el descuento
                     print(descrip)
             else:
                 valor = 0
@@ -1083,24 +1088,24 @@ def confirmar_pago (request, id):
             descripcion.append(descrip)
             ids_inmuebles.append(inmueble_id)
             
-            # #Actualizar Fechas y estados por cada inmueble
-            # estado_pago = 1
-            # fechaPago = obj_inmueble.fechaPago
+            #Actualizar Fechas y estados por cada inmueble
+            estado_pago = 1
+            fechaPago = obj_inmueble.fechaPago
             
-            # estadoPago = estado_pago 
-            # nuevaFecha = fechaPago + relativedelta(months = 1)
+            estadoPago = estado_pago 
+            nuevaFecha = fechaPago + relativedelta(months = 1)
             
-            # obj_inmueble.estadoPago = estadoPago
-            # obj_inmueble.fechaPago = nuevaFecha
-            # obj_inmueble.save()
+            obj_inmueble.estadoPago = estadoPago
+            obj_inmueble.fechaPago = nuevaFecha
+            obj_inmueble.save()
             
-            # #Actualizar el propietario si todos los inmuebles ya estan pagos
-            # pagado = jerarquia_estadoPago_propietario(obj_propietario) 
+            #Actualizar el propietario si todos los inmuebles ya estan pagos
+            pagado = jerarquia_estadoPago_propietario(obj_propietario) 
             
-            # if pagado == 1: #Comprobar que todos los estados esten en "Pagado" para aumentar la fecha
-            #     max_fecha_pago = obj_propietario.inmueble.aggregate(Max('fechaPago'))['fechaPago__max']
-            #     obj_propietario.fecha_pago = max_fecha_pago
-            #     obj_propietario.save()                
+            if pagado == 1: #Comprobar que todos los estados esten en "Pagado" para aumentar la fecha
+                max_fecha_pago = obj_propietario.inmueble.aggregate(Max('fechaPago'))['fechaPago__max']
+                obj_propietario.fecha_pago = max_fecha_pago
+                obj_propietario.save()                
             
         propietarios = {
             'id': obj_propietario.id,
@@ -1137,13 +1142,18 @@ def factura(request):
     
     logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))
     logo_datacredito_url = request.build_absolute_uri(static('image/Logo-Datacredito.png'))
+    firma_carlos = request.build_absolute_uri(static('image/firma_carlos.png'))
+    
     pdf_files = []
     for i, data in enumerate(objeto_inmueblef):
         descuento = descuentos[i] if descuentos[i] is not None else 0
         descrip = descripcion[i] if descripcion[i] is not None else "No hay observaciones."
         direccion = data.direccion
-        valor_inicial = int(float(totalPagar[i]))
-        total = valor_inicial - int(descuento)
+        valor_inicial = float(totalPagar[i])
+        total = valor_inicial - float(descuento)
+        
+        # Convertir el valor total a letras
+        valor_total_letras = num2words(total, lang='es', to='currency', currency='COP')
         value ={
             'direccion': direccion,
             'valor_inicial': valor_inicial,
@@ -1156,19 +1166,27 @@ def factura(request):
             'consecutivo':f'{consecutivo.factura_pro:04d}', # '04d' significa que debe tener 4 dígitos con ceros a la izquierda,
             'logo_rentacasa_url': logo_rentacasa_url,
             'logo_datacredito_url': logo_datacredito_url,
+            'firma_carlos': firma_carlos,
+            'valortotal_letras':valor_total_letras,
         }
         
         #Aumento el numero para la proxima factura y actualizo
         consecutivo.factura_pro += 1
         consecutivo.save()
         
-        pdf = render_pdf('factura.html', value)
+        #Generación del PDF con Weasyprint
+        template = get_template('factura.html')
+        html_template = template.render(value)
+        css_url = os.path.join(settings.BASE_DIR, 'generar/static/css/factura.css' )
+        pdf = HTML(string=html_template).write_pdf(stylesheets = [CSS(css_url)])
+        
+        response = HttpResponse(pdf,content_type = 'application/pdf')
         pdf_files.append((f'factura_{i+1}.pdf', pdf))
 
     zip_buffer = BytesIO() #Empaqueta cada pdf para luego descargar solo un .ZIP
     with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
         for filename, pdf in pdf_files:
-            zip_file.writestr(filename, pdf.getvalue())
+            zip_file.writestr(filename, pdf)
     zip_buffer.seek(0)
     nombre_zip = f"{obj_usuario.nombre.upper()}_{obj_usuario.apellido.upper()}.zip"
     
@@ -1240,7 +1258,7 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
     elif btn == '3':
         resultado = individuo_inquilino(request, idArrendatario)
         return HttpResponse(resultado)
-    elif btnPago == '4':
+    elif btnPago == '4' or btnPago == '5':
         #obtengo los valores del html
         meses = int(request.POST.get('meses_acumulados'))
         documento = request.FILES.getlist('docRespaldo', None)
@@ -1284,13 +1302,10 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
 
         #concatenar texto
         if observaciones2:
-            observaciones = observaciones1 + ".\n" + observaciones2
             otro_valor = request.POST.get('otroValor')
         else:
             otro_valor = 0
-            observaciones = observaciones1
-        
-        print(f"Texto final: {observaciones}")
+            observaciones2 = "No aplica otro Valor"
         
         request.session['mesPagado1'] = fechaCobro.strftime("%d/%m/%Y")
         request.session['mesPagado2'] = nuevaFecha.strftime("%d/%m/%Y") #Fecha hasta donde pago, en caso de llevar meses de atraso
@@ -1298,7 +1313,9 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         request.session['valor_total'] = request.POST.get('valor_total')
         request.session['OtroValor']= otro_valor
         request.session['valor_descuento'] = descuento
-        request.session['observaciones'] = observaciones
+        request.session['obs_descuento'] = observaciones1
+        request.session['obs_otrovalor'] = observaciones2
+        request.session['btnpago'] = btnPago
         
         print(f"El monto de mora: {request.POST.get('monto')}")
         print(f"El valor total a pagar: {request.POST.get('valor_total')}")
@@ -1330,6 +1347,7 @@ def factura_Arr(request, idInmueble, idArrendatario):
     
     logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))
     logo_datacredito_url = request.build_absolute_uri(static('image/Logo-Datacredito.png'))
+    firma_carlos = request.build_absolute_uri(static('image/firma_carlos.png'))
 
     otro_valor_str = str(request.session.get('OtroValor', ''))
     monto_str = str(request.session.get('monto', ''))
@@ -1350,8 +1368,18 @@ def factura_Arr(request, idInmueble, idArrendatario):
     monto = float(monto_clean)
     valor_total = float(valor_total_clean)
     valor_descuento = float(valor_descuento_clean)
-    descripcion = request.session.get('observaciones', [])
-    descrip = descripcion if descripcion  is not None else "No hay observaciones."
+    descripcion_descuento = request.session.get('obs_descuento', [])
+    descripcion_otro = request.session.get('obs_otrovalor', [])
+    
+
+    # Convertir el valor total a letras
+    valor_total_letras = num2words(valor_total, lang='es', to='currency', currency='COP')
+    
+    metodo_pago = str(request.session.get('btnpago', []))
+    print(f"metodo de pago: {metodo_pago}")
+    print(f"obs del descuento: {descripcion_descuento}")
+    print(f"obs del otro valor: {descripcion_otro}")
+    
         
     data = {
         'usuario': obj_usuario,
@@ -1360,13 +1388,19 @@ def factura_Arr(request, idInmueble, idArrendatario):
         'valor_descuento': valor_descuento,
         'otro_valor': otro_valor_clean,
         'totalPagar': valor_total,
+        'totalPagarLetras': valor_total_letras,
         'fecha_actual': fecha_actual,
         'meses_pagados':meses_pagados,
         'logo_rentacasa_url': logo_rentacasa_url,
         'logo_datacredito_url': logo_datacredito_url,
-        'obs':descrip,
+        'firma_carlos': firma_carlos,
+        'obs_otro':descripcion_otro,
+        'obs_descuento':descripcion_descuento,
+        'metodo_pago':metodo_pago,
         'consecutivo':f'{consecutivo.factura_arr:04d}'  # '04d' significa que debe tener 4 dígitos con ceros a la izquierda,
     }
+    
+    print(f"{valor_total_letras}")
     
     #Aumento el numero para la proxima factura y actualizo
     consecutivo.factura_arr += 1
@@ -1375,5 +1409,17 @@ def factura_Arr(request, idInmueble, idArrendatario):
     #Nombre del archivo
     nombre_pdf = f"{obj_usuario.nombre.upper()}_{obj_usuario.apellido.upper()}.pdf"
     
-    pdf = render_pdf_arr('factura_arr.html', nombre_pdf, data)
-    return pdf
+    #Generación del PDF con Weasyprint
+    template = get_template('factura_arr.html')
+    html_template = template.render(data)
+    css_url = os.path.join(settings.BASE_DIR, 'generar/static/css/factura_arr.css' )
+    pdf = HTML(string=html_template).write_pdf(stylesheets = [CSS(css_url)])
+    
+    #pdf = render_pdf_arr('factura_arr.html', nombre_pdf, data)  #LLamado a la función
+    response = HttpResponse(pdf,content_type = 'application/pdf')
+    response['Content-Disposition'] = f'atachment; filename="{nombre_pdf}"'
+    
+    return response
+
+    # Devuelve el HTML renderizado
+    #return HttpResponse(html_template)

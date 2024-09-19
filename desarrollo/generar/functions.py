@@ -284,17 +284,10 @@ def render_pdf( template_src, context_dict={}):
 def render_pdf_arr( template_src, name, context_dict={}):
     template = get_template(template_src)
     
+    html_template = template.render(context_dict)
+    pdf = HTML(string=html_template).write_pdf(target=name)
     
-    html = template.render(context_dict)
-    
-    
-    result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode("utf-8")), dest=result)
-    if not pdf.err:
-        result.seek(0)
-        return FileResponse(result, as_attachment=True, filename=f'{name}')
-    return None
-
+    return pdf
 
 #-----------------------------------------------Función para limpiar la BD desde las carpetas--------------------------------------------
 #Elimina las imagenes de la base de datos que se eliminen manual desde las carpetas de los archivos
