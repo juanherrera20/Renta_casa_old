@@ -6,15 +6,27 @@ from django.templatetags.static import static
 from django.contrib import messages
 from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, HttpResponse
+from django.conf import settings
 import uuid
 from django.db.models import Q, Max
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import superuser, usuarios, arrendatario, propietario, tareas, inmueble, Documentos, Imagenes, DocsPersonas, Docdescuentos, Consecutivo
 from werkzeug.security import generate_password_hash, check_password_hash
 from .functions import autenticado_required, actualizar_estados_propietarios,actualizar_estados_arrendatarios, actualizar_tareas, extract_numbers, convert_time, jerarquia_estadoPago_propietario, render_pdf, render_pdf_arr, calcular_monto_atraso, delete_imagenes, parse_date #Importo las funciones desde functions.py
 from .functions import diccionarioTareaEstado, diccionarioTareaEtiqueta, diccionarioHabilitar, diccionarioPago, diccionarioInmueble, diccionarioBancos, diccionarioPorcentajeDescuento, diccionarioTipoInmueble
 import json
 import zipfile
+from django.urls import reverse
+from weasyprint import HTML, CSS
+from django.template.loader import get_template
+import os
+from num2words import num2words
+
+
+#Librerias Weasyprint para generar pdfs
+
+# from django.conf import settings
+# from django.templatetags.static import static
 
 # Creations the views.
 def index(request):
@@ -450,7 +462,8 @@ def analisis_propietarios(request):
     
     for objeto in objetoInmuebles: #De esta manera obtengo los valores especificos para cada inmueble directamente desde el
         estadoPropietario.append(diccionarioPago[str(objeto.estadoPago)])
-        bancoLink.append(diccionarioBancos[str(objeto.propietario_id.bancos)])                                                                               
+        bancoLink.append(diccionarioBancos[str(objeto.propietario_id.bancos)])
+                                                                                       
     
     estados_espacio = [valor.lower().replace(' ', '') for valor in estadoPropietario]
     objetoCanon = inmueble.objects.values_list('canon', flat=True).filter(arrendatario_id__isnull=False)
@@ -883,7 +896,10 @@ def all_values_pro(request, id): #Vista exclusivamente para los propietarios
     newServicios = extract_numbers(servicios)
     matriculas = [numero if numero!= 0 else 'No existe' for numero in newServicios]
     All = [(objetoInmueble, clave_tipo,clave_estado,clave_porcentaje,servicios)]
-
+    
+    #obtengo los descuentos del inmueble
+    objs_DocDescuentos = objetoInmueble.Docdescuento.all()
+    
     #------------------------------------------------------Individuo_Propietario----------------------------------------------------
     objetoPropietario = propietario.objects.filter(id=objetoInmueble.propietario_id_id).first()
     pago = diccionarioPago[str(objetoInmueble.estadoPago)]
@@ -906,8 +922,84 @@ def all_values_pro(request, id): #Vista exclusivamente para los propietarios
         respaldo = 2
     return render(request, 'analisis/all_values_pro.html', {'inmueble': All, 'matricula':matriculas, 'documentos':documentos, 'imagenes':imagenes,
                                                         'usuario':objetoUser, 'propietario':objetoPropietario, 'pago': pago, 'documentos':documentos, 'total':totalPago,
-                                                        'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo})
+                                                        'usuario2':objetoUser2, 'arrendatario':objetoArrendatario, 'estado':estados, 'respaldo':respaldo, 'Docdescuentos': objs_DocDescuentos})
 
+
+@autenticado_required
+def agregar_descuento(request, id):
+    obj_inmueble = inmueble.objects.get(id=id)
+    obj_propietario = obj_inmueble.propietario_id
+    obj_usuario = obj_propietario.usuarios_id
+
+    if request.method == "GET":
+        # Procesa el formulario aquí, si es necesario
+        objs_DocDescuentos = obj_inmueble.Docdescuento.all()
+        context = {
+            'inmueble': obj_inmueble,
+            'DocDescuentos': objs_DocDescuentos,
+            'usuario': obj_usuario
+        }
+        return render(request, 'analisis/propietarios/agregar_descuento.html', context)
+    else:
+        # Manejar eliminación de descuentos
+        eliminados = request.POST.getlist('eliminar')  # Obtener lista de IDs de descuentos eliminados
+        if eliminados:
+            for descuento_id in eliminados:
+                try:
+                    descuento = Docdescuentos.objects.get(id=descuento_id)
+                    descuento.delete()
+                except Docdescuentos.DoesNotExist:
+                    continue  # Si no existe, continuar
+                
+                
+        descuentos = []
+        index = 0
+        
+        while True:
+            valor = request.POST.get(f'descuentos[{index}][valor]')
+            descripcion = request.POST.get(f'descuentos[{index}][descripcion]')
+            documento = request.FILES.get(f'descuentos[{index}][documento]')
+            
+            if valor is None and descripcion is None and documento is None:
+                break  # Salir del bucle si no hay más datos
+            
+            descuento_data = {
+                'valor': valor,
+                'descripcion': descripcion,
+                'documento': documento
+            }
+            descuentos.append(descuento_data)
+            index += 1
+
+        # Definir la ubicación para guardar los documentos
+        fs = FileSystemStorage(location=f"../media/Inmuebles/{obj_inmueble.direccion}/Documentos")
+
+        for descuento_data in descuentos:
+            valor = descuento_data.get('valor')
+            descripcion = descuento_data.get('descripcion')
+            documento = descuento_data.get('documento')
+           
+            urls = []
+            if documento:
+                filename = fs.save(documento.name, documento)
+                url = fs.url(filename)
+                urls.append(url)
+
+            # Crear y guardar el descuento
+            guardar = Docdescuentos(
+                inmueble_id=id,
+                valor=valor,
+                descrip=descripcion,
+                documento=','.join(urls),  # Guardar las URLs como una cadena separada por comas
+                fecha=date.today()
+            )
+            guardar.save()
+
+        # Devolver la URL a la que redirigir
+        return JsonResponse({'status': 'success', 'redirect_url': reverse('AllValuesPro', args=[id])})
+        #return redirect('AllValuesPro', id=obj_inmueble.id)
+    
+    
 @autenticado_required
 def redireccion_pro(request): #Redirección solo para los propietarios
     btn = request.POST.get('btn')
@@ -933,52 +1025,68 @@ def confirmar_pago (request, id):
     template_path = "analisis/modal_pago.html"
     obj_propietario = propietario.objects.get(id = id)
     objs_inmuebles = obj_propietario.inmueble.exclude(estadoPago = 1).filter(arrendatario_id__isnull=False) #filtrar los que no se han pagado
+    print(f"Inmuebles no pagados {objs_inmuebles}")
     objeto_usuario = obj_propietario.usuarios_id
     
     if request.method == 'GET':
+        print("Entro metodo get")
         total_pago = []
+        list_DocDescuentos = []  #Array para almacenar listas de documentos
         for obj_inmueble in objs_inmuebles:
             descuento = diccionarioPorcentajeDescuento[str(obj_inmueble.porcentaje)]
             total_pago.append( obj_inmueble.canon * (100 - descuento)/100)
             
-        inmuebles = zip(objs_inmuebles, total_pago)
+            objs_DocDescuentos = obj_inmueble.Docdescuento.all() #Obtengo los descuentos por cada inmueble
+            list_DocDescuentos.append(objs_DocDescuentos) #La lista de descuentos por cada inmueble, lo agrego a la lista de descuentos por todos los inmuebles
+        inmuebles = zip(objs_inmuebles, total_pago, list_DocDescuentos)
         return render(request, template_path, {"propietario": obj_propietario, "inmuebles": inmuebles})
     
     else:
-        #Guardar los documentos de descuento y toda su información
-        id_inmuebles = request.POST.getlist('inmueblesId') #Hay varios inmuebles en el formulario
-        objs_inmuebles = inmueble.objects.filter(id__in=id_inmuebles)  #De esta manera traigo todos los objetos con una sola consulta
-        descuento=[]
-        descripcion=[]
-        ids_inmuebles=[]
+        # Captura de datos enviados en el formulario
+        id_inmuebles = request.POST.getlist('inmueblesId') #Hay varuis inmuebles en el formulario
+        objs_inmuebles = inmueble.objects.filter(id__in=id_inmuebles) #De esta manera traigo todos los objetos de los ids 
+        print(f"EStos son los inmubles: {objs_inmuebles}")
+        
+        #Creo arrays para mandar datos a la factura
         totalPagar = []
+        descuento = []
+        descripcion = []
+        ids_inmuebles = []
+
+        # Iterar sobre los inmuebles seleccionados
         for obj_inmueble in objs_inmuebles:
-            id_inmueble = obj_inmueble.id
-            documento = request.FILES.getlist(f'docRespaldo_{id_inmueble}', None) #Los inputs estan en relación al inmueble
-            valor = request.POST.get(f'descuento_{id_inmueble}', None)
-            descrip = request.POST.get(f'descripcionDescuento_{id_inmueble}', None)
-            total = request.POST.get(f'totalPagar_{id_inmueble}')
-            urls=[]
+            print(f"El id del objeto en el ciclo {obj_inmueble.id}")
+            inmueble_id = str(obj_inmueble.id)
             
-            if valor  or descrip :  #controlar si se apreto el boton descuento o no
-                fs = FileSystemStorage(location=f"../media/Inmuebles/{obj_inmueble.direccion}/Documentos") #Guardo una carpeta afuera de la carpeta principal
-                
-                if documento: #Si se adjuntaron documentos
-                    for doc in documento:
-                        filename = fs.save(doc.name, doc)
-                        url = fs.url(filename)
-                        urls.append(url)
-                guardar = Docdescuentos(inmueble_id =id_inmueble, valor = valor, descrip = descrip ,documento =','.join(urls))
-                guardar.save()
-            else: 
+            #Obtengo los descuentos
+            descuentos_aplicados = int(request.POST.get('descuentosAplicados_' + inmueble_id, 0))
+            ids_descuentos_aplicados = request.POST.get('idsDescuentos_' + inmueble_id, '').split(',')
+            total = request.POST.get(f'totalPagar_{inmueble_id}')
+            print(f"Descutnos aplicados: {descuentos_aplicados}")
+            print(f"ids de los descuentos {ids_descuentos_aplicados}")
+            
+            descrip = ""
+            valor = descuentos_aplicados
+            
+            if ids_descuentos_aplicados and any(id_descuento.strip() for id_descuento in ids_descuentos_aplicados): #verifica que al menos uno de los elementos en ids_descuentos_aplicados no sea una cadena vacía después de eliminar espacios en blanco.
+                print("Entro en existen descuentos aplicados")
+                objs_DocDescuentos = obj_inmueble.Docdescuento.all()
+                for obj_DocDescuento in objs_DocDescuentos:
+                    descrip += obj_DocDescuento.descrip + "\n"
+                    obj_DocDescuento.delete() #Elimino el descuento
+                    print(descrip)
+            else:
                 valor = 0
                 descrip = "No aplica ningún descuento"
-            
+                    
+            print(f"Descripción definitiva: {descrip}")
+            print(f"Valor total: {valor}")
+            print(f"Total {total}")
             #Se actualiza las listas para la generación de facturas
             totalPagar.append(total)
             descuento.append(valor)
             descripcion.append(descrip)
-            ids_inmuebles.append(id_inmueble)
+            ids_inmuebles.append(inmueble_id)
             
             #Actualizar Fechas y estados por cada inmueble
             estado_pago = 1
@@ -1013,8 +1121,10 @@ def confirmar_pago (request, id):
         request.session['obj_propietario'] = propietarios
         request.session['obj_usuario'] = propietario_user_id
 
+
         #return redirect('analisis_propietarios')
-        return redirect("factura") #Aquí se redirecciona al html de la factura    
+        return redirect("factura")
+        
 #------------------------------------------------------------------ Función para las facturas de Propietarios ----------------------------------------------------------
 def factura(request):
     totalPagar = request.session.get('totalPagar', [])
@@ -1032,13 +1142,18 @@ def factura(request):
     
     logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))
     logo_datacredito_url = request.build_absolute_uri(static('image/Logo-Datacredito.png'))
+    firma_carlos = request.build_absolute_uri(static('image/firma_carlos.png'))
+    
     pdf_files = []
     for i, data in enumerate(objeto_inmueblef):
         descuento = descuentos[i] if descuentos[i] is not None else 0
         descrip = descripcion[i] if descripcion[i] is not None else "No hay observaciones."
         direccion = data.direccion
-        valor_inicial = int(float(totalPagar[i]))
-        total = valor_inicial - int(descuento)
+        valor_inicial = float(totalPagar[i])
+        total = valor_inicial - float(descuento)
+        
+        # Convertir el valor total a letras
+        valor_total_letras = num2words(total, lang='es', to='currency', currency='COP')
         value ={
             'direccion': direccion,
             'valor_inicial': valor_inicial,
@@ -1051,19 +1166,27 @@ def factura(request):
             'consecutivo':f'{consecutivo.factura_pro:04d}', # '04d' significa que debe tener 4 dígitos con ceros a la izquierda,
             'logo_rentacasa_url': logo_rentacasa_url,
             'logo_datacredito_url': logo_datacredito_url,
+            'firma_carlos': firma_carlos,
+            'valortotal_letras':valor_total_letras,
         }
         
         #Aumento el numero para la proxima factura y actualizo
         consecutivo.factura_pro += 1
         consecutivo.save()
         
-        pdf = render_pdf('factura.html', value)
+        #Generación del PDF con Weasyprint
+        template = get_template('factura.html')
+        html_template = template.render(value)
+        css_url = os.path.join(settings.BASE_DIR, 'generar/static/css/factura.css' )
+        pdf = HTML(string=html_template).write_pdf(stylesheets = [CSS(css_url)])
+        
+        response = HttpResponse(pdf,content_type = 'application/pdf')
         pdf_files.append((f'factura_{i+1}.pdf', pdf))
 
     zip_buffer = BytesIO() #Empaqueta cada pdf para luego descargar solo un .ZIP
     with zipfile.ZipFile(zip_buffer, 'w') as zip_file:
         for filename, pdf in pdf_files:
-            zip_file.writestr(filename, pdf.getvalue())
+            zip_file.writestr(filename, pdf)
     zip_buffer.seek(0)
     nombre_zip = f"{obj_usuario.nombre.upper()}_{obj_usuario.apellido.upper()}.zip"
     
@@ -1135,7 +1258,7 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
     elif btn == '3':
         resultado = individuo_inquilino(request, idArrendatario)
         return HttpResponse(resultado)
-    elif btnPago == '4':
+    elif btnPago == '4' or btnPago == '5':
         #obtengo los valores del html
         meses = int(request.POST.get('meses_acumulados'))
         documento = request.FILES.getlist('docRespaldo', None)
@@ -1171,7 +1294,7 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
                     filename = fs.save(doc.name, doc)
                     url = fs.url(filename)
                     urls.append(url)
-            doc_descuentos = Docdescuentos(inmueble_id = idInmueble, valor = descuento, descrip = observaciones1 ,documento =','.join(urls))
+            doc_descuentos = Docdescuentos(inmueble_id = idInmueble, valor = descuento, descrip = observaciones1, fecha = date.today() ,documento =','.join(urls))
             doc_descuentos.save()
         else: 
             descuento = 0
@@ -1179,13 +1302,10 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
 
         #concatenar texto
         if observaciones2:
-            observaciones = observaciones1 + ".\n" + observaciones2
             otro_valor = request.POST.get('otroValor')
         else:
             otro_valor = 0
-            observaciones = observaciones1
-        
-        print(f"Texto final: {observaciones}")
+            observaciones2 = "No aplica otro Valor"
         
         request.session['mesPagado1'] = fechaCobro.strftime("%d/%m/%Y")
         request.session['mesPagado2'] = nuevaFecha.strftime("%d/%m/%Y") #Fecha hasta donde pago, en caso de llevar meses de atraso
@@ -1193,7 +1313,9 @@ def redireccion_arr(request):  # Redirección solo para los arrendatarios
         request.session['valor_total'] = request.POST.get('valor_total')
         request.session['OtroValor']= otro_valor
         request.session['valor_descuento'] = descuento
-        request.session['observaciones'] = observaciones
+        request.session['obs_descuento'] = observaciones1
+        request.session['obs_otrovalor'] = observaciones2
+        request.session['btnpago'] = btnPago
         
         print(f"El monto de mora: {request.POST.get('monto')}")
         print(f"El valor total a pagar: {request.POST.get('valor_total')}")
@@ -1225,6 +1347,7 @@ def factura_Arr(request, idInmueble, idArrendatario):
     
     logo_rentacasa_url = request.build_absolute_uri(static('image/Logo RENTACASA.png'))
     logo_datacredito_url = request.build_absolute_uri(static('image/Logo-Datacredito.png'))
+    firma_carlos = request.build_absolute_uri(static('image/firma_carlos.png'))
 
     otro_valor_str = str(request.session.get('OtroValor', ''))
     monto_str = str(request.session.get('monto', ''))
@@ -1245,8 +1368,18 @@ def factura_Arr(request, idInmueble, idArrendatario):
     monto = float(monto_clean)
     valor_total = float(valor_total_clean)
     valor_descuento = float(valor_descuento_clean)
-    descripcion = request.session.get('observaciones', [])
-    descrip = descripcion if descripcion  is not None else "No hay observaciones."
+    descripcion_descuento = request.session.get('obs_descuento', [])
+    descripcion_otro = request.session.get('obs_otrovalor', [])
+    
+
+    # Convertir el valor total a letras
+    valor_total_letras = num2words(valor_total, lang='es', to='currency', currency='COP')
+    
+    metodo_pago = str(request.session.get('btnpago', []))
+    print(f"metodo de pago: {metodo_pago}")
+    print(f"obs del descuento: {descripcion_descuento}")
+    print(f"obs del otro valor: {descripcion_otro}")
+    
         
     data = {
         'usuario': obj_usuario,
@@ -1255,18 +1388,38 @@ def factura_Arr(request, idInmueble, idArrendatario):
         'valor_descuento': valor_descuento,
         'otro_valor': otro_valor_clean,
         'totalPagar': valor_total,
+        'totalPagarLetras': valor_total_letras,
         'fecha_actual': fecha_actual,
         'meses_pagados':meses_pagados,
         'logo_rentacasa_url': logo_rentacasa_url,
         'logo_datacredito_url': logo_datacredito_url,
-        'obs':descrip,
+        'firma_carlos': firma_carlos,
+        'obs_otro':descripcion_otro,
+        'obs_descuento':descripcion_descuento,
+        'metodo_pago':metodo_pago,
         'consecutivo':f'{consecutivo.factura_arr:04d}'  # '04d' significa que debe tener 4 dígitos con ceros a la izquierda,
     }
+    
+    print(f"{valor_total_letras}")
     
     #Aumento el numero para la proxima factura y actualizo
     consecutivo.factura_arr += 1
     consecutivo.save()
+    
+    #Nombre del archivo
     nombre_pdf = f"{obj_usuario.nombre.upper()}_{obj_usuario.apellido.upper()}.pdf"
     
-    pdf = render_pdf_arr('factura_arr.html', nombre_pdf, data)
-    return pdf
+    #Generación del PDF con Weasyprint
+    template = get_template('factura_arr.html')
+    html_template = template.render(data)
+    css_url = os.path.join(settings.BASE_DIR, 'generar/static/css/factura_arr.css' )
+    pdf = HTML(string=html_template).write_pdf(stylesheets = [CSS(css_url)])
+    
+    #pdf = render_pdf_arr('factura_arr.html', nombre_pdf, data)  #LLamado a la función
+    response = HttpResponse(pdf,content_type = 'application/pdf')
+    response['Content-Disposition'] = f'atachment; filename="{nombre_pdf}"'
+    
+    return response
+
+    # Devuelve el HTML renderizado
+    #return HttpResponse(html_template)

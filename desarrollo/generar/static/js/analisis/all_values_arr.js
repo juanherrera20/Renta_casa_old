@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Variables
     let btnPago = document.getElementById('btnPago');
+    let btnPago2 = document.getElementById('btnPago2');
     let btnDescuento = document.querySelector('.btnDescuento');
     let btnOtroValor = document.querySelector('.btnOtroValor');
     let btnConfirmarDescuento = document.querySelector('.btnConfirmar');
@@ -41,6 +42,36 @@ document.addEventListener('DOMContentLoaded', function() {
             prueba.type = 'hidden';
             prueba.name = 'btnRespaldoPago';
             prueba.value = 4;
+            document.getElementById('miFormulario').appendChild(prueba);
+
+            Swal.fire({
+                title: "¿Seguro que el arrendatario ya pagó?",
+                showDenyButton: true,
+                confirmButtonText: "Sí",
+                denyButtonText: `No`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire("Arrendatario actualizado!", "", "success").then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('miFormulario').submit(); // Envía el formulario si el usuario confirma la acción
+                        }
+                    });
+                } else if (result.isDenied) {
+                    Swal.fire("No se guardaron los cambios", "", "info");
+                }
+            });
+        });
+    }
+
+      // Evento para el botón de Pago
+      if (btnPago2) {
+        btnPago2.addEventListener('click', function(event) {
+            event.preventDefault();
+
+            var prueba = document.createElement('input');
+            prueba.type = 'hidden';
+            prueba.name = 'btnRespaldoPago';
+            prueba.value = 5;
             document.getElementById('miFormulario').appendChild(prueba);
 
             Swal.fire({

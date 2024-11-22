@@ -22,7 +22,7 @@ from django.conf.urls.static import static
 from generar.views import index, register, dash, inmu, personas_propietarios, personas_inquilinos, analisis_propietarios, analisis_inquilinos, close
 from generar.views import  tarea, noti, add_propietario, guardar, add_inquilino, guardar_inquilino,  add_tarea, guardar_tarea, modal_ver_tarea
 from generar.views import individuo_propietario, individuo_inquilino,all_values_pro, add_inmueble, guardar_inmueble, individuo_inmueble, actualizar_propietario, actualizar_inquilino
-from generar.views import actualizar_modal, actualizar_inmueble, redireccion_pro, redireccion_arr, all_values_arr, confirmar_pago, actualizar_estado, factura, factura_Arr,  eliminar_tarea
+from generar.views import actualizar_modal, actualizar_inmueble, redireccion_pro, redireccion_arr, all_values_arr, confirmar_pago, actualizar_estado, factura, factura_Arr,  eliminar_tarea, agregar_descuento
 
 urlpatterns = [
 
@@ -68,6 +68,7 @@ urlpatterns = [
     #Visualizar todos los datos
     #---------Propietarios-----------------
     path('Analisis/All/ValuesPro/<int:id>', all_values_pro, name="AllValuesPro"),
+    path('Analisis/Agregar-descuentos/<int:id>', agregar_descuento, name='agregar_descuento'),
     path('Analisis/RedireccionPro/',redireccion_pro, name="redirecPro"),
     path('Analisis/All/ValuesPro/ConfirmarPago/<int:id>/', confirmar_pago, name = "confirmarPago"),
     #---------Arrendatarios-----------------

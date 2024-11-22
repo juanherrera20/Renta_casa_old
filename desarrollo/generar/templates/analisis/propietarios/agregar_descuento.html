@@ -1,0 +1,140 @@
+{% extends "barra_navegacion.html" %}
+{% load static %}
+
+{% block static %}
+<link rel="stylesheet" href="{% static 'css/analisis/propietarios/agregar_descuento.css' %}" type="text/css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+{% endblock static %}
+
+{% block encabezado %}
+Agregar Descuentos
+{% endblock encabezado %}
+
+{% block title %}
+<div class="title">
+    Agregar Descuentos
+</div>
+{% endblock title %}
+
+{% block contenido %}
+<div class="content-container">
+    <div id="app">
+        <!-- Mostrar descuentos existentes con Django -->
+        <div>
+            <h3>Descuentos Existentes</h3>
+            <form method="POST" enctype="multipart/form-data" id="descuentos-form">
+                {% csrf_token %}
+                <div>
+                    {% for descuento in DocDescuentos %}
+                        <div class="descuento-item">
+                            <p>Fecha: {{ descuento.fecha }}</p>
+                            <p>Valor: ${{ descuento.valor }}</p>
+                            <p class="descripcion">{{ descuento.descrip }}</p>
+                            <div class="delete-container">
+                                <input type="checkbox" name="eliminar" value="{{ descuento.id }}">
+                                <span class="material-symbols-outlined">delete</span>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>No hay descuentos registrados.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Botón para agregar un nuevo descuento -->
+                <button type="button" @click="agregarFormulario">Agregar Descuento</button>
+
+                <!-- Formularios dinámicos para agregar descuentos -->
+                <div v-for="(form, index) in formularios" :key="index" class="form-container" :class="{ 'form-aceptado': form.aceptado }">
+                    <h3 v-text="'Agregar Descuento ' + (index + 1)"></h3>
+                    <input type="number" v-model.number="form.valor" placeholder="Valor del descuento" min="0" :disabled="form.aceptado" />
+                    <input type="text" v-model="form.descripcion" placeholder="Descripción del descuento" :disabled="form.aceptado" />
+                    <input type="file" @change="asociarDocumento($event, index)" :disabled="form.aceptado" />
+                    <button v-if="!form.aceptado" @click="aceptarDescuento(index)">Aceptar</button>
+                    <button v-if="!form.aceptado" @click="cancelarDescuento(index)">Cancelar</button>
+                    <span v-if="form.aceptado" class="aceptado-indicator">Descuento Aceptado</span>
+                </div>
+
+                <!-- Botón para guardar todos los descuentos -->
+                <button type="button" v-if="formularios.length > 0" @click="guardarTodosDescuentos">Guardar Todos</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Incluyendo Vue desde CDN -->
+<script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+<script>
+new Vue({
+    el: '#app',
+    data() {
+        return {
+            formularios: [], // Arreglo de formularios dinámicos para agregar descuentos
+            formulariosAceptados: [] // Formularios aceptados para guardar
+        }
+    },
+    methods: {
+        aceptarDescuento(index) {
+            const formulario = this.formularios[index];
+            if (formulario.valor !== null && formulario.valor >= 0 && formulario.descripcion) {
+                formulario.aceptado = true; // Marcar como aceptado
+                this.formulariosAceptados.push(formulario);
+            } else {
+                alert('Por favor, ingresa un valor y una descripción para el descuento.');
+            }
+        },
+        cancelarDescuento(index) {
+            this.formularios.splice(index, 1); // Eliminar el formulario al cancelar
+        },
+        agregarFormulario() {
+            this.formularios.push({ valor: null, descripcion: '', documento: null, aceptado: false });
+        },
+        asociarDocumento(event, index) {
+            const archivo = event.target.files[0];
+            if (archivo) {
+                this.formularios[index].documento = archivo;
+            }
+        },
+        guardarTodosDescuentos() {
+            const formData = new FormData();
+            this.formulariosAceptados.forEach((descuento, index) => {
+                formData.append(`descuentos[${index}][valor]`, descuento.valor);
+                formData.append(`descuentos[${index}][descripcion]`, descuento.descripcion);
+                if (descuento.documento) {
+                    formData.append(`descuentos[${index}][documento]`, descuento.documento);
+                }
+            });
+
+            // Agregar los IDs de los descuentos a eliminar al FormData
+            const checkboxes = document.querySelectorAll('input[name="eliminar"]:checked');
+            checkboxes.forEach(checkbox => {
+                formData.append('eliminar', checkbox.value);
+            });
+
+            fetch('{% url "agregar_descuento" id=inmueble.id %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Descuentos guardados exitosamente.');
+                    window.location.href = data.redirect_url; // Redirige a la URL recibida
+                } else {
+                    alert('Error al guardar descuentos: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    },
+    mounted() {
+        // Agregar el primer formulario automáticamente
+        this.agregarFormulario();
+    }
+});
+</script>
+{% endblock %}
